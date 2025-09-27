@@ -93,10 +93,10 @@
         transform: translateX(-50%);
       }
       @media (max-width: 475px) {
-        top: 15%;
+        top: 15vh;
       }
       @media (max-width: 375px) {
-        top: 25vh;
+        top: 30vh;
         font-size: $font-size-title-mobile;
       }
 
@@ -111,7 +111,7 @@
         @media (max-width: 768px) {
           position: absolute;
           left: 65%;
-          top: 60px;
+          top: 80px;
           width: 100%;
           font-size: $font-size-h1-mobile;
         }
@@ -128,7 +128,7 @@
     .titleRight {
       position: absolute;
       bottom: 5vh;
-      right: 7.5vw;
+      right: 2vw;
       font-size: $font-size-h1-desktop;
       font-family: $font-family-accentuated-text;
       letter-spacing: 0.15rem;
