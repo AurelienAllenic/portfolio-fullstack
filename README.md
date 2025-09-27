@@ -80,7 +80,7 @@ npm run dev
 
 ### Styles généraux
 
-![Styles généraux](./public/assets/maquette/STYLES/styles.png)
+![Styles généraux](./public/assets/maquette/styles.png)
 
 ### Vue d'ensemble
 
@@ -88,11 +88,11 @@ npm run dev
 
 ### Version Desktop
 
-![Version Desktop](./public/assets/maquette/DESKTOP/desktop.png)
+![Version Desktop](./public/assets/maquette/desktop.png)
 
 ### Version Mobile
 
-![Page 3](./public/assets/maquette/MOBILE/mobile.png)
+![Page 3](./public/assets/maquette/mobile.png)
 
 📄 [Télécharger la maquette complète (PDF)](./public/assets/maquette.pdf)
 _💡 Téléchargez le PDF pour accéder aux liens interactifs_
