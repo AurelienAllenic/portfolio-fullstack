@@ -1,2 +1,43 @@
 .containerHero {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden; // Empêche le scroll réel
+  background-image: url("/src/assets/background.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    transparent var(--gradient-size, 30%),
+    rgba(0, 0, 0, 1) 30%
+  );
+  pointer-events: none;
+}
+
+.hero1 {
+  background: red;
+  height: 100px;
+  width: 10%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+}
+.hero2 {
+  background: blue;
+  height: 100px;
+  width: 10%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
 }
