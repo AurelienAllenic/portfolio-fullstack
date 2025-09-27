@@ -1,8 +1,10 @@
+@import "../../abstract/variables.scss";
+
 .containerHero {
   width: 100%;
   min-height: 100vh;
   position: relative;
-  overflow: hidden; // Empêche le scroll réel
+  overflow: hidden;
   background-image: url("/src/assets/background.webp");
   background-size: cover;
   background-position: center;
@@ -24,13 +26,44 @@
 }
 
 .hero1 {
-  background: red;
-  height: 100px;
-  width: 10%;
+  min-height: 100vh;
+  width: 100%;
   position: absolute;
   transform: translate(-50%, -50%);
   left: 50%;
   top: 50%;
+  color: white;
+  .titleContainer {
+    min-height: 500px;
+    width: 875px;
+    //background: rgba(205, 49, 49, 0.2);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    font-weight: $font-weight-regular;
+    .titleLeft {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      top: 50px;
+      font-family: $font-family-secondary;
+      font-size: $font-size-h1-desktop;
+      span {
+        font-family: $font-family-accentuated-text;
+        font-size: $font-size-title-desktop;
+        letter-spacing: 0.15rem;
+      }
+    }
+    .titleRight {
+      position: absolute;
+      bottom: 25px;
+      right: 100px;
+      font-size: $font-size-h2-desktop;
+      font-family: $font-family-accentuated-text;
+      letter-spacing: 0.15rem;
+    }
+  }
 }
 .hero2 {
   background: blue;

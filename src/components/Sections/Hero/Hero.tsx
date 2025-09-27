@@ -77,7 +77,14 @@ const Hero: React.FC = () => {
       ></div>
 
       {gradientState === "hero1" && (
-        <div className={styles.hero1}>Contenu Hero1</div>
+        <div className={styles.hero1}>
+          <div className={styles.titleContainer}>
+            <h2 className={styles.titleLeft}>
+              Développeur<span>WEB</span>
+            </h2>
+            <h2 className={styles.titleRight}>FULLSTACK</h2>
+          </div>
+        </div>
       )}
       {gradientState === "hero2" && (
         <div className={styles.hero2}>Contenu Hero2</div>
