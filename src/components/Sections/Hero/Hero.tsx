@@ -5,9 +5,9 @@ import { gsap } from "gsap";
 const Hero: React.FC = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [gradientState, setGradientState] = useState<"hero1" | "hero2">(
-    "hero1"
-  );
+  const [gradientState, setGradientState] = useState<
+    "hero1" | "hero2" | "transition"
+  >("hero1");
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -24,24 +24,29 @@ const Hero: React.FC = () => {
     tl.to(overlay, {
       "--gradient-size": "100%",
       onUpdate: () => {
-        const val = parseFloat(
-          getComputedStyle(overlay).getPropertyValue("--gradient-size")
-        );
+        const val =
+          parseFloat(
+            getComputedStyle(overlay).getPropertyValue("--gradient-size")
+          ) || 0;
         overlay.style.setProperty("--gradient-size", `${val}%`);
 
-        // Met à jour le state pour afficher la div correspondante
-        if (val <= 0) setGradientState("hero1");
-        else if (val >= 100) setGradientState("hero2");
+        // Gestion des états en fonction de la progression
+        if (val > 0 && val < 50) {
+          setGradientState("transition"); // Hero1 disparaît, Hero2 pas encore visible
+        } else if (val >= 50) {
+          setGradientState("hero2"); // Hero2 apparaît à 50%
+        } else if (val === 0) {
+          setGradientState("hero1"); // Revenir à Hero1 si animation inversée
+        }
       },
       onComplete: () => {
         scrollBlocked = false;
         document.body.style.overflow = "auto";
-        setGradientState("hero2"); // Assure que hero2 est visible
       },
       onReverseComplete: () => {
         scrollBlocked = true;
         document.body.style.overflow = "hidden";
-        setGradientState("hero1"); // Revenir à hero1
+        setGradientState("hero1"); // Revenir à Hero1
       },
     });
 
@@ -86,9 +91,7 @@ const Hero: React.FC = () => {
           </div>
         </div>
       )}
-      {gradientState === "hero2" && (
-        <div className={styles.hero2}>Contenu Hero2</div>
-      )}
+      {gradientState === "hero2" && <div className={styles.hero2}></div>}
     </div>
   );
 };

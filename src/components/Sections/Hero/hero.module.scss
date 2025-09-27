@@ -2,7 +2,8 @@
 
 .containerHero {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 500px;
   position: relative;
   overflow: hidden;
   background-image: url("/src/assets/background.webp");
@@ -20,57 +21,146 @@
   background: radial-gradient(
     circle at center,
     transparent var(--gradient-size, 30%),
-    rgba(0, 0, 0, 1) 30%
+    #050505 250px
   );
   pointer-events: none;
+  @media (max-width: 575px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 200px
+    );
+  }
+  @media (max-width: 435px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 175px
+    );
+  }
+  @media (max-width: 375px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 135px
+    );
+  }
 }
 
 .hero1 {
   min-height: 100vh;
   width: 100%;
   position: absolute;
-  transform: translate(-50%, -50%);
-  left: 50%;
   top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   .titleContainer {
     min-height: 500px;
     width: 875px;
-    //background: rgba(205, 49, 49, 0.2);
     position: absolute;
-    transform: translate(-50%, -50%);
-    left: 50%;
     top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-weight: $font-weight-regular;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      min-height: 100vh;
+    }
+
     .titleLeft {
       display: flex;
       flex-direction: column;
       position: relative;
-      top: 50px;
+      top: 5%;
       font-family: $font-family-secondary;
       font-size: $font-size-h1-desktop;
+
+      @media (max-width: 900px) {
+        left: 15%;
+        font-size: $font-size-title-tab;
+      }
+      @media (max-width: 768px) {
+        font-size: $font-size-h1-desktop;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      @media (max-width: 475px) {
+        top: 15%;
+      }
+      @media (max-width: 375px) {
+        top: 25vh;
+        font-size: $font-size-title-mobile;
+      }
+
       span {
         font-family: $font-family-accentuated-text;
         font-size: $font-size-title-desktop;
         letter-spacing: 0.15rem;
+
+        @media (max-width: 900px) {
+          font-size: $font-size-h1-tab;
+        }
+        @media (max-width: 768px) {
+          position: absolute;
+          left: 65%;
+          top: 60px;
+          width: 100%;
+          font-size: $font-size-h1-mobile;
+        }
+        @media (max-width: 475px) {
+          font-size: $font-size-h1-desktop;
+        }
+        @media (max-width: 375px) {
+          font-size: $font-size-title-tab;
+          top: 45px;
+        }
       }
     }
+
     .titleRight {
       position: absolute;
-      bottom: 25px;
-      right: 100px;
-      font-size: $font-size-h2-desktop;
+      bottom: 5vh;
+      right: 7.5vw;
+      font-size: $font-size-h1-desktop;
       font-family: $font-family-accentuated-text;
       letter-spacing: 0.15rem;
+
+      @media (max-width: 900px) {
+        font-size: $font-size-title-tab;
+        right: 15vw;
+      }
+      @media (max-width: 768px) {
+        bottom: 20vh;
+        right: 30vw;
+        transform: translateX(50%);
+        font-size: $font-size-h2-desktop;
+      }
+      @media (max-width: 475px) {
+        font-size: $font-size-title-tab;
+        bottom: 27.5vh;
+      }
+      @media (max-width: 375px) {
+        font-size: $font-size-h1-tab;
+        bottom: 34vh;
+      }
     }
   }
 }
+
 .hero2 {
-  background: blue;
   height: 100px;
   width: 10%;
   position: absolute;
   top: 50%;
-  transform: translate(-50%, -50%);
   left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.2);
 }
