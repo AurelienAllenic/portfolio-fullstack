@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
+import HeroBeforeScroll from "./HeroBeforeScroll";
 
 const Hero: React.FC = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -81,16 +82,7 @@ const Hero: React.FC = () => {
         style={{ "--gradient-size": "0%" } as React.CSSProperties}
       ></div>
 
-      {gradientState === "hero1" && (
-        <div className={styles.hero1}>
-          <div className={styles.titleContainer}>
-            <h2 className={styles.titleLeft}>
-              Développeur<span>WEB</span>
-            </h2>
-            <h2 className={styles.titleRight}>FULLSTACK</h2>
-          </div>
-        </div>
-      )}
+      {gradientState === "hero1" && <HeroBeforeScroll />}
       {gradientState === "hero2" && <div className={styles.hero2}></div>}
     </div>
   );
