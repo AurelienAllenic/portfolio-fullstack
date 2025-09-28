@@ -1,2 +1,216 @@
+@import "../../abstract/variables.scss";
+
 .containerHero {
+  width: 100%;
+  height: 100vh;
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+  background-image: url("/src/assets/background.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    transparent var(--gradient-size, 30%),
+    #050505 350px
+  );
+  pointer-events: none;
+  @media (max-width: 575px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 200px
+    );
+  }
+  @media (max-width: 435px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 175px
+    );
+  }
+  @media (max-width: 375px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 135px
+    );
+  }
+}
+
+.hero1 {
+  min-height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .titleContainer {
+    min-height: 600px;
+    width: 1150px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: $font-weight-regular;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .titleLeft {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      top: 5%;
+      font-family: $font-family-secondary;
+      font-size: $font-size-h1-desktop;
+
+      @media (max-width: 900px) {
+        left: 15%;
+        font-size: $font-size-title-tab;
+      }
+      @media (max-width: 768px) {
+        font-size: $font-size-h1-desktop;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      @media (max-width: 475px) {
+        top: 15vh;
+      }
+      @media (max-width: 375px) {
+        top: 30vh;
+        font-size: $font-size-title-mobile;
+      }
+
+      span {
+        font-family: $font-family-accentuated-text;
+        font-size: $font-size-title-desktop;
+        letter-spacing: 0.15rem;
+        @media (max-width: 900px) {
+          font-size: $font-size-h1-tab;
+        }
+        @media (max-width: 768px) {
+          position: absolute;
+          left: 65%;
+          top: 80px;
+          width: 100%;
+          font-size: $font-size-h1-mobile;
+        }
+        @media (max-width: 475px) {
+          font-size: $font-size-h1-desktop;
+        }
+        @media (max-width: 375px) {
+          font-size: $font-size-title-tab;
+          top: 45px;
+        }
+      }
+    }
+
+    .titleRight {
+      position: absolute;
+      bottom: 0vh;
+      right: 3vw;
+      font-size: $font-size-h1-desktop;
+      font-family: $font-family-accentuated-text;
+      letter-spacing: 0.15rem;
+
+      @media (max-width: 900px) {
+        font-size: $font-size-title-tab;
+        right: 15vw;
+      }
+      @media (max-width: 768px) {
+        bottom: 20vh;
+        right: 30vw;
+        transform: translateX(50%);
+        font-size: $font-size-h2-desktop;
+      }
+      @media (max-width: 475px) {
+        font-size: $font-size-title-tab;
+        bottom: 27.5vh;
+      }
+      @media (max-width: 375px) {
+        font-size: $font-size-h1-tab;
+        bottom: 34vh;
+      }
+    }
+  }
+  .textContainer {
+    position: absolute;
+    bottom: 10%;
+    .subtitle {
+      font-family: $font-family-text;
+      font-size: $font-size-body-desktop;
+    }
+  }
+
+  .scrollIndicatorContainer {
+    position: absolute;
+    left: 5%;
+    bottom: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; // centre horizontalement l'image et le texte
+    &:hover {
+      .scrollIndicatorImg {
+        transform: rotate(360deg);
+        transition-delay: 0.5s;
+        transition: transform 0.5s ease-in-out;
+      }
+      .scrollIndicator {
+        opacity: 0.7;
+        transition: opacity 0.5s ease-in-out;
+      }
+    }
+
+    .scrollIndicatorImg {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .scrollIndicator {
+      transform: rotate(-90deg);
+      transform-origin: center center;
+      font-size: $font-size-body-desktop;
+      font-family: $font-family-primary;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      bottom: 125px;
+      transition: opacity 0.5s ease-in-out;
+      opacity: 1;
+      // on centre verticalement par rapport à l'image
+      margin-top: calc(-0.5 * 150px); // -50% de la hauteur de l'image
+    }
+  }
+}
+
+.hero2 {
+  height: 100px;
+  width: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.2);
 }
