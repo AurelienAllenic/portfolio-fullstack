@@ -1,6 +1,9 @@
 a {
   text-decoration: inherit;
 }
+body {
+  background: #050505;
+}
 * {
   margin: 0;
   padding: 0;
@@ -8,4 +11,17 @@ a {
 }
 h2 {
   font-weight: inherit;
+} /* Pour Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Pour Firefox */
+html {
+  scrollbar-width: none; /* masque la scrollbar */
+}
+
+/* Pour IE et anciennes versions Edge */
+html {
+  -ms-overflow-style: none;
 }

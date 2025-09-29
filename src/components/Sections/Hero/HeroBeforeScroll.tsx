@@ -12,7 +12,8 @@ const HeroBeforeScroll = () => {
       </div>
       <div className={styles.textContainer}>
         <p className={styles.subtitle}>
-          De la conception à la programmation d’applications performantes
+          De la conception à la programmation d’applications performantes et
+          design
         </p>
       </div>
       <div className={styles.scrollIndicatorContainer}>
