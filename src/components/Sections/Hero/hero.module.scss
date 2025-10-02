@@ -48,7 +48,7 @@
   min-height: 500px;
   position: relative;
   overflow: hidden;
-  background-image: url("/src/assets/background.webp");
+  background-image: url("https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -221,10 +221,10 @@
     bottom: 25%;
     display: flex;
     flex-direction: column;
-    align-items: center; // centre horizontalement l'image et le texte
+    align-items: center;
     opacity: 0;
     animation: slideAppear 1s ease-out forwards;
-    animation-delay: 2s;
+    animation-delay: 1.5s;
     &:hover {
       .scrollIndicator {
         opacity: 0.7;
@@ -251,18 +251,17 @@
       bottom: 125px;
       transition: opacity 0.5s ease-in-out;
       opacity: 1;
-      // on centre verticalement par rapport à l'image
-      margin-top: calc(-0.5 * 150px); // -50% de la hauteur de l'image
+      margin-top: calc(-0.5 * 150px);
     }
   }
 }
 
 .hero2 {
-  height: 100px;
-  width: 10%;
+  height: 100%;
+  width: 100%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.7);
 }

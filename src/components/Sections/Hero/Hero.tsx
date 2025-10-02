@@ -2,10 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
 import HeroBeforeScroll from "./HeroBeforeScroll";
+import HeroAfterScroll from "./HeroAfterScroll";
 
 const Hero: React.FC = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const iconsRef = useRef<NodeListOf<HTMLImageElement> | null>(null);
+  const hero2Ref = useRef<HTMLDivElement>(null);
+
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
   >("hero1");
@@ -31,23 +35,35 @@ const Hero: React.FC = () => {
           ) || 0;
         overlay.style.setProperty("--gradient-size", `${val}%`);
 
-        // Gestion des états en fonction de la progression
         if (val > 0 && val < 50) {
-          setGradientState("transition"); // Hero1 disparaît, Hero2 pas encore visible
+          setGradientState("transition");
         } else if (val >= 50) {
-          setGradientState("hero2"); // Hero2 apparaît à 50%
+          setGradientState("hero2");
         } else if (val === 0) {
-          setGradientState("hero1"); // Revenir à Hero1 si animation inversée
+          setGradientState("hero1");
         }
       },
       onComplete: () => {
         scrollBlocked = false;
         document.body.style.overflow = "auto";
+
+        // ⚡ ICÔNES HERO2 (ENTRANCE)
+        const icons =
+          container.querySelectorAll<HTMLImageElement>(".contentRight img");
+        iconsRef.current = icons;
+        gsap.set(icons, { opacity: 0, y: -50 });
+        gsap.to(icons, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          delay: 1,
+          ease: "power2.out",
+        });
       },
       onReverseComplete: () => {
         scrollBlocked = true;
         document.body.style.overflow = "hidden";
-        setGradientState("hero1"); // Revenir à Hero1
+        setGradientState("hero1");
       },
     });
 
@@ -55,12 +71,22 @@ const Hero: React.FC = () => {
       const rect = container.getBoundingClientRect();
       const delta = e.deltaY;
 
-      // Déclenche l'effet si le haut de la section touche le haut de l'écran
       if (rect.top <= 0 && rect.bottom > 0) {
         if (scrollBlocked) e.preventDefault();
 
-        if (delta > 0 && tl.progress() < 1) tl.play(); // Scroll vers le bas
-        else if (delta < 0 && tl.progress() > 0) tl.reverse(); // Scroll vers le haut
+        if (delta > 0 && tl.progress() < 1) {
+          tl.play();
+        } else if (delta < 0 && rect.top === 0 && tl.progress() > 0) {
+          // ⚡ Fade-out HeroAfterScroll dès le début de la reverse
+          if (hero2Ref.current) {
+            gsap.to(hero2Ref.current, {
+              opacity: 0,
+              duration: 1,
+              ease: "power2.out",
+            });
+          }
+          tl.reverse();
+        }
       }
     };
 
@@ -83,7 +109,7 @@ const Hero: React.FC = () => {
       ></div>
 
       {gradientState === "hero1" && <HeroBeforeScroll />}
-      {gradientState === "hero2" && <div className={styles.hero2}></div>}
+      {gradientState === "hero2" && <HeroAfterScroll ref={hero2Ref} />}
     </div>
   );
 };
