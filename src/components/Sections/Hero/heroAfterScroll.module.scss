@@ -51,6 +51,17 @@
   }
 }
 
+@keyframes tooltipAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .containerHeroAfterScroll {
   position: relative;
   height: 100%;
@@ -120,6 +131,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
 
         img {
           width: 95px;
@@ -127,6 +139,40 @@
           object-fit: contain;
           opacity: 0;
           animation: appear 0.8s ease-out forwards;
+          transition: transform 0.3s ease-out;
+          will-change: transform;
+        }
+
+        img:hover {
+          transform: scale(1.1);
+        }
+
+        .tooltip {
+          position: absolute;
+          background: rgba(0, 0, 0, 0.8);
+          color: #fff;
+          padding: 5px 10px;
+          border-radius: 4px;
+          font-family: $font-family-primary;
+          font-size: 1rem;
+          white-space: nowrap;
+          opacity: 0;
+          transform: translateY(10px);
+          pointer-events: none;
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        &:hover .tooltip {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .tooltipTop {
+          bottom: 110px;
+        }
+
+        .tooltipBottom {
+          top: 110px;
         }
       }
     }
