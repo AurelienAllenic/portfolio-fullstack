@@ -3,15 +3,42 @@ import styles from "./heroAfterScroll.module.scss";
 
 const HeroAfterScroll = forwardRef<HTMLDivElement>((_, ref) => {
   const allIcons = [
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_xfwwir.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
-    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
+      name: "HTML",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+      name: "CSS",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
+      name: "SCSS",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
+      name: "JavaScript",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+      name: "React",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+      name: "Next.js",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
+      name: "Node.js",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
+      name: "Python",
+    },
+    {
+      src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
+      name: "Django",
+    },
   ];
 
   return (
@@ -31,11 +58,18 @@ const HeroAfterScroll = forwardRef<HTMLDivElement>((_, ref) => {
           {allIcons.map((icon, index) => (
             <div key={index} className={styles.iconContainer}>
               <img
-                src={icon}
-                alt="icon"
+                src={icon.src}
+                alt={icon.name}
                 className={styles.icon}
                 style={{ animationDelay: `${0.5 + index * 0.1}s` }}
               />
+              <span
+                className={`${styles.tooltip} ${
+                  index < 6 ? styles.tooltipTop : styles.tooltipBottom
+                }`}
+              >
+                {icon.name}
+              </span>
             </div>
           ))}
         </div>
