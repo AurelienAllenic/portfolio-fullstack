@@ -79,7 +79,7 @@
       transform: translateY(40%);
       .titleLeft {
         font-family: $font-family-primary;
-        font-size: 7rem;
+        font-size: 7.5rem;
         position: relative;
         opacity: 0;
         animation: appear 1.5s ease-out forwards;
@@ -87,7 +87,7 @@
         .titleLeftHighlight {
           position: absolute;
           top: 125px;
-          font-size: 3.5rem;
+          font-size: 4rem;
           left: 125px;
           opacity: 0;
           animation: appear 1s ease-out forwards;
@@ -98,9 +98,9 @@
         position: absolute;
         top: 225px;
         font-family: $font-family-primary;
-        font-size: 1.75rem;
-        width: 350px;
-        line-height: 2rem;
+        font-size: 2rem;
+        width: 550px;
+        line-height: 2.35rem;
         opacity: 0;
         animation: overlayAppearClassic 0.5s ease-out forwards;
         animation-delay: 1s;
