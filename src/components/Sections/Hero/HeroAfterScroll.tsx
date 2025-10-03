@@ -71,7 +71,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement>((_, ref) => {
           {allIcons.map((icon, index) => (
             <div
               key={index}
-              ref={(el) => (iconContainers.current[index] = el)}
+              ref={(el) => {
+                iconContainers.current[index] = el; // Assign without returning
+              }}
               className={styles.iconContainer}
             >
               <img
