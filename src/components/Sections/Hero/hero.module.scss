@@ -3,7 +3,7 @@
 @keyframes appear {
   0% {
     opacity: 0;
-    transform: translateY(-50px);
+    transform: translateY(-45px);
   }
   75% {
     transform: translateY(0px);
@@ -25,7 +25,7 @@
 @keyframes slideAppear {
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-45px);
   }
   to {
     opacity: 1;
@@ -45,7 +45,7 @@
 .containerHero {
   width: 100%;
   height: 100vh;
-  min-height: 500px;
+  min-height: 450px;
   position: relative;
   overflow: hidden;
   background-image: url("https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp");
@@ -66,28 +66,28 @@
   background: radial-gradient(
     circle at center,
     transparent var(--gradient-size, 30%),
-    #050505 350px
+    #050505 315px // 350px * 0.9
   );
   pointer-events: none;
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 30%),
-      #050505 200px
+      #050505 180px // 200px * 0.9
     );
   }
   @media (max-width: 435px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 30%),
-      #050505 175px
+      #050505 158px // 175px * 0.9
     );
   }
   @media (max-width: 375px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 30%),
-      #050505 135px
+      #050505 122px // 135px * 0.9
     );
   }
 }
@@ -105,8 +105,8 @@
   justify-content: center;
 
   .titleContainer {
-    min-height: 600px;
-    width: 1150px;
+    min-height: 540px;
+    width: 1035px;
     position: absolute;
     top: 55%;
     left: 50%;
@@ -159,7 +159,7 @@
         @media (max-width: 768px) {
           position: absolute;
           left: 65%;
-          top: 80px;
+          top: 72px;
           width: 100%;
           font-size: $font-size-h1-mobile;
         }
@@ -168,7 +168,7 @@
         }
         @media (max-width: 375px) {
           font-size: $font-size-title-tab;
-          top: 45px;
+          top: 41px;
         }
       }
     }
@@ -205,7 +205,7 @@
   }
   .textContainer {
     position: absolute;
-    bottom: 5%;
+    bottom: 2.5%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -222,7 +222,7 @@
   .scrollIndicatorContainer {
     position: absolute;
     left: 5%;
-    bottom: 25%;
+    bottom: 23%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -231,8 +231,8 @@
     animation-delay: 1.5s;
 
     .scrollIndicatorImg {
-      width: 125px;
-      height: 125px;
+      width: 113px;
+      height: 113px;
       object-fit: cover;
       transition: transform 0.5s ease-in-out;
     }
@@ -240,16 +240,16 @@
     .scrollIndicator {
       transform: rotate(-90deg);
       transform-origin: center center;
-      font-size: 32px;
+      font-size: 29px;
       font-family: $font-family-primary;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      bottom: 125px;
+      bottom: 113px;
       transition: opacity 0.5s ease-in-out;
       opacity: 1;
-      margin-top: calc(-0.5 * 150px);
+      margin-top: calc(-0.5 * 135px);
     }
   }
 }
