@@ -1,5 +1,4 @@
 import styles from "./hero.module.scss";
-import scrollIndicator from "../../../assets/scroll-indicator.png";
 
 const HeroBeforeScroll = () => {
   return (
@@ -19,7 +18,7 @@ const HeroBeforeScroll = () => {
       <div className={styles.scrollIndicatorContainer}>
         <p className={styles.scrollIndicator}>Scroll Down</p>
         <img
-          src={scrollIndicator}
+          src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scroll-indicator_kvzoqd.webp"
           alt="Scroll indicator"
           className={styles.scrollIndicatorImg}
         />

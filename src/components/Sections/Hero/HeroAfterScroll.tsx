@@ -1,17 +1,20 @@
 import { forwardRef } from "react";
 import styles from "./heroAfterScroll.module.scss";
-import HTML from "../../../assets/icons-languages/html.png";
-import CSS from "../../../assets/icons-languages/css.png";
-import SCSS from "../../../assets/icons-languages/scss.png";
-import JS from "../../../assets/icons-languages/js.png";
-import REACT from "../../../assets/icons-languages/react.png";
-import NEXT from "../../../assets/icons-languages/next.png";
-import NODEJS from "../../../assets/icons-languages/nodejs.png";
-import PYTHON from "../../../assets/icons-languages/python.png";
-import DJANGO from "../../../assets/icons-languages/django.png";
+
 
 const HeroAfterScroll = forwardRef<HTMLDivElement>((props, ref) => {
-  const allIcons = [HTML, CSS, SCSS, JS, REACT, NEXT, NODEJS, PYTHON, DJANGO];
+  const allIcons = [
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_xfwwir.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
+    "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
+  ];
+  
 
   return (
     <div ref={ref} className={styles.containerHeroAfterScroll}>
