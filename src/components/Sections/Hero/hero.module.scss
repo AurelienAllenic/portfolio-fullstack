@@ -96,7 +96,7 @@
   min-height: 100vh;
   width: 100%;
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
@@ -108,7 +108,7 @@
     min-height: 600px;
     width: 1150px;
     position: absolute;
-    top: 50%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: $font-weight-regular;
@@ -205,7 +205,11 @@
   }
   .textContainer {
     position: absolute;
-    bottom: 10%;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
     .subtitle {
       font-family: $font-family-text;
       font-size: $font-size-body-desktop;
@@ -225,12 +229,6 @@
     opacity: 0;
     animation: slideAppear 1s ease-out forwards;
     animation-delay: 1.5s;
-    &:hover {
-      .scrollIndicator {
-        opacity: 0.7;
-        transition: opacity 0.5s ease-in-out;
-      }
-    }
 
     .scrollIndicatorImg {
       width: 125px;
