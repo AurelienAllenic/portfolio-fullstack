@@ -4,12 +4,20 @@
   0% {
     opacity: 0;
     transform: translateY(-45px);
+    pointer-events: none;
   }
   75% {
     transform: translateY(0px);
   }
   100% {
     opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@keyframes addAppearedClass {
+  to {
+    content: "appeared";
   }
 }
 
@@ -123,22 +131,23 @@
       justify-content: center;
       position: absolute;
       bottom: 27%;
-      left: 41%;
+      left: 45%;
       transform: translateY(40%);
 
       .iconContainer {
-        flex: 0 1 calc(100% / 6 - 18px);
+        flex: 0 1 calc(100% / 6 - 16px);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
 
         img {
-          width: 86px;
-          height: 86px;
+          width: 77px;
+          height: 77px;
           object-fit: contain;
           opacity: 0;
-          animation: appear 0.8s ease-out forwards;
+          animation: appear 0.8s ease-out forwards,
+            addAppearedClass 0.8s ease-out 0.8s forwards;
           transition: transform 0.3s ease-out;
           will-change: transform;
         }
@@ -162,7 +171,7 @@
           transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        &:hover .tooltip {
+        &.appeared:hover .tooltip {
           opacity: 1;
           transform: translateY(0);
         }

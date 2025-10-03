@@ -1,7 +1,20 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import styles from "./heroAfterScroll.module.scss";
 
 const HeroAfterScroll = forwardRef<HTMLDivElement>((_, ref) => {
+  const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const timeouts = iconContainers.current.map((container, index) => {
+      const delay = 0.5 + index * 0.1; // Match JSX animationDelay
+      return setTimeout(() => {
+        if (container) container.classList.add(styles.appeared);
+      }, (delay + 0.8) * 1000); // Add 0.8s for animation duration
+    });
+
+    return () => timeouts.forEach(clearTimeout);
+  }, []);
+
   const allIcons = [
     {
       src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
@@ -56,7 +69,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement>((_, ref) => {
         </div>
         <div className={styles.contentRight}>
           {allIcons.map((icon, index) => (
-            <div key={index} className={styles.iconContainer}>
+            <div
+              key={index}
+              ref={(el) => (iconContainers.current[index] = el)}
+              className={styles.iconContainer}
+            >
               <img
                 src={icon.src}
                 alt={icon.name}
