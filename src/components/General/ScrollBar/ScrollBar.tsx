@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./Scrollbar.module.scss";
+import styles from "./scrollbar.module.scss";
 
 interface ScrollbarProps {
   children: React.ReactNode;
