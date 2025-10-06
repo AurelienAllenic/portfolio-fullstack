@@ -117,12 +117,31 @@
         position: absolute;
         top: 203px;
         font-family: $font-family-primary;
-        font-size: 29px;
-        width: 495px;
-        line-height: 34px;
+        font-size: 33px;
+        width: 475px;
+        line-height: 38px;
         opacity: 0;
         animation: overlayAppearClassic 0.5s ease-out forwards;
         animation-delay: 1s;
+        .linkSubtitle {
+          position: relative;
+          color: #fff;
+          text-decoration: underline;
+          transition: all 0.3s ease-out;
+          &:hover {
+            transition: all 0.3s ease-out;
+            opacity: 0.7;
+          }
+        }
+      }
+      .mediumSubtitle {
+        width: 560px;
+        font-size: 31px;
+        line-height: 37px;
+      }
+      .largeSubtitle {
+        width: 662px;
+        font-size: 29px;
       }
     }
     .contentRight {
