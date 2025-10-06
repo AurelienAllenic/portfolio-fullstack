@@ -30,7 +30,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         beforeLink:
           "Pendant ces deux années de mastère, j'ai réalisé une alternance chez ",
         linkText: "Solead agency",
-        linkHref: "https://solead-agency.com",
+        linkHref: "https://soleadagency.com",
         afterLink:
           " en tant que développeur web. Travaillant à la fois sur du front et du back",
       },
@@ -202,6 +202,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                   <a
                     href={(texts[2] as LinkText).linkHref}
                     className={styles.linkSubtitle}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {(texts[2] as LinkText).linkText}
                   </a>
