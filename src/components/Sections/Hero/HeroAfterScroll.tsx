@@ -10,7 +10,7 @@ type LinkText = {
   beforeLink: string;
   linkText: string;
   linkHref: string;
-  afterLink: string;
+  afterLink: string | string[];
 };
 
 type TextContent = string | LinkText;
@@ -25,7 +25,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     const texts: TextContent[] = [
       "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
-      "Je suis titulaire d'un mastère en développement web fullstack à l'IIM digital School du pôle Léonard de Vinci.",
+      {
+        beforeLink:
+          "Je suis titulaire d'un mastère en développement web fullstack à ",
+        linkText: "l'IIM Digital School",
+        linkHref: "https://www.iim.fr/",
+        afterLink: " du pôle Léonard de Vinci.",
+      },
       {
         beforeLink:
           "Pendant ces deux années de mastère, j'ai réalisé une alternance chez ",
@@ -34,7 +40,17 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         afterLink:
           " en tant que développeur web. Travaillant à la fois sur du front et du back",
       },
-      "J'ai également suivi trois formations OpenClassrooms : <br />Développeur Web,<br />Développeur d'application - JavaScript/React,<br />Développeur d'application - Python.",
+      {
+        beforeLink: "J'ai également suivi trois formations ",
+        linkText: "OpenClassrooms",
+        linkHref: "https://openclassrooms.com/",
+        afterLink: [
+          ":",
+          "Développeur Web,",
+          "Développeur d'application - JavaScript/React,",
+          "Développeur d'application - Python.",
+        ],
+      },
     ];
 
     // Apparition progressive des icônes
@@ -196,25 +212,34 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                   : ""
               }`}
             >
-              {textIndex === 2 ? (
-                <>
-                  {(texts[2] as LinkText).beforeLink}
-                  <a
-                    href={(texts[2] as LinkText).linkHref}
-                    className={styles.linkSubtitle}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {(texts[2] as LinkText).linkText}
-                  </a>
-                  {(texts[2] as LinkText).afterLink}
-                </>
-              ) : (
+              {typeof texts[textIndex] === "string" ? (
                 <span
                   dangerouslySetInnerHTML={{
                     __html: texts[textIndex] as string,
                   }}
                 ></span>
+              ) : (
+                <>
+                  {(texts[textIndex] as LinkText).beforeLink}
+                  <a
+                    href={(texts[textIndex] as LinkText).linkHref}
+                    className={styles.linkSubtitle}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {(texts[textIndex] as LinkText).linkText}
+                  </a>
+                  {Array.isArray((texts[textIndex] as LinkText).afterLink)
+                    ? (
+                        (texts[textIndex] as LinkText).afterLink as string[]
+                      ).map((line: string, i: number) => (
+                        <span key={i}>
+                          {line}
+                          <br />
+                        </span>
+                      ))
+                    : (texts[textIndex] as LinkText).afterLink}
+                </>
               )}
             </p>
           </div>
