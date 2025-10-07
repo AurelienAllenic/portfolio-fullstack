@@ -19,6 +19,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
   ({ onReturnToHeroBefore }, ref) => {
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
+    const overlayRef = useRef<HTMLDivElement | null>(null);
+
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
     const firstRender = useRef(true);
@@ -78,7 +80,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         const goingDown = e.deltaY > 0;
         const goingUp = e.deltaY < 0;
 
-        // 🔽 Passage au texte suivant
+        // 🔽 Texte suivant
         if (goingDown && textIndex < texts.length - 1) {
           e.preventDefault();
           setScrollLocked(true);
@@ -98,7 +100,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             .to(textRef.current, { opacity: 1, duration: 0.5 });
         }
 
-        // 🔼 Gestion du scroll vers le haut
+        // 🔼 Texte précédent
         else if (goingUp) {
           e.preventDefault();
           setScrollLocked(true);
@@ -114,12 +116,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           });
 
           if (textIndex > 0) {
-            // Retour au texte précédent
             tl.to(textRef.current, { opacity: 0, duration: 0.5 })
               .add(() => setTextIndex((prev) => prev - 1))
               .to(textRef.current, { opacity: 1, duration: 0.5 });
           } else if (textIndex === 0) {
-            // Retour à HeroBeforeScroll
             tl.to(textRef.current, { opacity: 0, duration: 0.5 }).add(() => {
               onReturnToHeroBefore?.();
             });
@@ -131,7 +131,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       return () => window.removeEventListener("wheel", handleWheel);
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
-    // Animation d’apparition du texte
+    // Animation d’apparition du texte + effet radial dynamique
     useEffect(() => {
       if (textRef.current) {
         gsap.fromTo(
@@ -144,14 +144,29 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            ease: "power2.out",
+            duration: firstRender.current ? 0.8 : 0.5,
+            ease: "power2.ease-out",
             delay: firstRender.current ? 1 : 0,
             onComplete: () => {
               firstRender.current = false;
             },
           }
         );
+      }
+
+      // 🌑 Transition du rayon du gradient
+      if (overlayRef.current) {
+        const totalTexts = texts.length - 1;
+        const progress = textIndex / totalTexts;
+
+        // Détermine la taille du radial : 100% → 0%
+        const gradientSize = 100 - progress * 66.66;
+
+        gsap.to(overlayRef.current, {
+          "--gradient-size": `${gradientSize}%`,
+          duration: 1.2,
+          ease: "power2.out",
+        });
       }
     }, [textIndex]);
 
@@ -196,12 +211,19 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     return (
       <div ref={ref} className={styles.containerHeroAfterScroll}>
-        <div className={styles.overlay}></div>
+        {/* 🌗 Overlay dynamique */}
+        <div
+          ref={overlayRef}
+          className={styles.gradientOverlay}
+          style={{ "--gradient-size": "100%" } as React.CSSProperties}
+        />
+
         <div className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
             </h2>
+
             <p
               ref={textRef}
               className={`${styles.subtitle} ${
@@ -217,7 +239,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                   dangerouslySetInnerHTML={{
                     __html: texts[textIndex] as string,
                   }}
-                ></span>
+                />
               ) : (
                 <>
                   {(texts[textIndex] as LinkText).beforeLink}
@@ -248,9 +270,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             {allIcons.map((icon, index) => (
               <div
                 key={index}
-                ref={(el) => {
-                  iconContainers.current[index] = el;
-                }}
+                ref={(el) => (iconContainers.current[index] = el)}
                 className={styles.iconContainer}
               >
                 <img
