@@ -232,27 +232,32 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                   }}
                 />
               ) : (
-                <>
-                  {(texts[textIndex] as LinkText).beforeLink}
-                  <a
-                    href={(texts[textIndex] as LinkText).linkHref}
-                    className={styles.linkSubtitle}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {(texts[textIndex] as LinkText).linkText}
-                  </a>
-                  {Array.isArray((texts[textIndex] as LinkText).afterLink)
-                    ? (texts[textIndex] as LinkText).afterLink.map(
-                        (line: string, i: number) => (
+                (() => {
+                  const text = texts[textIndex] as LinkText;
+                  return (
+                    <>
+                      {text.beforeLink}
+                      <a
+                        href={text.linkHref}
+                        className={styles.linkSubtitle}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {text.linkText}
+                      </a>
+                      {Array.isArray(text.afterLink) ? (
+                        text.afterLink.map((line: string, i: number) => (
                           <span key={i}>
                             {line}
                             <br />
                           </span>
-                        )
-                      )
-                    : (texts[textIndex] as LinkText).afterLink}
-                </>
+                        ))
+                      ) : (
+                        <span>{text.afterLink}</span>
+                      )}
+                    </>
+                  );
+                })()
               )}
             </p>
           </div>
@@ -260,7 +265,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             {allIcons.map((icon, index) => (
               <div
                 key={index}
-                ref={(el) => (iconContainers.current[index] = el)}
+                ref={(el) => {
+                  iconContainers.current[index] = el;
+                }}
                 className={styles.iconContainer}
               >
                 <img
