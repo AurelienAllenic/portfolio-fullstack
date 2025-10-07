@@ -20,8 +20,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
-    const lastTouchY = useRef<number | null>(null); // Suivi de la position Y pour touch
-
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
     const firstRender = useRef(true);
@@ -56,18 +54,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
-    // Throttle pour limiter la fréquence des événements touch
-    const throttle = (func: Function, limit: number) => {
-      let inThrottle: boolean;
-      return function (...args: any[]) {
-        if (!inThrottle) {
-          func(...args);
-          inThrottle = true;
-          setTimeout(() => (inThrottle = false), limit);
-        }
-      };
-    };
-
     // Apparition progressive des icônes
     useEffect(() => {
       const timeouts = iconContainers.current.map((container, index) => {
@@ -76,23 +62,27 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           if (container) container.classList.add(styles.appeared);
         }, (delay + 0.8) * 1000);
       });
+
       return () => timeouts.forEach(clearTimeout);
     }, []);
 
-    // Gestion des interactions (wheel + touch)
+    // Gestion du scroll
     useEffect(() => {
-      const handleInteraction = (direction: "up" | "down") => {
+      const handleWheel = (e: WheelEvent) => {
         if (scrollLocked) {
-          window.scrollTo(0, 0);
+          e.preventDefault();
           return;
         }
 
         const isAtTop = window.scrollY === 0;
         if (!isAtTop) return;
 
+        const goingDown = e.deltaY > 0;
+        const goingUp = e.deltaY < 0;
+
         // 🔽 Texte suivant
-        if (direction === "down" && textIndex < texts.length - 1) {
-          window.scrollTo(0, 0);
+        if (goingDown && textIndex < texts.length - 1) {
+          e.preventDefault();
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
 
@@ -109,10 +99,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             .add(() => setTextIndex((prev) => prev + 1))
             .to(textRef.current, { opacity: 1, duration: 0.5 });
         }
-
         // 🔼 Texte précédent
-        else if (direction === "up") {
-          window.scrollTo(0, 0);
+        else if (goingUp) {
+          e.preventDefault();
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
 
@@ -137,39 +126,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }
       };
 
-      // Gestion des événements wheel (desktop)
-      const handleWheel = (e: WheelEvent) => {
-        const direction = e.deltaY > 0 ? "down" : "up";
-        if (scrollLocked) e.preventDefault();
-        handleInteraction(direction);
-      };
-
-      // Gestion des événements tactiles (mobile)
-      const handleTouchStart = (e: TouchEvent) => {
-        lastTouchY.current = e.touches[0].clientY;
-      };
-
-      const handleTouchMove = throttle((e: TouchEvent) => {
-        if (lastTouchY.current === null) return;
-        const currentY = e.touches[0].clientY;
-        const deltaY = lastTouchY.current - currentY;
-        const direction = deltaY > 0 ? "down" : "up";
-        if (scrollLocked) e.preventDefault();
-        handleInteraction(direction);
-        lastTouchY.current = currentY;
-      }, 16); // 16ms ≈ 60fps
-
       window.addEventListener("wheel", handleWheel, { passive: false });
-      window.addEventListener("touchstart", handleTouchStart, {
-        passive: true,
-      });
-      window.addEventListener("touchmove", handleTouchMove, { passive: false });
-
-      return () => {
-        window.removeEventListener("wheel", handleWheel);
-        window.removeEventListener("touchstart", handleTouchStart);
-        window.removeEventListener("touchmove", handleTouchMove);
-      };
+      return () => window.removeEventListener("wheel", handleWheel);
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
     // Animation d’apparition du texte + effet radial dynamique
@@ -177,16 +135,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (textRef.current) {
         gsap.fromTo(
           textRef.current,
-          {
-            opacity: 0,
-            y: firstRender.current ? 20 : 100,
-            delay: firstRender.current ? 1 : 0,
-          },
+          { opacity: 0, y: firstRender.current ? 20 : 100 },
           {
             opacity: 1,
             y: 0,
             duration: firstRender.current ? 0.8 : 0.5,
-            ease: "power2.ease-out",
+            ease: "power2.out",
             delay: firstRender.current ? 1 : 0,
             onComplete: () => {
               firstRender.current = false;
@@ -199,9 +153,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (overlayRef.current) {
         const totalTexts = texts.length - 1;
         const progress = textIndex / totalTexts;
-
-        // Détermine la taille du radial : 100% → 0%
-        const gradientSize = 100 - progress * 66.66;
+        const gradientSize = 100 - progress * 75;
 
         gsap.to(overlayRef.current, {
           "--gradient-size": `${gradientSize}%`,
@@ -258,13 +210,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           className={styles.gradientOverlay}
           style={{ "--gradient-size": "100%" } as React.CSSProperties}
         />
-
         <div className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
             </h2>
-
             <p
               ref={textRef}
               className={`${styles.subtitle} ${
@@ -293,20 +243,19 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                     {(texts[textIndex] as LinkText).linkText}
                   </a>
                   {Array.isArray((texts[textIndex] as LinkText).afterLink)
-                    ? (
-                        (texts[textIndex] as LinkText).afterLink as string[]
-                      ).map((line: string, i: number) => (
-                        <span key={i}>
-                          {line}
-                          <br />
-                        </span>
-                      ))
+                    ? (texts[textIndex] as LinkText).afterLink.map(
+                        (line: string, i: number) => (
+                          <span key={i}>
+                            {line}
+                            <br />
+                          </span>
+                        )
+                      )
                     : (texts[textIndex] as LinkText).afterLink}
                 </>
               )}
             </p>
           </div>
-
           <div className={styles.contentRight}>
             {allIcons.map((icon, index) => (
               <div
