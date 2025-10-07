@@ -20,6 +20,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
+    const lastTouchY = useRef<number | null>(null); // Suivi de la position Y pour touch
 
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
@@ -55,6 +56,18 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
+    // Throttle pour limiter la fréquence des événements touch
+    const throttle = (func: Function, limit: number) => {
+      let inThrottle: boolean;
+      return function (...args: any[]) {
+        if (!inThrottle) {
+          func(...args);
+          inThrottle = true;
+          setTimeout(() => (inThrottle = false), limit);
+        }
+      };
+    };
+
     // Apparition progressive des icônes
     useEffect(() => {
       const timeouts = iconContainers.current.map((container, index) => {
@@ -66,23 +79,20 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       return () => timeouts.forEach(clearTimeout);
     }, []);
 
-    // Gestion du scroll
+    // Gestion des interactions (wheel + touch)
     useEffect(() => {
-      const handleWheel = (e: WheelEvent) => {
+      const handleInteraction = (direction: "up" | "down") => {
         if (scrollLocked) {
-          e.preventDefault();
+          window.scrollTo(0, 0);
           return;
         }
 
         const isAtTop = window.scrollY === 0;
         if (!isAtTop) return;
 
-        const goingDown = e.deltaY > 0;
-        const goingUp = e.deltaY < 0;
-
         // 🔽 Texte suivant
-        if (goingDown && textIndex < texts.length - 1) {
-          e.preventDefault();
+        if (direction === "down" && textIndex < texts.length - 1) {
+          window.scrollTo(0, 0);
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
 
@@ -101,8 +111,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }
 
         // 🔼 Texte précédent
-        else if (goingUp) {
-          e.preventDefault();
+        else if (direction === "up") {
+          window.scrollTo(0, 0);
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
 
@@ -127,8 +137,39 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }
       };
 
+      // Gestion des événements wheel (desktop)
+      const handleWheel = (e: WheelEvent) => {
+        const direction = e.deltaY > 0 ? "down" : "up";
+        if (scrollLocked) e.preventDefault();
+        handleInteraction(direction);
+      };
+
+      // Gestion des événements tactiles (mobile)
+      const handleTouchStart = (e: TouchEvent) => {
+        lastTouchY.current = e.touches[0].clientY;
+      };
+
+      const handleTouchMove = throttle((e: TouchEvent) => {
+        if (lastTouchY.current === null) return;
+        const currentY = e.touches[0].clientY;
+        const deltaY = lastTouchY.current - currentY;
+        const direction = deltaY > 0 ? "down" : "up";
+        if (scrollLocked) e.preventDefault();
+        handleInteraction(direction);
+        lastTouchY.current = currentY;
+      }, 16); // 16ms ≈ 60fps
+
       window.addEventListener("wheel", handleWheel, { passive: false });
-      return () => window.removeEventListener("wheel", handleWheel);
+      window.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+      return () => {
+        window.removeEventListener("wheel", handleWheel);
+        window.removeEventListener("touchstart", handleTouchStart);
+        window.removeEventListener("touchmove", handleTouchMove);
+      };
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
     // Animation d’apparition du texte + effet radial dynamique
