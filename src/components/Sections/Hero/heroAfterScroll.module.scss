@@ -206,3 +206,16 @@
     }
   }
 }
+
+.gradientOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) var(--gradient-size, 100%)
+  );
+  z-index: 0;
+  transition: background 0.8s ease;
+}

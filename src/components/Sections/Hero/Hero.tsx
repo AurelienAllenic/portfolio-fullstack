@@ -11,6 +11,7 @@ const Hero: React.FC = () => {
   const hero2Ref = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const hasFadedOut = useRef(false);
+  const lastTouchY = useRef<number | null>(null); // Suivi de la position Y pour touch
 
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
@@ -19,6 +20,18 @@ const Hero: React.FC = () => {
   const handleReturnToHeroBefore = () => {
     tlRef.current?.reverse();
     hasFadedOut.current = false;
+  };
+
+  // Throttle pour limiter la fréquence des événements touch
+  const throttle = (func: Function, limit: number) => {
+    let inThrottle: boolean;
+    return function (...args: any[]) {
+      if (!inThrottle) {
+        func(...args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
   };
 
   useEffect(() => {
@@ -96,27 +109,57 @@ const Hero: React.FC = () => {
       },
     });
 
-    const handleWheel = (e: WheelEvent) => {
+    const handleInteraction = (direction: "up" | "down") => {
       const rect = container.getBoundingClientRect();
-      const delta = e.deltaY;
       const isAtTop = window.scrollY === 0;
 
       if (!isAtTop) return;
 
       if (rect.top <= 0 && rect.bottom > 0) {
-        if (scrollBlocked) e.preventDefault();
+        if (scrollBlocked) {
+          // Empêche le scroll par défaut
+          window.scrollTo(0, 0);
+        }
 
-        if (delta > 0 && (tlRef.current?.progress() ?? 0) < 1) {
+        if (direction === "down" && (tlRef.current?.progress() ?? 0) < 1) {
           tlRef.current?.play();
+        } else if (direction === "up" && (tlRef.current?.progress() ?? 0) > 0) {
+          tlRef.current?.reverse();
         }
       }
     };
 
+    // Gestion des événements wheel (desktop)
+    const handleWheel = (e: WheelEvent) => {
+      const direction = e.deltaY > 0 ? "down" : "up";
+      if (scrollBlocked) e.preventDefault();
+      handleInteraction(direction);
+    };
+
+    // Gestion des événements tactiles (mobile)
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = throttle((e: TouchEvent) => {
+      if (lastTouchY.current === null) return;
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchY.current - currentY;
+      const direction = deltaY > 0 ? "down" : "up";
+      if (scrollBlocked) e.preventDefault();
+      handleInteraction(direction);
+      lastTouchY.current = currentY;
+    }, 16); // 16ms ≈ 60fps
+
     document.body.style.overflow = "hidden";
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       document.body.style.overflow = "auto";
       tlRef.current?.kill();
     };
