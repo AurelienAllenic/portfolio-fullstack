@@ -1,9 +1,73 @@
-/* NAV component */
+@import "../../abstract/variables.scss";
 
 .containerNav {
+  width: 100%;
+  background-color: transparent; /* Black background */
+  color: #ffffff; /* White text */
+  position: fixed;
+  top: 0;
+  height: 100px;
+  z-index: 1;
 }
 
-/* Mobile NAV component */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: 35px 50px 0 50px; /* Adjust padding as needed */
+  font-family: $font-family-primary;
+}
 
-.containerMobileNav {
+.logo {
+  font-size: 1.85em; /* Adjust size to match design */
+}
+
+.navLinks {
+  display: flex;
+  list-style: none;
+  letter-spacing: 0.08rem;
+  margin: 0;
+  padding: 0;
+  gap: 50px;
+  font-size: 1.5rem;
+  position: relative;
+  transform: translateX(-12%);
+}
+
+.navLinks li {
+  margin-left: 20px; /* Space between menu items */
+  cursor: pointer;
+}
+
+.navLinks a {
+  color: #ffffff; /* White text for links */
+  text-decoration: none;
+  font-size: 1em; /* Adjust size to match design */
+  transition: color 0.3s; /* Smooth hover effect */
+}
+
+.navLinks a:hover {
+  color: #cccccc; /* Lighter shade on hover */
+}
+
+/* Style for social icons (e.g., LinkedIn and GitHub) */
+.socialIcons {
+  display: flex;
+  align-items: center;
+}
+
+.socialIcons a {
+  margin-left: 15px; /* Space between icons */
+  color: #ffffff;
+  font-size: 1.2em; /* Adjust icon size */
+  transition: all 0.3s ease-in-out;
+  :hover {
+    transform: scale(1.1);
+    transition: all 0.3s ease-in-out;
+  }
+}
+
+.socialIcons a:hover {
+  color: #cccccc; /* Lighter shade on hover */
 }

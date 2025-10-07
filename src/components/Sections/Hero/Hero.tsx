@@ -1,3 +1,4 @@
+// components/Sections/Hero/Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
@@ -123,7 +124,7 @@ const Hero: React.FC = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className={styles.containerHero}>
+    <div ref={containerRef} className={styles.containerHero} id="about">
       <div
         ref={overlayRef}
         className={styles.overlay}

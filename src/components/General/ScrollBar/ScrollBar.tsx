@@ -6,12 +6,11 @@ interface ScrollbarProps {
 }
 
 const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef(document.documentElement);
   const thumbRef = useRef<HTMLDivElement>(null);
   const [thumbHeight, setThumbHeight] = useState(50);
   const [visible, setVisible] = useState(true);
 
-  // Met à jour la taille et la position du thumb
   const updateThumb = () => {
     const content = contentRef.current;
     const thumb = thumbRef.current;
@@ -19,7 +18,14 @@ const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
 
     const contentHeight = content.scrollHeight;
     const visibleHeight = window.innerHeight;
-    const scrollTop = window.scrollY || window.pageYOffset;
+    const scrollTop = window.scrollY;
+
+    if (contentHeight <= visibleHeight) {
+      setVisible(false);
+      return;
+    } else {
+      setVisible(true);
+    }
 
     const newThumbHeight = Math.max(
       (visibleHeight / contentHeight) * visibleHeight,
@@ -28,45 +34,26 @@ const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
     setThumbHeight(newThumbHeight);
 
     const maxThumbTop = visibleHeight - newThumbHeight;
-    const thumbTop = Math.min(
-      (scrollTop / (contentHeight - visibleHeight)) * maxThumbTop,
-      maxThumbTop
-    );
-    thumb.style.top = `${thumbTop}px`;
-  };
-
-  // Vérifie overflow du body
-  const checkOverflow = () => {
-    const overflow = window.getComputedStyle(document.body).overflow;
-    setVisible(overflow !== "hidden");
+    const thumbTop =
+      (scrollTop / (contentHeight - visibleHeight)) * maxThumbTop;
+    thumb.style.top = `${Math.min(Math.max(thumbTop, 0), maxThumbTop)}px`;
   };
 
   useEffect(() => {
     const handleResize = () => {
       updateThumb();
-      checkOverflow();
     };
 
     window.addEventListener("scroll", updateThumb);
     window.addEventListener("resize", handleResize);
-
-    const observer = new MutationObserver(checkOverflow);
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["style"],
-    });
-
     updateThumb();
-    checkOverflow();
 
     return () => {
       window.removeEventListener("scroll", updateThumb);
       window.removeEventListener("resize", handleResize);
-      observer.disconnect();
     };
   }, []);
 
-  // Drag pour scroller via le thumb
   useEffect(() => {
     const thumb = thumbRef.current;
     if (!thumb) return;
@@ -78,19 +65,19 @@ const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
       startY = e.clientY;
-      startScroll = window.scrollY || window.pageYOffset;
-      document.body.style.userSelect = "none"; // bloque la sélection de texte
+      startScroll = window.scrollY;
+      document.body.style.userSelect = "none";
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !contentRef.current) return;
-      const contentHeight = contentRef.current.scrollHeight;
+      if (!isDragging) return;
       const visibleHeight = window.innerHeight;
+      const contentHeight = contentRef.current.scrollHeight;
       const maxThumbTop = visibleHeight - thumbHeight;
       const deltaY = e.clientY - startY;
       const scrollDelta =
         (deltaY / maxThumbTop) * (contentHeight - visibleHeight);
-      window.scrollTo({ top: startScroll + scrollDelta });
+      window.scrollTo({ top: startScroll + scrollDelta, behavior: "auto" });
     };
 
     const onMouseUp = () => {
@@ -118,9 +105,7 @@ const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
           style={{ height: `${thumbHeight}px` }}
         />
       </div>
-      <div ref={contentRef} className={styles.content}>
-        {children}
-      </div>
+      {children}
     </>
   );
 };
