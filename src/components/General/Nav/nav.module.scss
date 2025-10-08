@@ -2,12 +2,15 @@
 
 .containerNav {
   width: 100%;
-  background-color: transparent; /* Black background */
-  color: #ffffff; /* White text */
+  background-color: transparent;
+  color: #ffffff;
   position: fixed;
   top: 0;
   height: 100px;
   z-index: 1;
+  @media (max-width: 768px) {
+    display: none !important;
+  }
 }
 
 .nav {
@@ -15,12 +18,21 @@
   justify-content: space-between;
   align-items: center;
   margin: 0 auto;
-  padding: 35px 50px 0 50px; /* Adjust padding as needed */
+  padding: 35px 50px 0 50px;
   font-family: $font-family-primary;
 }
 
 .logo {
-  font-size: 1.85em; /* Adjust size to match design */
+  font-size: 1.85rem;
+  @media (max-width: 1350px) {
+    font-size: 1.5rem;
+  }
+  @media (max-width: 1050px) {
+    font-size: 1.2rem;
+  }
+  @media (max-width: 900px) {
+    font-size: 1rem !important;
+  }
 }
 
 .navLinks {
@@ -33,41 +45,70 @@
   font-size: 1.5rem;
   position: relative;
   transform: translateX(-12%);
+  @media (max-width: 1350px) {
+    gap: 25px;
+  }
+  @media (max-width: 900px) {
+    transform: translateX(-11%);
+    gap: 20px;
+  }
 }
 
 .navLinks li {
-  margin-left: 20px; /* Space between menu items */
+  margin-left: 20px;
   cursor: pointer;
+  @media (max-width: 900px) {
+    margin-left: 0 !important;
+  }
 }
 
 .navLinks a {
-  color: #ffffff; /* White text for links */
+  color: #ffffff;
   text-decoration: none;
-  font-size: 1em; /* Adjust size to match design */
-  transition: color 0.3s; /* Smooth hover effect */
+  font-size: 1.5rem;
+  transition: color 0.3s;
+  @media (max-width: 1350px) {
+    font-size: 1.2rem;
+  }
+  @media (max-width: 1050px) {
+    font-size: 1rem;
+  }
 }
 
 .navLinks a:hover {
-  color: #cccccc; /* Lighter shade on hover */
+  color: #cccccc;
 }
 
-/* Style for social icons (e.g., LinkedIn and GitHub) */
 .socialIcons {
   display: flex;
   align-items: center;
 }
 
 .socialIcons a {
-  margin-left: 15px; /* Space between icons */
+  margin-left: 15px;
   color: #ffffff;
-  font-size: 1.2em; /* Adjust icon size */
+  font-size: 1.2em;
   transition: all 0.3s ease-in-out;
   :hover {
     transform: scale(1.1);
     transition: all 0.3s ease-in-out;
   }
+  img {
+    @media (max-width: 1350px) {
+      width: 35px;
+      height: 35px;
+    }
+    @media (max-width: 1050px) {
+      width: 30px !important;
+      height: 30px;
+    }
+    @media (max-width: 900px) {
+      width: 25px !important;
+      height: 25px;
+    }
+  }
 }
 
 .socialIcons a:hover {
-  color: #cccccc; /* Lighter shade on hover */
+  color: #cccccc;
 }

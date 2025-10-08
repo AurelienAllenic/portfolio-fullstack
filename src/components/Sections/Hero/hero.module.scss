@@ -113,6 +113,10 @@
     transform: translate(-50%, -50%);
     font-weight: $font-weight-regular;
 
+    @media (max-width: 1830px) {
+      width: 975px;
+    }
+
     @media (max-width: 768px) {
       width: 100%;
       min-height: 100vh;
@@ -126,6 +130,10 @@
       font-family: $font-family-secondary;
       font-size: $font-size-h1-desktop;
       animation: appear 1s ease-out forwards;
+
+      @media (max-width: 1830px) {
+        font-size: 65px;
+      }
 
       @media (max-width: 900px) {
         left: 15%;
@@ -153,6 +161,9 @@
         opacity: 0;
         animation: appear 1.2s ease-out forwards;
         animation-delay: 0.4s;
+        @media (max-width: 1830px) {
+          font-size: 95px;
+        }
         @media (max-width: 900px) {
           font-size: $font-size-h1-tab;
         }
@@ -183,6 +194,9 @@
       opacity: 0;
       animation: appear 1.2s ease-out forwards;
       animation-delay: 0.8s;
+      @media (max-width: 1830px) {
+        font-size: 65px;
+      }
       @media (max-width: 900px) {
         font-size: $font-size-title-tab;
         right: 15vw;
@@ -216,6 +230,9 @@
       opacity: 0;
       animation: appear 1s ease-out forwards;
       animation-delay: 1s;
+      @media (max-width: 1830px) {
+        font-size: 32px;
+      }
     }
   }
 
@@ -229,6 +246,10 @@
     opacity: 0;
     animation: slideAppear 1s ease-out forwards;
     animation-delay: 1.5s;
+
+    @media (max-width: 1830px) {
+      left: 2%;
+    }
 
     .scrollIndicatorImg {
       width: 113px;
@@ -262,4 +283,230 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.7);
+}
+
+@media (max-height: 1115px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 275px
+    );
+  }
+  .titleContainer {
+    width: 945px !important;
+    .titleLeft {
+      font-size: 65px;
+      span {
+        font-size: 95px;
+      }
+    }
+    .titleRight {
+      font-size: 65px;
+    }
+  }
+  .textContainer {
+    bottom: 5% !important;
+    .subtitle {
+      font-size: 32px;
+    }
+  }
+}
+@media (max-height: 875px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 215px
+    );
+  }
+  .titleContainer {
+    min-height: 430px !important;
+    width: 775px !important;
+  }
+  .titleLeft {
+    font-size: 65px !important;
+    span {
+      font-size: 85px !important;
+    }
+  }
+  .titleRight {
+    font-size: 65px !important;
+    right: 1vw !important;
+  }
+  .subtitle {
+    font-size: 30px !important;
+  }
+}
+@media (max-height: 675px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 150px
+    );
+  }
+  .titleContainer {
+    min-height: 300px !important;
+    width: 590px !important;
+    bottom: 7% !important;
+    .subtitle {
+      font-size: 28px !important;
+    }
+  }
+  .titleLeft {
+    font-size: 55px !important;
+    span {
+      font-size: 70px !important;
+    }
+  }
+  .titleRight {
+    font-size: 55px !important;
+  }
+  .scrollIndicatorContainer {
+    bottom: 15% !important;
+    .scrollIndicator {
+      bottom: 80px !important;
+      font-size: 25px !important;
+    }
+    .scrollIndicatorImg {
+      width: 90px !important;
+      height: 90px !important;
+    }
+  }
+}
+@media (max-height: 485px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 115px
+    );
+  }
+  .titleContainer {
+    min-height: 225px !important;
+    width: 480px !important;
+  }
+  .titleLeft {
+    font-size: 40px !important;
+    span {
+      font-size: 60px !important;
+    }
+  }
+  .titleRight {
+    font-size: 40px !important;
+  }
+  .subtitle {
+    font-size: 25px !important;
+  }
+  .scrollIndicatorContainer {
+    .scrollIndicatorImg {
+      height: 70px !important;
+      width: 70px !important;
+    }
+    .scrollIndicator {
+      font-size: 23px !important;
+      bottom: 70px !important;
+    }
+  }
+}
+@media (max-height: 405px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 100px
+    );
+  }
+  .titleLeft {
+    font-size: 30px !important;
+    span {
+      font-size: 40px !important;
+    }
+  }
+  .titleRight {
+    font-size: 30px !important;
+    right: 0vw !important;
+  }
+  .textContainer {
+    bottom: 7.5% !important;
+    .subtitle {
+      font-size: 17px !important;
+    }
+  }
+  .titleContainer {
+    min-height: 190px !important;
+    width: 380px !important;
+  }
+  .scrollIndicatorContainer {
+    .scrollIndicator {
+      font-size: 20px !important;
+      bottom: 62px !important;
+    }
+    .scrollIndicatorImg {
+      height: 55px !important;
+      width: 55px !important;
+    }
+  }
+}
+@media (max-height: 365px) {
+  .overlay {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 75px
+    );
+    top: -20px;
+  }
+  .titleLeft {
+    font-size: 25px !important;
+    span {
+      font-size: 35px !important;
+    }
+  }
+  .titleRight {
+    font-size: 25px !important;
+    right: 0vw !important;
+  }
+  .textContainer {
+    bottom: 13% !important;
+    .subtitle {
+      font-size: 17px !important;
+    }
+  }
+  .titleContainer {
+    min-height: 105px !important;
+    width: 300px !important;
+    top: 50% !important;
+  }
+  .scrollIndicatorContainer {
+    bottom: 20% !important;
+    .scrollIndicator {
+      font-size: 17px !important;
+      bottom: 50px !important;
+    }
+  }
+}
+
+@media (max-height: 335px) {
+  .overlay {
+    top: -40px !important;
+  }
+
+  .scrollIndicatorContainer {
+    bottom: 25% !important;
+    .scrollIndicator {
+      font-size: 16px !important;
+    }
+  }
+  .textContainer {
+    bottom: 18% !important;
+    .subtitle {
+      font-size: 15px !important;
+    }
+  }
+  .titleContainer {
+    width: 285px !important;
+    top: 45% !important;
+  }
 }

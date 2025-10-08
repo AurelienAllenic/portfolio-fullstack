@@ -68,8 +68,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     // Gestion du scroll
     useEffect(() => {
+      let timeoutId: number | null = null;
+
       const handleWheel = (e: WheelEvent) => {
-        if (scrollLocked) {
+        if (scrollLocked || timeoutId) {
           e.preventDefault();
           return;
         }
@@ -88,10 +90,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
           const tl = gsap.timeline({
             onComplete: () => {
-              setTimeout(() => {
-                setScrollLocked(false);
-                document.body.style.overflow = "auto";
-              }, 500);
+              setScrollLocked(false);
+              document.body.style.overflow = "auto";
             },
           });
 
@@ -107,10 +107,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
           const tl = gsap.timeline({
             onComplete: () => {
-              setTimeout(() => {
-                setScrollLocked(false);
-                document.body.style.overflow = "auto";
-              }, 500);
+              setScrollLocked(false);
+              document.body.style.overflow = "auto";
             },
           });
 
@@ -124,10 +122,18 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             });
           }
         }
+
+        // Définir un délai de debounce
+        timeoutId = setTimeout(() => {
+          timeoutId = null;
+        }, 100);
       };
 
       window.addEventListener("wheel", handleWheel, { passive: false });
-      return () => window.removeEventListener("wheel", handleWheel);
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        window.removeEventListener("wheel", handleWheel);
+      };
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
     // Animation d’apparition du texte + effet radial dynamique
@@ -157,7 +163,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
         gsap.to(overlayRef.current, {
           "--gradient-size": `${gradientSize}%`,
-          duration: 1.2,
+          duration: 0.5,
           ease: "power2.out",
         });
       }
