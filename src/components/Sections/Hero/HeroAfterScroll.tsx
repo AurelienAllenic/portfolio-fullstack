@@ -68,7 +68,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     // Gestion du scroll
     useEffect(() => {
-      let timeoutId: NodeJS.Timeout | null = null;
+      let timeoutId: number | null = null;
 
       const handleWheel = (e: WheelEvent) => {
         if (scrollLocked || timeoutId) {
@@ -163,7 +163,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
         gsap.to(overlayRef.current, {
           "--gradient-size": `${gradientSize}%`,
-          duration: 0.5, // Synchronisé avec la durée totale de l'animation du texte
+          duration: 0.5,
           ease: "power2.out",
         });
       }
