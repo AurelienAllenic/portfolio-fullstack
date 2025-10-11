@@ -66,9 +66,23 @@
   background: radial-gradient(
     circle at center,
     transparent var(--gradient-size, 30%),
-    #050505 315px // 350px * 0.9
+    #050505 315px
   );
   pointer-events: none;
+  @media (max-width: 1560px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 275px
+    );
+  }
+  @media (max-width: 900px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 225px
+    );
+  }
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
@@ -88,6 +102,13 @@
       circle at center,
       transparent var(--gradient-size, 30%),
       #050505 122px // 135px * 0.9
+    );
+  }
+  @media (max-height: 920px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 30%),
+      #050505 35%
     );
   }
 }
@@ -116,10 +137,28 @@
     @media (max-width: 1830px) {
       width: 975px;
     }
-
+    @media (max-width: 1560px) {
+      width: 850px;
+      min-height: 500px;
+    }
+    @media (max-width: 900px) {
+      width: 700px;
+      min-height: 400px;
+    }
     @media (max-width: 768px) {
       width: 100%;
-      min-height: 100vh;
+      min-height: 650px;
+      top: 47%;
+    }
+    @media (max-width: 375px) {
+      top: 37%;
+      min-height: 700px;
+    }
+    @media (max-height: 920px) {
+      width: 50%;
+    }
+    @media (max-height: 765px) {
+      min-height: 70%;
     }
 
     .titleLeft {
@@ -134,24 +173,30 @@
       @media (max-width: 1830px) {
         font-size: 65px;
       }
-
+      @media (max-width: 1560px) {
+        font-size: 60px;
+      }
       @media (max-width: 900px) {
-        left: 15%;
-        font-size: $font-size-title-tab;
+        font-size: 50px;
       }
       @media (max-width: 768px) {
         font-size: $font-size-h1-desktop;
         position: absolute;
-        top: 10%;
+        top: 20%;
         left: 50%;
         transform: translateX(-50%);
       }
-      @media (max-width: 475px) {
-        top: 15vh;
+      @media (max-width: 575px) {
+        font-size: 60px;
+        top: 25%;
+      }
+      @media (max-width: 435px) {
+        font-size: 40px;
+        top: 32%;
       }
       @media (max-width: 375px) {
-        top: 30vh;
-        font-size: $font-size-title-mobile;
+        top: 35vh;
+        font-size: 35px;
       }
 
       span {
@@ -164,22 +209,30 @@
         @media (max-width: 1830px) {
           font-size: 95px;
         }
+        @media (max-width: 1560px) {
+          font-size: 85px;
+        }
         @media (max-width: 900px) {
-          font-size: $font-size-h1-tab;
+          font-size: 70px;
         }
         @media (max-width: 768px) {
           position: absolute;
           left: 65%;
-          top: 72px;
+          top: 90px;
           width: 100%;
           font-size: $font-size-h1-mobile;
         }
-        @media (max-width: 475px) {
-          font-size: $font-size-h1-desktop;
+        @media (max-width: 575px) {
+          font-size: 70px;
+          top: 80px;
+        }
+        @media (max-width: 435px) {
+          font-size: 55px;
+          top: 55px;
         }
         @media (max-width: 375px) {
-          font-size: $font-size-title-tab;
-          top: 41px;
+          font-size: 50px;
+          top: 45px;
         }
       }
     }
@@ -198,22 +251,20 @@
         font-size: 65px;
       }
       @media (max-width: 900px) {
-        font-size: $font-size-title-tab;
-        right: 15vw;
+        font-size: 55px;
       }
       @media (max-width: 768px) {
-        bottom: 20vh;
+        bottom: 0;
         right: 30vw;
         transform: translateX(50%);
         font-size: $font-size-h2-desktop;
       }
-      @media (max-width: 475px) {
-        font-size: $font-size-title-tab;
-        bottom: 27.5vh;
+      @media (max-width: 435px) {
+        font-size: 50px;
+        right: 33vw;
       }
       @media (max-width: 375px) {
-        font-size: $font-size-h1-tab;
-        bottom: 34vh;
+        font-size: 40px;
       }
     }
   }
@@ -224,6 +275,9 @@
     transform: translateX(-50%);
     text-align: center;
     width: 100%;
+    @media (max-width: 1560px) {
+      bottom: 0%;
+    }
     .subtitle {
       font-family: $font-family-text;
       font-size: $font-size-body-desktop;
@@ -232,6 +286,16 @@
       animation-delay: 1s;
       @media (max-width: 1830px) {
         font-size: 32px;
+      }
+      @media (max-width: 1560px) {
+        font-size: 29px;
+      }
+      @media (max-width: 900px) {
+        font-size: 22px;
+        padding: 0 25px;
+      }
+      @media (max-width: 575px) {
+        font-size: 20px;
       }
     }
   }
@@ -250,12 +314,40 @@
     @media (max-width: 1830px) {
       left: 2%;
     }
+    @media (max-width: 900px) {
+      bottom: 20%;
+    }
+    @media (max-width: 575px) {
+      bottom: 15%;
+    }
+    @media (max-width: 435px) {
+      bottom: 14%;
+      left: 0%;
+    }
+    @media (max-width: 375px) {
+      bottom: 17%;
+    }
+    @media (max-height: 700px) {
+      display: none;
+    }
 
     .scrollIndicatorImg {
       width: 113px;
       height: 113px;
       object-fit: cover;
       transition: transform 0.5s ease-in-out;
+      @media (max-width: 1560px) {
+        width: 100px;
+        height: 100px;
+      }
+      @media (max-width: 900px) {
+        width: 75px;
+        height: 75px;
+      }
+      @media (max-width: 435px) {
+        width: 50px;
+        height: 50px;
+      }
     }
 
     .scrollIndicator {
@@ -271,6 +363,18 @@
       transition: opacity 0.5s ease-in-out;
       opacity: 1;
       margin-top: calc(-0.5 * 135px);
+      @media (max-width: 1560px) {
+        font-size: 25px;
+        bottom: 85px;
+      }
+      @media (max-width: 900px) {
+        font-size: 22px;
+        bottom: 75px;
+      }
+      @media (max-width: 435px) {
+        font-size: 20px;
+        bottom: 55px;
+      }
     }
   }
 }
@@ -283,230 +387,4 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.7);
-}
-
-@media (max-height: 1115px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 275px
-    );
-  }
-  .titleContainer {
-    width: 945px !important;
-    .titleLeft {
-      font-size: 65px;
-      span {
-        font-size: 95px;
-      }
-    }
-    .titleRight {
-      font-size: 65px;
-    }
-  }
-  .textContainer {
-    bottom: 5% !important;
-    .subtitle {
-      font-size: 32px;
-    }
-  }
-}
-@media (max-height: 875px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 215px
-    );
-  }
-  .titleContainer {
-    min-height: 430px !important;
-    width: 775px !important;
-  }
-  .titleLeft {
-    font-size: 65px !important;
-    span {
-      font-size: 85px !important;
-    }
-  }
-  .titleRight {
-    font-size: 65px !important;
-    right: 1vw !important;
-  }
-  .subtitle {
-    font-size: 30px !important;
-  }
-}
-@media (max-height: 675px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 150px
-    );
-  }
-  .titleContainer {
-    min-height: 300px !important;
-    width: 590px !important;
-    bottom: 7% !important;
-    .subtitle {
-      font-size: 28px !important;
-    }
-  }
-  .titleLeft {
-    font-size: 55px !important;
-    span {
-      font-size: 70px !important;
-    }
-  }
-  .titleRight {
-    font-size: 55px !important;
-  }
-  .scrollIndicatorContainer {
-    bottom: 15% !important;
-    .scrollIndicator {
-      bottom: 80px !important;
-      font-size: 25px !important;
-    }
-    .scrollIndicatorImg {
-      width: 90px !important;
-      height: 90px !important;
-    }
-  }
-}
-@media (max-height: 485px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 115px
-    );
-  }
-  .titleContainer {
-    min-height: 225px !important;
-    width: 480px !important;
-  }
-  .titleLeft {
-    font-size: 40px !important;
-    span {
-      font-size: 60px !important;
-    }
-  }
-  .titleRight {
-    font-size: 40px !important;
-  }
-  .subtitle {
-    font-size: 25px !important;
-  }
-  .scrollIndicatorContainer {
-    .scrollIndicatorImg {
-      height: 70px !important;
-      width: 70px !important;
-    }
-    .scrollIndicator {
-      font-size: 23px !important;
-      bottom: 70px !important;
-    }
-  }
-}
-@media (max-height: 405px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 100px
-    );
-  }
-  .titleLeft {
-    font-size: 30px !important;
-    span {
-      font-size: 40px !important;
-    }
-  }
-  .titleRight {
-    font-size: 30px !important;
-    right: 0vw !important;
-  }
-  .textContainer {
-    bottom: 7.5% !important;
-    .subtitle {
-      font-size: 17px !important;
-    }
-  }
-  .titleContainer {
-    min-height: 190px !important;
-    width: 380px !important;
-  }
-  .scrollIndicatorContainer {
-    .scrollIndicator {
-      font-size: 20px !important;
-      bottom: 62px !important;
-    }
-    .scrollIndicatorImg {
-      height: 55px !important;
-      width: 55px !important;
-    }
-  }
-}
-@media (max-height: 365px) {
-  .overlay {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 30%),
-      #050505 75px
-    );
-    top: -20px;
-  }
-  .titleLeft {
-    font-size: 25px !important;
-    span {
-      font-size: 35px !important;
-    }
-  }
-  .titleRight {
-    font-size: 25px !important;
-    right: 0vw !important;
-  }
-  .textContainer {
-    bottom: 13% !important;
-    .subtitle {
-      font-size: 17px !important;
-    }
-  }
-  .titleContainer {
-    min-height: 105px !important;
-    width: 300px !important;
-    top: 50% !important;
-  }
-  .scrollIndicatorContainer {
-    bottom: 20% !important;
-    .scrollIndicator {
-      font-size: 17px !important;
-      bottom: 50px !important;
-    }
-  }
-}
-
-@media (max-height: 335px) {
-  .overlay {
-    top: -40px !important;
-  }
-
-  .scrollIndicatorContainer {
-    bottom: 25% !important;
-    .scrollIndicator {
-      font-size: 16px !important;
-    }
-  }
-  .textContainer {
-    bottom: 18% !important;
-    .subtitle {
-      font-size: 15px !important;
-    }
-  }
-  .titleContainer {
-    width: 285px !important;
-    top: 45% !important;
-  }
 }
