@@ -155,11 +155,49 @@
         width: 560px;
         font-size: 31px;
         line-height: 37px;
+        @media (max-width: 1400px) {
+          font-size: 25px;
+          width: 400px;
+        }
+        @media (max-width: 875px) {
+          font-size: 20px;
+          line-height: 32px;
+          width: 300px;
+        }
+        @media (max-width: 768px) {
+          font-size: 23px;
+          width: 350px;
+        }
+        @media (max-width: 375px) {
+          width: 275px;
+          font-size: 20px;
+        }
       }
 
       .largeSubtitle {
         width: 662px;
         font-size: 29px;
+        @media (max-width: 1400px) {
+          font-size: 25px;
+          width: 450px;
+        }
+        @media (max-width: 875px) {
+          font-size: 20px;
+          line-height: 32px;
+          width: 325px;
+        }
+        @media (max-width: 768px) {
+          font-size: 23px;
+          width: 450px;
+          margin-top: 55px;
+        }
+        @media (max-width: 768px) {
+          width: 375px;
+        }
+        @media (max-width: 375px) {
+          width: 300px;
+          font-size: 20px;
+        }
       }
     }
 
