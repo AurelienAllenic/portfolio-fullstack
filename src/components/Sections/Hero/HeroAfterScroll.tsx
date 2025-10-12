@@ -23,6 +23,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
     const firstRender = useRef(true);
+    const touchStartY = useRef<number | null>(null);
 
     const texts: TextContent[] = [
       "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
@@ -54,19 +55,60 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
-    // Apparition progressive des icônes
+    // Handle animations and scroll events
     useEffect(() => {
-      const timeouts = iconContainers.current.map((container, index) => {
-        const delay = 0.5 + index * 0.1;
-        return setTimeout(() => {
-          if (container) container.classList.add(styles.appeared);
-        }, (delay + 0.8) * 1000);
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+
+      // Animate icons (from side on all devices)
+      const icons = iconContainers.current;
+      gsap.set(icons, { opacity: 0, x: -45 });
+      icons.forEach((container, index) => {
+        if (container) {
+          gsap.to(container, {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            delay: 0.5 + index * 0.1 + 0.8,
+            ease: "power2.out",
+            onStart: () => {
+              container.style.animation = "none"; // Disable CSS animation
+            },
+          });
+        }
       });
 
-      return () => timeouts.forEach(clearTimeout);
+      // Animate titles and subtitle based on screen size
+      const titles = document.querySelectorAll<HTMLElement>(
+        `.${styles.titleLeft}, .${styles.titleLeftHighlight}, .${styles.subtitle}`
+      );
+      titles.forEach((el) => {
+        el.style.animation = "none"; // Disable CSS animation
+      });
+
+      if (isDesktop) {
+        gsap.set(titles, { opacity: 0, y: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.set(titles, { opacity: 0, x: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          x: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      }
     }, []);
 
-    // Gestion du scroll
+    // Handle scroll and touch events
     useEffect(() => {
       let timeoutId: number | null = null;
 
@@ -82,7 +124,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         const goingDown = e.deltaY > 0;
         const goingUp = e.deltaY < 0;
 
-        // 🔽 Texte suivant
         if (goingDown && textIndex < texts.length - 1) {
           e.preventDefault();
           setScrollLocked(true);
@@ -98,9 +139,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           tl.to(textRef.current, { opacity: 0, duration: 0.5 })
             .add(() => setTextIndex((prev) => prev + 1))
             .to(textRef.current, { opacity: 1, duration: 0.5 });
-        }
-        // 🔼 Texte précédent
-        else if (goingUp) {
+        } else if (goingUp) {
           e.preventDefault();
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
@@ -123,20 +162,85 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           }
         }
 
-        // Définir un délai de debounce
+        timeoutId = setTimeout(() => {
+          timeoutId = null;
+        }, 100);
+      };
+
+      const handleTouchStart = (e: TouchEvent) => {
+        touchStartY.current = e.touches[0].clientY;
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        if (touchStartY.current === null || scrollLocked || timeoutId) {
+          e.preventDefault();
+          return;
+        }
+
+        const isAtTop = window.scrollY === 0;
+        if (!isAtTop) return;
+
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchStartY.current - touchY; // Positive for swipe down
+
+        if (deltaY > 30 && textIndex < texts.length - 1) {
+          e.preventDefault();
+          setScrollLocked(true);
+          document.body.style.overflow = "hidden";
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              setScrollLocked(false);
+              document.body.style.overflow = "auto";
+            },
+          });
+
+          tl.to(textRef.current, { opacity: 0, duration: 0.5 })
+            .add(() => setTextIndex((prev) => prev + 1))
+            .to(textRef.current, { opacity: 1, duration: 0.5 });
+        } else if (deltaY < -30) {
+          e.preventDefault();
+          setScrollLocked(true);
+          document.body.style.overflow = "hidden";
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              setScrollLocked(false);
+              document.body.style.overflow = "auto";
+            },
+          });
+
+          if (textIndex > 0) {
+            tl.to(textRef.current, { opacity: 0, duration: 0.5 })
+              .add(() => setTextIndex((prev) => prev - 1))
+              .to(textRef.current, { opacity: 1, duration: 0.5 });
+          } else if (textIndex === 0) {
+            tl.to(textRef.current, { opacity: 0, duration: 0.5 }).add(() => {
+              onReturnToHeroBefore?.();
+            });
+          }
+        }
+
         timeoutId = setTimeout(() => {
           timeoutId = null;
         }, 100);
       };
 
       window.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("touchstart", handleTouchStart, {
+        passive: false,
+      });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
       return () => {
         if (timeoutId) clearTimeout(timeoutId);
         window.removeEventListener("wheel", handleWheel);
+        window.removeEventListener("touchstart", handleTouchStart);
+        window.removeEventListener("touchmove", handleTouchMove);
       };
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
-    // Animation d’apparition du texte + effet radial dynamique
+    // Text and gradient animation
     useEffect(() => {
       if (textRef.current) {
         gsap.fromTo(
@@ -155,7 +259,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         );
       }
 
-      // 🌑 Transition du rayon du gradient
       if (overlayRef.current) {
         const totalTexts = texts.length - 1;
         const progress = textIndex / totalTexts;
@@ -210,7 +313,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     return (
       <div ref={ref} className={styles.containerHeroAfterScroll}>
-        {/* 🌗 Overlay dynamique */}
         <div
           ref={overlayRef}
           className={styles.gradientOverlay}
@@ -276,12 +378,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 }}
                 className={styles.iconContainer}
               >
-                <img
-                  src={icon.src}
-                  alt={icon.name}
-                  className={styles.icon}
-                  style={{ animationDelay: `${0.5 + index * 0.1}s` }}
-                />
+                <img src={icon.src} alt={icon.name} className={styles.icon} />
                 <span
                   className={`${styles.tooltip} ${
                     index < 6 ? styles.tooltipTop : styles.tooltipBottom
