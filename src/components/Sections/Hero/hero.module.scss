@@ -297,9 +297,6 @@
     transform: translateX(-50%);
     text-align: center;
     width: 100%;
-    @media (max-height: 680px) {
-      bottom: -5%;
-    }
     .subtitle {
       font-family: $font-family-text;
       font-size: $font-size-body-desktop;
