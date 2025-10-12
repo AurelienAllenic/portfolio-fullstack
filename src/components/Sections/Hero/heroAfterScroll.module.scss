@@ -36,12 +36,12 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: flex-end; // ✅ En bas par défaut (desktop)
+  align-items: flex-end; // ✅ En bas sur desktop
   overflow: hidden;
-  padding-bottom: 15vh; // ✅ espace depuis le bas
+  padding-bottom: 15vh; // ✅ Espacement depuis le bas (fixe et stable)
 
   @media (max-width: 768px) {
-    align-items: center; // ✅ centré sur mobile
+    align-items: center; // ✅ Centré sur mobile
     padding-bottom: 0;
   }
 
@@ -56,7 +56,7 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end; // ✅ cohérent avec le placement bas
+    align-items: flex-end; // ✅ Cohérent avec la position basse
     width: 80%;
     max-width: 1600px;
     color: #fff;
@@ -67,6 +67,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
+      justify-content: center;
       gap: 60px;
     }
 
@@ -136,6 +137,7 @@
         }
         @media (max-width: 768px) {
           margin-top: 40px;
+          height: 210px;
         }
         @media (max-width: 375px) {
           width: 250px;
@@ -189,7 +191,6 @@
         @media (max-width: 768px) {
           font-size: 23px;
           width: 450px;
-          margin-top: 55px;
         }
         @media (max-width: 768px) {
           width: 375px;
@@ -280,9 +281,15 @@
 
         .tooltipTop {
           bottom: 99px;
+          @media (max-width: 768px) {
+            bottom: 65px !important;
+          }
         }
         .tooltipBottom {
           top: 99px;
+          @media (max-width: 768px) {
+            bottom: 65px !important;
+          }
         }
       }
     }
