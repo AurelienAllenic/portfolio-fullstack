@@ -166,7 +166,22 @@
       top: 37%;
       min-height: 700px;
     }
-
+    @media (max-width: 389px) and (max-height: 1050px) {
+      min-height: 555px;
+    }
+    @media (max-width: 375px) and (max-height: 1050px) {
+      top: 40%;
+      min-height: 620px;
+    }
+    @media (max-width: 375px) and (max-height: 800px) {
+      min-height: 550px;
+    }
+    @media (max-width: 375px) and (max-height: 660px) {
+      min-height: 485px;
+    }
+    @media (max-width: 375px) and (max-height: 580px) {
+      min-height: 430px;
+    }
     .titleLeft {
       display: flex;
       flex-direction: column;
@@ -202,6 +217,9 @@
       @media (max-width: 375px) {
         top: 35vh;
         font-size: 35px;
+      }
+      @media (max-width: 375px) and (max-height: 1050px) {
+        top: 30vh;
       }
 
       span {
@@ -279,6 +297,9 @@
     transform: translateX(-50%);
     text-align: center;
     width: 100%;
+    @media (max-height: 680px) {
+      bottom: -5%;
+    }
     .subtitle {
       font-family: $font-family-text;
       font-size: $font-size-body-desktop;
