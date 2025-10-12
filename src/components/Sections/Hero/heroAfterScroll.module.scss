@@ -103,6 +103,9 @@
         opacity: 0;
         animation: appear 1.5s ease-out forwards;
         animation-delay: 0.5s;
+        @media (max-width: 1400px) {
+          font-size: 90px;
+        }
         .titleLeftHighlight {
           position: absolute;
           top: 113px;
@@ -111,6 +114,10 @@
           opacity: 0;
           animation: appear 1s ease-out forwards;
           animation-delay: 0.75s;
+          @media (max-width: 1400px) {
+            font-size: 45px;
+            top: 100px;
+          }
         }
       }
       .subtitle {
@@ -123,6 +130,11 @@
         opacity: 0;
         animation: overlayAppearClassic 0.5s ease-out forwards;
         animation-delay: 1s;
+        @media (max-width: 1400px) {
+          font-size: 25px;
+          line-height: 30px;
+          top: 180px;
+        }
         .linkSubtitle {
           position: relative;
           color: #fff;
@@ -152,6 +164,12 @@
       bottom: 27%;
       left: 45%;
       transform: translateY(40%);
+      @media (max-width: 1400px) {
+        left: 50%;
+      }
+      @media (max-width: 1230px) {
+        left: 55%;
+      }
 
       .iconContainer {
         flex: 0 1 calc(100% / 6 - 16px);
@@ -169,6 +187,14 @@
             addAppearedClass 0.8s ease-out 0.8s forwards;
           transition: transform 0.3s ease-out;
           will-change: transform;
+          @media (max-width: 1400px) {
+            width: 60px;
+            height: 60px;
+          }
+          @media (max-width: 1230px) {
+            width: 50px;
+            height: 50px;
+          }
         }
 
         img:hover {
