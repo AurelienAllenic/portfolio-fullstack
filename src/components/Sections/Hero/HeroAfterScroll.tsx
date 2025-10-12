@@ -20,11 +20,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
     const firstRender = useRef(true);
-    const touchStartY = useRef<number | null>(null);
 
     const texts: TextContent[] = [
       "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
@@ -56,61 +54,35 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
-    // Initial animations for icons and titles
+    // Apparition progressive des icônes
     useEffect(() => {
-      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-
-      // Animate icons (from side on all devices)
-      const icons = iconContainers.current;
-      gsap.set(icons, { opacity: 0, x: -45 });
-      icons.forEach((container, index) => {
-        if (container) {
-          gsap.to(container, {
-            opacity: 1,
-            x: 0,
-            duration: 1,
-            delay: 0.5 + index * 0.1 + 0.8,
-            ease: "power2.out",
-            onStart: () => {
-              container.style.animation = "none"; // Disable CSS animation
-            },
-          });
-        }
+      const timeouts = iconContainers.current.map((container, index) => {
+        const delay = 0.5 + index * 0.1;
+        return setTimeout(() => {
+          if (container) container.classList.add(styles.appeared);
+        }, (delay + 0.8) * 1000);
       });
 
-      // Animate titles and subtitle
-      const titles = containerRef.current?.querySelectorAll<HTMLElement>(
-        `.${styles.titleLeft}, .${styles.titleLeftHighlight}, .${styles.subtitle}`
-      );
-      if (titles) {
-        titles.forEach((el) => {
-          el.style.animation = "none"; // Disable CSS animation
-        });
-        if (isDesktop) {
-          gsap.set(titles, { opacity: 0, y: -45 });
-          gsap.to(titles, {
-            opacity: 1,
-            y: 0,
-            stagger: 0.2,
-            delay: 0.5,
-            duration: 1,
-            ease: "power2.out",
-          });
-        } else {
-          gsap.set(titles, { opacity: 0, x: -45 });
-          gsap.to(titles, {
-            opacity: 1,
-            x: 0,
-            stagger: 0.2,
-            delay: 0.5,
-            duration: 1,
-            ease: "power2.out",
-          });
-        }
-      }
+      return () => timeouts.forEach(clearTimeout);
     }, []);
 
-    // Handle scroll and touch events
+    // Fonction pour changer le texte avec animation
+    const changeText = (nextIndex: number, callback?: () => void) => {
+      setScrollLocked(true);
+      document.body.style.overflow = "hidden";
+      gsap
+        .timeline({
+          onComplete: () => {
+            setScrollLocked(false);
+            callback?.();
+          },
+        })
+        .to(textRef.current, { opacity: 0, duration: 0.5 })
+        .add(() => setTextIndex(nextIndex))
+        .to(textRef.current, { opacity: 1, duration: 0.5 });
+    };
+
+    // Gestion du scroll
     useEffect(() => {
       let timeoutId: number | null = null;
 
@@ -128,102 +100,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
         if (goingDown && textIndex < texts.length - 1) {
           e.preventDefault();
-          setScrollLocked(true);
-          document.body.style.overflow = "hidden";
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              setScrollLocked(false);
-              //document.body.style.overflow = "auto";
-            },
-          });
-
-          tl.to(textRef.current, { opacity: 0, duration: 0.5 })
-            .add(() => setTextIndex((prev) => prev + 1))
-            .to(textRef.current, { opacity: 1, duration: 0.5 });
+          changeText(textIndex + 1);
         } else if (goingUp) {
           e.preventDefault();
-          setScrollLocked(true);
-          document.body.style.overflow = "hidden";
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              setScrollLocked(false);
-              //document.body.style.overflow = "auto";
-            },
-          });
-
-          if (textIndex > 0) {
-            tl.to(textRef.current, { opacity: 0, duration: 0.5 })
-              .add(() => setTextIndex((prev) => prev - 1))
-              .to(textRef.current, { opacity: 1, duration: 0.5 });
-          } else if (textIndex === 0) {
-            tl.to(textRef.current, { opacity: 0, duration: 0.5 }).add(() => {
-              onReturnToHeroBefore?.();
-            });
-          }
-        }
-
-        timeoutId = setTimeout(() => {
-          timeoutId = null;
-        }, 100);
-      };
-
-      const handleTouchStart = (e: TouchEvent) => {
-        touchStartY.current = e.touches[0].clientY;
-      };
-
-      const handleTouchMove = (e: TouchEvent) => {
-        if (touchStartY.current === null || scrollLocked || timeoutId) return;
-
-        const isAtTop = window.scrollY === 0;
-        if (!isAtTop) return;
-
-        const container = containerRef.current;
-        if (!container) return;
-
-        const rect = container.getBoundingClientRect();
-        if (rect.top > 0 || rect.bottom <= 0) return;
-
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchStartY.current - touchY;
-
-        if (deltaY > 50 && textIndex < texts.length - 1) {
-          e.preventDefault();
-          setScrollLocked(true);
-          document.body.style.overflow = "hidden";
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              setScrollLocked(false);
-              //document.body.style.overflow = "auto";
-            },
-          });
-
-          tl.to(textRef.current, { opacity: 0, duration: 0.5 })
-            .add(() => setTextIndex((prev) => prev + 1))
-            .to(textRef.current, { opacity: 1, duration: 0.5 });
-        } else if (deltaY < -50) {
-          e.preventDefault();
-          setScrollLocked(true);
-          document.body.style.overflow = "hidden";
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              setScrollLocked(false);
-              //document.body.style.overflow = "auto";
-            },
-          });
-
-          if (textIndex > 0) {
-            tl.to(textRef.current, { opacity: 0, duration: 0.5 })
-              .add(() => setTextIndex((prev) => prev - 1))
-              .to(textRef.current, { opacity: 1, duration: 0.5 });
-          } else if (textIndex === 0) {
-            tl.to(textRef.current, { opacity: 0, duration: 0.5 }).add(() => {
-              onReturnToHeroBefore?.();
-            });
-          }
+          if (textIndex > 0) changeText(textIndex - 1);
+          else changeText(0, onReturnToHeroBefore);
         }
 
         timeoutId = setTimeout(() => {
@@ -232,31 +113,61 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       };
 
       window.addEventListener("wheel", handleWheel, { passive: false });
-      window.addEventListener("touchstart", handleTouchStart, {
-        passive: true,
-      });
-      window.addEventListener("touchmove", handleTouchMove, { passive: false });
-
       return () => {
         if (timeoutId) clearTimeout(timeoutId);
         window.removeEventListener("wheel", handleWheel);
-        window.removeEventListener("touchstart", handleTouchStart);
-        window.removeEventListener("touchmove", handleTouchMove);
-        //document.body.style.overflow = "auto";
       };
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
-    // Text and gradient animation
-    useEffect(() => {
-      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    // Gestion du swipe touch
+    const touchStartY = useRef<number | null>(null);
 
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartY.current === null || scrollLocked) return;
+      const deltaY = touchStartY.current - e.touches[0].clientY;
+      if (window.scrollY !== 0) return;
+
+      if (deltaY > 30 && textIndex < texts.length - 1) {
+        e.preventDefault();
+        changeText(textIndex + 1);
+        touchStartY.current = e.touches[0].clientY;
+      } else if (deltaY < -30) {
+        e.preventDefault();
+        if (textIndex > 0) changeText(textIndex - 1);
+        else changeText(0, onReturnToHeroBefore);
+        touchStartY.current = e.touches[0].clientY;
+      }
+    };
+
+    useEffect(() => {
+      window.addEventListener("touchstart", handleTouchStart, {
+        passive: false,
+      });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", () => (touchStartY.current = null));
+
+      return () => {
+        window.removeEventListener("touchstart", handleTouchStart);
+        window.removeEventListener("touchmove", handleTouchMove);
+        window.removeEventListener(
+          "touchend",
+          () => (touchStartY.current = null)
+        );
+      };
+    }, [textIndex, scrollLocked, onReturnToHeroBefore]);
+
+    // Animation texte + overlay
+    useEffect(() => {
       if (textRef.current) {
         gsap.fromTo(
           textRef.current,
-          { opacity: 0, x: isDesktop ? 0 : -45, y: isDesktop ? -45 : 0 },
+          { opacity: 0, y: firstRender.current ? 20 : 100 },
           {
             opacity: 1,
-            x: 0,
             y: 0,
             duration: firstRender.current ? 0.8 : 0.5,
             ease: "power2.out",
@@ -269,12 +180,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
 
       if (overlayRef.current) {
-        const totalTexts = texts.length - 1;
-        const progress = textIndex / totalTexts;
-        const gradientSize = 100 - progress * 75;
-
+        const progress = textIndex / (texts.length - 1);
         gsap.to(overlayRef.current, {
-          "--gradient-size": `${gradientSize}%`,
+          "--gradient-size": `${100 - progress * 75}%`,
           duration: 0.5,
           ease: "power2.out",
         });
@@ -327,7 +235,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           className={styles.gradientOverlay}
           style={{ "--gradient-size": "100%" } as React.CSSProperties}
         />
-        <div ref={containerRef} className={styles.contentContainer}>
+        <div className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
@@ -363,7 +271,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                         {text.linkText}
                       </a>
                       {Array.isArray(text.afterLink) ? (
-                        text.afterLink.map((line: string, i: number) => (
+                        text.afterLink.map((line, i) => (
                           <span key={i}>
                             {line}
                             <br />
@@ -387,7 +295,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 }}
                 className={styles.iconContainer}
               >
-                <img src={icon.src} alt={icon.name} className={styles.icon} />
+                <img
+                  src={icon.src}
+                  alt={icon.name}
+                  className={styles.icon}
+                  style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                />
                 <span
                   className={`${styles.tooltip} ${
                     index < 6 ? styles.tooltipTop : styles.tooltipBottom
