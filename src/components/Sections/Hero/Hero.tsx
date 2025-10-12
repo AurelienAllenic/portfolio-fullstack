@@ -77,7 +77,6 @@ const Hero: React.FC = () => {
       },
       onComplete: () => {
         scrollBlocked = false;
-        document.body.style.overflow = "auto";
 
         // Disable CSS animations to avoid conflicts
         const titles = container.querySelectorAll<HTMLElement>(
@@ -236,7 +235,6 @@ const Hero: React.FC = () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
-      document.body.style.overflow = "auto";
       tlRef.current?.kill();
     };
   }, []);

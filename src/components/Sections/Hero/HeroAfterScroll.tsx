@@ -20,6 +20,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(0);
     const [scrollLocked, setScrollLocked] = useState(false);
     const firstRender = useRef(true);
@@ -55,7 +56,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
-    // Handle animations and scroll events
+    // Initial animations for icons and titles
     useEffect(() => {
       const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
@@ -77,34 +78,35 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }
       });
 
-      // Animate titles and subtitle based on screen size
-      const titles = document.querySelectorAll<HTMLElement>(
+      // Animate titles and subtitle
+      const titles = containerRef.current?.querySelectorAll<HTMLElement>(
         `.${styles.titleLeft}, .${styles.titleLeftHighlight}, .${styles.subtitle}`
       );
-      titles.forEach((el) => {
-        el.style.animation = "none"; // Disable CSS animation
-      });
-
-      if (isDesktop) {
-        gsap.set(titles, { opacity: 0, y: -45 });
-        gsap.to(titles, {
-          opacity: 1,
-          y: 0,
-          stagger: 0.2,
-          delay: 0.5,
-          duration: 1,
-          ease: "power2.out",
+      if (titles) {
+        titles.forEach((el) => {
+          el.style.animation = "none"; // Disable CSS animation
         });
-      } else {
-        gsap.set(titles, { opacity: 0, x: -45 });
-        gsap.to(titles, {
-          opacity: 1,
-          x: 0,
-          stagger: 0.2,
-          delay: 0.5,
-          duration: 1,
-          ease: "power2.out",
-        });
+        if (isDesktop) {
+          gsap.set(titles, { opacity: 0, y: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.set(titles, { opacity: 0, x: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            x: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        }
       }
     }, []);
 
@@ -132,7 +134,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           const tl = gsap.timeline({
             onComplete: () => {
               setScrollLocked(false);
-              document.body.style.overflow = "auto";
+              //document.body.style.overflow = "auto";
             },
           });
 
@@ -147,7 +149,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           const tl = gsap.timeline({
             onComplete: () => {
               setScrollLocked(false);
-              document.body.style.overflow = "auto";
+              //document.body.style.overflow = "auto";
             },
           });
 
@@ -172,18 +174,21 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       };
 
       const handleTouchMove = (e: TouchEvent) => {
-        if (touchStartY.current === null || scrollLocked || timeoutId) {
-          e.preventDefault();
-          return;
-        }
+        if (touchStartY.current === null || scrollLocked || timeoutId) return;
 
         const isAtTop = window.scrollY === 0;
         if (!isAtTop) return;
 
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchStartY.current - touchY; // Positive for swipe down
+        const container = containerRef.current;
+        if (!container) return;
 
-        if (deltaY > 30 && textIndex < texts.length - 1) {
+        const rect = container.getBoundingClientRect();
+        if (rect.top > 0 || rect.bottom <= 0) return;
+
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchStartY.current - touchY;
+
+        if (deltaY > 50 && textIndex < texts.length - 1) {
           e.preventDefault();
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
@@ -191,14 +196,14 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           const tl = gsap.timeline({
             onComplete: () => {
               setScrollLocked(false);
-              document.body.style.overflow = "auto";
+              //document.body.style.overflow = "auto";
             },
           });
 
           tl.to(textRef.current, { opacity: 0, duration: 0.5 })
             .add(() => setTextIndex((prev) => prev + 1))
             .to(textRef.current, { opacity: 1, duration: 0.5 });
-        } else if (deltaY < -30) {
+        } else if (deltaY < -50) {
           e.preventDefault();
           setScrollLocked(true);
           document.body.style.overflow = "hidden";
@@ -206,7 +211,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           const tl = gsap.timeline({
             onComplete: () => {
               setScrollLocked(false);
-              document.body.style.overflow = "auto";
+              //document.body.style.overflow = "auto";
             },
           });
 
@@ -228,7 +233,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
       window.addEventListener("wheel", handleWheel, { passive: false });
       window.addEventListener("touchstart", handleTouchStart, {
-        passive: false,
+        passive: true,
       });
       window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
@@ -237,17 +242,21 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         window.removeEventListener("wheel", handleWheel);
         window.removeEventListener("touchstart", handleTouchStart);
         window.removeEventListener("touchmove", handleTouchMove);
+        //document.body.style.overflow = "auto";
       };
     }, [textIndex, scrollLocked, onReturnToHeroBefore]);
 
     // Text and gradient animation
     useEffect(() => {
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+
       if (textRef.current) {
         gsap.fromTo(
           textRef.current,
-          { opacity: 0, y: firstRender.current ? 20 : 100 },
+          { opacity: 0, x: isDesktop ? 0 : -45, y: isDesktop ? -45 : 0 },
           {
             opacity: 1,
+            x: 0,
             y: 0,
             duration: firstRender.current ? 0.8 : 0.5,
             ease: "power2.out",
@@ -318,7 +327,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           className={styles.gradientOverlay}
           style={{ "--gradient-size": "100%" } as React.CSSProperties}
         />
-        <div className={styles.contentContainer}>
+        <div ref={containerRef} className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
