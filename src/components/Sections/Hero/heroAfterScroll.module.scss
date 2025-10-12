@@ -15,21 +15,6 @@
   }
 }
 
-@keyframes addAppearedClass {
-  to {
-    content: "appeared";
-  }
-}
-
-@keyframes overlayAppear {
-  from {
-    opacity: 0.7;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes overlayAppearClassic {
   from {
     opacity: 0;
@@ -39,63 +24,59 @@
   }
 }
 
-@keyframes slideAppear {
-  from {
-    opacity: 0;
-    transform: translateX(-45px);
-  }
+@keyframes addAppearedClass {
   to {
-    opacity: 1;
-    transform: translateX(0px);
-  }
-}
-
-@keyframes hero1FadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes tooltipAppear {
-  from {
-    opacity: 0;
-    transform: translateY(9px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    content: "appeared";
   }
 }
 
 .containerHeroAfterScroll {
   position: relative;
-  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; // ✅ En bas par défaut (desktop)
+  overflow: hidden;
+  padding-bottom: 15vh; // ✅ espace depuis le bas
+
+  @media (max-width: 768px) {
+    align-items: center; // ✅ centré sur mobile
+    padding-bottom: 0;
+  }
+
   .overlay {
-    width: 100%;
-    height: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
     animation: overlayAppearClassic 1s ease-out forwards;
   }
+
   .contentContainer {
     position: relative;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    bottom: 0%;
     display: flex;
-    gap: 23px;
+    justify-content: space-between;
+    align-items: flex-end; // ✅ cohérent avec le placement bas
+    width: 80%;
+    max-width: 1600px;
     color: #fff;
+    gap: 40px;
+    z-index: 1;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 60px;
+    }
+
     .contentLeft {
-      position: absolute;
-      bottom: 41%;
-      left: 14%;
-      transform: translateY(40%);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+
       .titleLeft {
         font-family: $font-family-primary;
         font-size: 108px;
@@ -103,26 +84,39 @@
         opacity: 0;
         animation: appear 1.5s ease-out forwards;
         animation-delay: 0.5s;
+
         @media (max-width: 1400px) {
           font-size: 90px;
         }
+        @media (max-width: 875px) {
+          font-size: 70px;
+        }
+
         .titleLeftHighlight {
           position: absolute;
-          top: 113px;
+          top: 105px;
+          left: 115px;
           font-size: 58px;
-          left: 113px;
           opacity: 0;
           animation: appear 1s ease-out forwards;
           animation-delay: 0.75s;
+
           @media (max-width: 1400px) {
             font-size: 45px;
-            top: 100px;
+            top: 90px;
+          }
+          @media (max-width: 875px) {
+            font-size: 35px;
+            top: 75px;
+          }
+          @media (max-width: 375px) {
+            left: 85px;
           }
         }
       }
+
       .subtitle {
-        position: absolute;
-        top: 203px;
+        margin-top: 75px;
         font-family: $font-family-primary;
         font-size: 33px;
         width: 475px;
@@ -130,45 +124,59 @@
         opacity: 0;
         animation: overlayAppearClassic 0.5s ease-out forwards;
         animation-delay: 1s;
+
         @media (max-width: 1400px) {
           font-size: 25px;
           line-height: 30px;
-          top: 180px;
+          width: 400px;
         }
+        @media (max-width: 875px) {
+          font-size: 20px;
+          width: 300px;
+        }
+        @media (max-width: 768px) {
+          margin-top: 40px;
+        }
+        @media (max-width: 375px) {
+          width: 250px;
+        }
+
         .linkSubtitle {
-          position: relative;
           color: #fff;
           text-decoration: underline;
-          transition: all 0.3s ease-out;
+          transition: opacity 0.3s ease-out;
           &:hover {
-            transition: all 0.3s ease-out;
             opacity: 0.7;
           }
         }
       }
+
       .mediumSubtitle {
         width: 560px;
         font-size: 31px;
         line-height: 37px;
       }
+
       .largeSubtitle {
         width: 662px;
         font-size: 29px;
       }
     }
+
     .contentRight {
+      flex: 1;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      position: absolute;
-      bottom: 27%;
-      left: 45%;
-      transform: translateY(40%);
-      @media (max-width: 1400px) {
-        left: 50%;
+      align-items: flex-end;
+      gap: 20px;
+
+      @media (max-width: 768px) {
+        align-items: center;
+        gap: 5px;
       }
-      @media (max-width: 1230px) {
-        left: 55%;
+      @media (max-width: 445px) {
+        gap: 15px;
       }
 
       .iconContainer {
@@ -177,6 +185,16 @@
         align-items: center;
         justify-content: center;
         position: relative;
+
+        @media (max-width: 1400px) {
+          flex: 0 1 calc(100% / 5 - 16px);
+        }
+        @media (max-width: 1100px) {
+          flex: 0 1 calc(100% / 4 - 16px);
+        }
+        @media (max-width: 768px) {
+          flex: 0 1 calc(21% - 16px);
+        }
 
         img {
           width: 77px;
@@ -187,6 +205,7 @@
             addAppearedClass 0.8s ease-out 0.8s forwards;
           transition: transform 0.3s ease-out;
           will-change: transform;
+
           @media (max-width: 1400px) {
             width: 60px;
             height: 60px;
@@ -195,10 +214,10 @@
             width: 50px;
             height: 50px;
           }
-        }
 
-        img:hover {
-          transform: scale(1.1);
+          &:hover {
+            transform: scale(1.1);
+          }
         }
 
         .tooltip {
@@ -224,7 +243,6 @@
         .tooltipTop {
           bottom: 99px;
         }
-
         .tooltipBottom {
           top: 99px;
         }
