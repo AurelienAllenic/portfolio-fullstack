@@ -1,4 +1,3 @@
-// components/Sections/Hero/Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
@@ -12,6 +11,7 @@ const Hero: React.FC = () => {
   const hero2Ref = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const hasFadedOut = useRef(false);
+  const touchStartY = useRef<number | null>(null);
 
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
@@ -28,6 +28,7 @@ const Hero: React.FC = () => {
     if (!overlay || !container) return;
 
     let scrollBlocked = true;
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
     tlRef.current = gsap.timeline({
       paused: true,
@@ -78,22 +79,110 @@ const Hero: React.FC = () => {
         scrollBlocked = false;
         document.body.style.overflow = "auto";
 
-        const icons =
-          container.querySelectorAll<HTMLImageElement>(".contentRight img");
+        // Disable CSS animations to avoid conflicts
+        const titles = container.querySelectorAll<HTMLElement>(
+          ".titleLeft, .titleLeft span, .titleRight, .subtitle"
+        );
+        const scrollIndicators = container.querySelectorAll<HTMLElement>(
+          ".scrollIndicatorContainer"
+        );
+
+        titles.forEach((el) => {
+          el.style.animation = "none";
+        });
+        scrollIndicators.forEach((el) => {
+          el.style.animation = "none";
+        });
+
+        // Animate scroll indicators (from side)
+        const icons = container.querySelectorAll<HTMLImageElement>(
+          ".scrollIndicatorContainer img"
+        );
         iconsRef.current = icons;
-        gsap.set(icons, { opacity: 0, y: -50 });
+        gsap.set(icons, { opacity: 0, x: -45 });
         gsap.to(icons, {
           opacity: 1,
-          y: 0,
+          x: 0,
           stagger: 0.2,
-          delay: 1,
+          delay: 1.5,
+          duration: 1,
           ease: "power2.out",
         });
+
+        // Animate titles based on screen size
+        if (isDesktop) {
+          gsap.set(titles, { opacity: 0, y: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.set(titles, { opacity: 0, x: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            x: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        }
       },
       onReverseComplete: () => {
         scrollBlocked = true;
         document.body.style.overflow = "hidden";
         setGradientState("hero1");
+
+        // Reset animations
+        const titles = container.querySelectorAll<HTMLElement>(
+          ".titleLeft, .titleLeft span, .titleRight, .subtitle"
+        );
+        const scrollIndicators = container.querySelectorAll<HTMLElement>(
+          ".scrollIndicatorContainer img"
+        );
+
+        titles.forEach((el) => {
+          el.style.animation = "none";
+        });
+        scrollIndicators.forEach((el) => {
+          el.style.animation = "none";
+        });
+
+        if (isDesktop) {
+          gsap.set(titles, { opacity: 0, y: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.set(titles, { opacity: 0, x: -45 });
+          gsap.to(titles, {
+            opacity: 1,
+            x: 0,
+            stagger: 0.2,
+            delay: 0.5,
+            duration: 1,
+            ease: "power2.out",
+          });
+        }
+
+        gsap.set(scrollIndicators, { opacity: 0, x: -45 });
+        gsap.to(scrollIndicators, {
+          opacity: 1,
+          x: 0,
+          stagger: 0.2,
+          delay: 1.5,
+          duration: 1,
+          ease: "power2.out",
+        });
       },
     });
 
@@ -113,11 +202,40 @@ const Hero: React.FC = () => {
       }
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartY.current === null) return;
+
+      const rect = container.getBoundingClientRect();
+      const isAtTop = window.scrollY === 0;
+
+      if (!isAtTop) return;
+
+      if (rect.top <= 0 && rect.bottom > 0) {
+        if (scrollBlocked) e.preventDefault();
+
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchStartY.current - touchY; // Positive for swipe down
+
+        if (deltaY > 30 && (tlRef.current?.progress() ?? 0) < 1) {
+          // Swipe down threshold (30px)
+          tlRef.current?.play();
+        }
+      }
+    };
+
     document.body.style.overflow = "hidden";
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
       document.body.style.overflow = "auto";
       tlRef.current?.kill();
     };
