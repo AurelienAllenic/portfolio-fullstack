@@ -289,7 +289,8 @@
         .tooltipBottom {
           top: 99px;
           @media (max-width: 768px) {
-            top: 65px !important;
+            top: inherit !important;
+            bottom: 65px !important;
           }
         }
       }
