@@ -83,6 +83,10 @@
       #050505 225px
     );
   }
+  @media (max-width: 768px) {
+    top: -5%;
+    height: 105%;
+  }
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
@@ -124,6 +128,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  @media (max-width: 768px) {
+    top: 40%;
+  }
 
   .titleContainer {
     min-height: 540px;
@@ -183,8 +190,7 @@
         font-size: $font-size-h1-desktop;
         position: absolute;
         top: 20%;
-        left: 50%;
-        transform: translateX(-50%);
+        left: 20%;
       }
       @media (max-width: 575px) {
         font-size: 60px;
@@ -255,8 +261,7 @@
       }
       @media (max-width: 768px) {
         bottom: 0;
-        right: 30vw;
-        transform: translateX(50%);
+        right: 10vw;
         font-size: $font-size-h2-desktop;
       }
       @media (max-width: 435px) {
@@ -275,9 +280,6 @@
     transform: translateX(-50%);
     text-align: center;
     width: 100%;
-    @media (max-width: 1560px) {
-      bottom: 0%;
-    }
     .subtitle {
       font-family: $font-family-text;
       font-size: $font-size-body-desktop;
