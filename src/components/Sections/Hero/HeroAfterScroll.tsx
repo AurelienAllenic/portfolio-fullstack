@@ -4,6 +4,8 @@ import styles from "./heroAfterScroll.module.scss";
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
+  onTransitionToProjects?: () => void;
+  returnFromProjects?: boolean;
 }
 
 type LinkText = {
@@ -16,14 +18,7 @@ type LinkText = {
 type TextContent = string | LinkText;
 
 const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
-  ({ onReturnToHeroBefore }, ref) => {
-    const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
-    const textRef = useRef<HTMLParagraphElement | null>(null);
-    const overlayRef = useRef<HTMLDivElement | null>(null);
-    const [textIndex, setTextIndex] = useState(0);
-    const [scrollLocked, setScrollLocked] = useState(false);
-    const firstRender = useRef(true);
-
+  ({ onReturnToHeroBefore, onTransitionToProjects, returnFromProjects }, ref) => {
     const texts: TextContent[] = [
       "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
       {
@@ -54,6 +49,14 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ];
 
+    const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
+    const textRef = useRef<HTMLParagraphElement | null>(null);
+    const overlayRef = useRef<HTMLDivElement | null>(null);
+    const [textIndex, setTextIndex] = useState(returnFromProjects ? texts.length - 1 : 0);
+    const [scrollLocked, setScrollLocked] = useState(false);
+    const [allAnimationsComplete, setAllAnimationsComplete] = useState(returnFromProjects);
+    const firstRender = useRef(true);
+
     // Apparition progressive des icônes
     useEffect(() => {
       const timeouts = iconContainers.current.map((container, index) => {
@@ -63,7 +66,17 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }, (delay + 0.8) * 1000);
       });
 
-      return () => timeouts.forEach(clearTimeout);
+      // Détecter quand toutes les animations sont terminées
+      const lastIconDelay = 0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
+      const allAnimationsTimeout = setTimeout(() => {
+        console.log("Toutes les animations sont terminées !");
+        setAllAnimationsComplete(true);
+      }, (lastIconDelay + 1) * 1000);
+
+      return () => {
+        timeouts.forEach(clearTimeout);
+        clearTimeout(allAnimationsTimeout);
+      };
     }, []);
 
     // Fonction pour changer le texte avec animation
@@ -101,6 +114,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (goingDown && textIndex < texts.length - 1) {
           e.preventDefault();
           changeText(textIndex + 1);
+        } else if (goingDown && textIndex === texts.length - 1) {
+          console.log("Scroll vers le bas au dernier texte - textIndex:", textIndex, "allAnimationsComplete:", allAnimationsComplete);
+          if (allAnimationsComplete) {
+            // Déclencher la transition vers Projects
+            console.log("Condition remplie : Déclenchement de la transition vers Projects !");
+            e.preventDefault();
+            onTransitionToProjects?.();
+          } else {
+            console.log("Animations pas encore terminées, on attend...");
+          }
         } else if (goingUp) {
           e.preventDefault();
           if (textIndex > 0) changeText(textIndex - 1);
@@ -135,6 +158,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         e.preventDefault();
         changeText(textIndex + 1);
         touchStartY.current = e.touches[0].clientY;
+      } else if (deltaY > 30 && textIndex === texts.length - 1 && allAnimationsComplete) {
+        // Déclencher la transition vers Projects
+        e.preventDefault();
+        onTransitionToProjects?.();
       } else if (deltaY < -30) {
         e.preventDefault();
         if (textIndex > 0) changeText(textIndex - 1);

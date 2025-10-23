@@ -4,7 +4,12 @@ import { gsap } from "gsap";
 import HeroBeforeScroll from "./HeroBeforeScroll";
 import HeroAfterScroll from "./HeroAfterScroll";
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onTransitionToProjects?: () => void;
+  returnFromProjects?: boolean;
+}
+
+const Hero: React.FC<HeroProps> = ({ onTransitionToProjects, returnFromProjects }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const iconsRef = useRef<NodeListOf<HTMLImageElement> | null>(null);
@@ -15,12 +20,13 @@ const Hero: React.FC = () => {
 
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
-  >("hero1");
+  >(returnFromProjects ? "hero2" : "hero1");
 
   const handleReturnToHeroBefore = () => {
     tlRef.current?.reverse();
     hasFadedOut.current = false;
   };
+
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -252,6 +258,8 @@ const Hero: React.FC = () => {
         <HeroAfterScroll
           ref={hero2Ref}
           onReturnToHeroBefore={handleReturnToHeroBefore}
+          onTransitionToProjects={onTransitionToProjects}
+          returnFromProjects={returnFromProjects}
         />
       )}
     </div>
