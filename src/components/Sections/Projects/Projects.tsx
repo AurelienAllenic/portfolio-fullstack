@@ -17,7 +17,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     let scrollBlocked = true;
     let timeoutId: number | null = null;
 
-    // Fade in animation
     gsap.fromTo(
       container,
       { opacity: 0 },
@@ -74,7 +73,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
       const deltaY = e.touches[0].clientY - touchStartY.current;
 
       if (deltaY > 30) {
-        // Swipe up
         e.preventDefault();
         scrollBlocked = true;
         gsap.to(container, {

@@ -1,4 +1,4 @@
-@import "../../abstract/variables.scss";
+@use "../../abstract/variables.scss" as *;
 
 @keyframes appear {
   0% {

@@ -1,4 +1,3 @@
-// HeroAfterScroll.tsx
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
@@ -59,14 +58,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const contentContainerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(0);
 
-    // Si on arrive depuis Projects, on commence au dernier texte.
     useEffect(() => {
       if (returnFromProjects) {
         setTextIndex(texts.length - 1);
       }
-      // NOTE: on ne remet pas textIndex à 0 automatiquement ici,
-      // le parent fera le reset via returnFromProjects toggle.
-    }, [returnFromProjects]);
+    }, [returnFromProjects, texts.length]);
 
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
@@ -125,7 +121,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         .to(textRef.current, { opacity: 1, duration: 0.5 });
     };
 
-    // wheel / touch handlers (inchangés)
     useEffect(() => {
       let timeoutId: number | null = null;
 
@@ -188,7 +183,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       onTransitionToProjects,
     ]);
 
-    // touch handlers (inchangés)
     const touchStartY = useRef<number | null>(null);
 
     const handleTouchStart = (e: TouchEvent) => {

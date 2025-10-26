@@ -1,4 +1,4 @@
-@import "../../abstract/variables.scss";
+@use "../../abstract/_variables.scss" as *;
 
 .containerNav {
   width: 100%;
