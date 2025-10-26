@@ -58,7 +58,7 @@ const Nav = () => {
             rel="noopener noreferrer"
           >
             <img
-              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/github-logo_r0a1tq.webp"
+              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/github_logo_kxkhvp.webp"
               alt="GitHub"
             />
           </a>
