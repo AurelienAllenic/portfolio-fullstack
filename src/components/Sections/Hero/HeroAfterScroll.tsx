@@ -55,13 +55,27 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
+    const contentContainerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(
       returnFromProjects ? texts.length - 1 : 0
     );
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
       useState(returnFromProjects);
+    const [direction, setDirection] = useState<"up" | "down">("down");
     const firstRender = useRef(true);
+    const hasTriggeredSwipe = useRef(false);
+
+    // Fade in content when returning from Projects
+    useEffect(() => {
+      if (returnFromProjects && contentContainerRef.current) {
+        gsap.fromTo(
+          contentContainerRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.5, ease: "power2.out" }
+        );
+      }
+    }, [returnFromProjects]);
 
     // Apparition progressive des icônes
     useEffect(() => {
@@ -88,17 +102,22 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     // Fonction pour changer le texte avec animation
     const changeText = (nextIndex: number, callback?: () => void) => {
+      const newDirection = nextIndex > textIndex ? "down" : "up";
       setScrollLocked(true);
       document.body.style.overflow = "hidden";
       gsap
         .timeline({
           onComplete: () => {
             setScrollLocked(false);
+            document.body.style.overflow = "";
             callback?.();
           },
         })
         .to(textRef.current, { opacity: 0, duration: 0.5 })
-        .add(() => setTextIndex(nextIndex))
+        .add(() => {
+          setDirection(newDirection);
+          setTextIndex(nextIndex);
+        })
         .to(textRef.current, { opacity: 1, duration: 0.5 });
     };
 
@@ -129,20 +148,27 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             allAnimationsComplete
           );
           if (allAnimationsComplete) {
-            // Animate gradient to close before transitioning
+            // Animate gradient to close and fade content before transitioning
             console.log(
               "Condition remplie : Animation du gradient avant transition vers Projects !"
             );
             e.preventDefault();
             setScrollLocked(true);
-            gsap.to(overlayRef.current, {
-              "--gradient-size": "0%",
-              duration: 0.5,
-              ease: "power2.out",
+            const tl = gsap.timeline({
               onComplete: () => {
                 onTransitionToProjects?.();
               },
             });
+            tl.to(overlayRef.current, {
+              "--gradient-size": "0%",
+              duration: 0.5,
+              ease: "power2.out",
+            });
+            tl.to(
+              contentContainerRef.current,
+              { opacity: 0, duration: 0.5, ease: "power2.out" },
+              "-=0.5"
+            );
           } else {
             console.log("Animations pas encore terminées, on attend...");
           }
@@ -175,37 +201,54 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0].clientY;
+      hasTriggeredSwipe.current = false;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (touchStartY.current === null || scrollLocked) return;
+      if (
+        touchStartY.current === null ||
+        scrollLocked ||
+        hasTriggeredSwipe.current
+      )
+        return;
       const deltaY = touchStartY.current - e.touches[0].clientY;
       if (window.scrollY !== 0) return;
 
       if (deltaY > 30 && textIndex < texts.length - 1) {
         e.preventDefault();
         changeText(textIndex + 1);
+        hasTriggeredSwipe.current = true;
         touchStartY.current = e.touches[0].clientY;
       } else if (
         deltaY > 30 &&
         textIndex === texts.length - 1 &&
         allAnimationsComplete
       ) {
-        // Animate gradient to close before transitioning
+        // Animate gradient to close and fade content before transitioning
         e.preventDefault();
         setScrollLocked(true);
-        gsap.to(overlayRef.current, {
-          "--gradient-size": "0%",
-          duration: 0.5,
-          ease: "power2.out",
+        const tl = gsap.timeline({
           onComplete: () => {
             onTransitionToProjects?.();
           },
         });
+        tl.to(overlayRef.current, {
+          "--gradient-size": "0%",
+          duration: 0.5,
+          ease: "power2.out",
+        });
+        tl.to(
+          contentContainerRef.current,
+          { opacity: 0, duration: 0.5, ease: "power2.out" },
+          "-=0.5"
+        );
+        hasTriggeredSwipe.current = true;
+        touchStartY.current = e.touches[0].clientY;
       } else if (deltaY < -30) {
         e.preventDefault();
         if (textIndex > 0) changeText(textIndex - 1);
         else changeText(0, onReturnToHeroBefore);
+        hasTriggeredSwipe.current = true;
         touchStartY.current = e.touches[0].clientY;
       }
     };
@@ -236,9 +279,14 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     // Animation texte + overlay
     useEffect(() => {
       if (textRef.current) {
+        const yFrom = firstRender.current
+          ? 20
+          : direction === "down"
+          ? 100
+          : -100;
         gsap.fromTo(
           textRef.current,
-          { opacity: 0, y: firstRender.current ? 20 : 100 },
+          { opacity: 0, y: yFrom },
           {
             opacity: 1,
             y: 0,
@@ -260,7 +308,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           ease: "power2.out",
         });
       }
-    }, [textIndex]);
+    }, [textIndex, direction]);
 
     const allIcons = [
       {
@@ -306,9 +354,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         <div
           ref={overlayRef}
           className={styles.gradientOverlay}
-          style={{ "--gradient-size": "100%" } as React.CSSProperties}
+          style={
+            {
+              "--gradient-size": returnFromProjects ? "0%" : "100%",
+            } as React.CSSProperties
+          }
         />
-        <div className={styles.contentContainer}>
+        <div ref={contentContainerRef} className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>

@@ -140,7 +140,6 @@ const Hero: React.FC<HeroProps> = ({
         }
       },
       onReverseComplete: () => {
-        scrollBlocked = true;
         document.body.style.overflow = "hidden";
         setGradientState("hero1");
 
@@ -189,9 +188,77 @@ const Hero: React.FC<HeroProps> = ({
           delay: 1.5,
           duration: 1,
           ease: "power2.out",
+          onComplete: () => {
+            scrollBlocked = false;
+          },
         });
       },
     });
+
+    if (returnFromProjects) {
+      tlRef.current.progress(1, true);
+      if (hero2Ref.current) {
+        gsap.set(hero2Ref.current, { opacity: 1 });
+      }
+      hasFadedOut.current = false;
+
+      scrollBlocked = false;
+
+      // Disable CSS animations to avoid conflicts
+      const titles = container.querySelectorAll<HTMLElement>(
+        ".titleLeft, .titleLeft span, .titleRight, .subtitle"
+      );
+      const scrollIndicators = container.querySelectorAll<HTMLElement>(
+        ".scrollIndicatorContainer"
+      );
+
+      titles.forEach((el) => {
+        el.style.animation = "none";
+      });
+      scrollIndicators.forEach((el) => {
+        el.style.animation = "none";
+      });
+
+      // Animate scroll indicators (from side)
+      const icons = container.querySelectorAll<HTMLImageElement>(
+        ".scrollIndicatorContainer img"
+      );
+      iconsRef.current = icons;
+      gsap.set(icons, { opacity: 0, x: -45 });
+      gsap.to(icons, {
+        opacity: 1,
+        x: 0,
+        stagger: 0.2,
+        delay: 1.5,
+        duration: 1,
+        ease: "power2.out",
+      });
+
+      // Animate titles based on screen size
+      if (isDesktop) {
+        gsap.set(titles, { opacity: 0, y: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.set(titles, { opacity: 0, x: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          x: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      }
+    } else {
+      scrollBlocked = false;
+    }
 
     const handleWheel = (e: WheelEvent) => {
       const rect = container.getBoundingClientRect();
@@ -245,15 +312,11 @@ const Hero: React.FC<HeroProps> = ({
       window.removeEventListener("touchmove", handleTouchMove);
       tlRef.current?.kill();
     };
-  }, []);
+  }, [returnFromProjects]);
 
   return (
     <div ref={containerRef} className={styles.containerHero} id="about">
-      <div
-        ref={overlayRef}
-        className={styles.overlay}
-        style={{ "--gradient-size": "0%" } as React.CSSProperties}
-      ></div>
+      <div ref={overlayRef} className={styles.overlay}></div>
 
       {gradientState === "hero1" && <HeroBeforeScroll />}
       {gradientState === "hero2" && (

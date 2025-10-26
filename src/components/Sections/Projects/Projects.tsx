@@ -27,6 +27,7 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
         ease: "power2.out",
         onComplete: () => {
           scrollBlocked = false;
+          document.body.style.overflow = "";
         },
       }
     );
@@ -44,7 +45,15 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
       if (goingUp) {
         e.preventDefault();
-        onTransitionToHero?.();
+        scrollBlocked = true;
+        gsap.to(container, {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            onTransitionToHero?.();
+          },
+        });
       }
 
       timeoutId = setTimeout(() => {
@@ -67,7 +76,15 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
       if (deltaY > 30) {
         // Swipe up
         e.preventDefault();
-        onTransitionToHero?.();
+        scrollBlocked = true;
+        gsap.to(container, {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            onTransitionToHero?.();
+          },
+        });
       }
     };
 
