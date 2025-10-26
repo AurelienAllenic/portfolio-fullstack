@@ -1,3 +1,4 @@
+// Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
@@ -15,7 +16,6 @@ const Hero: React.FC<HeroProps> = ({
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const iconsRef = useRef<NodeListOf<HTMLImageElement> | null>(null);
   const hero2Ref = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const hasFadedOut = useRef(false);
@@ -26,7 +26,10 @@ const Hero: React.FC<HeroProps> = ({
   >(returnFromProjects ? "hero2" : "hero1");
 
   const handleReturnToHeroBefore = () => {
-    tlRef.current?.reverse();
+    // Animation fluide de 100% → 0% → 30% (ou valeur par défaut)
+    if (tlRef.current) {
+      tlRef.current.reverse();
+    }
     hasFadedOut.current = false;
   };
 
@@ -37,6 +40,9 @@ const Hero: React.FC<HeroProps> = ({
 
     let scrollBlocked = true;
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+
+    // Désactiver l'animation CSS pour éviter tout conflit
+    overlay.style.animation = "none";
 
     tlRef.current = gsap.timeline({
       paused: true,
@@ -86,7 +92,7 @@ const Hero: React.FC<HeroProps> = ({
       onComplete: () => {
         scrollBlocked = false;
 
-        // Disable CSS animations to avoid conflicts
+        // Désactiver les animations CSS des titres et indicateurs
         const titles = container.querySelectorAll<HTMLElement>(
           ".titleLeft, .titleLeft span, .titleRight, .subtitle"
         );
@@ -101,11 +107,10 @@ const Hero: React.FC<HeroProps> = ({
           el.style.animation = "none";
         });
 
-        // Animate scroll indicators (from side)
+        // Animation des indicateurs de scroll (depuis la gauche)
         const icons = container.querySelectorAll<HTMLImageElement>(
           ".scrollIndicatorContainer img"
         );
-        iconsRef.current = icons;
         gsap.set(icons, { opacity: 0, x: -45 });
         gsap.to(icons, {
           opacity: 1,
@@ -116,7 +121,7 @@ const Hero: React.FC<HeroProps> = ({
           ease: "power2.out",
         });
 
-        // Animate titles based on screen size
+        // Animation des titres selon la taille d'écran
         if (isDesktop) {
           gsap.set(titles, { opacity: 0, y: -45 });
           gsap.to(titles, {
@@ -143,7 +148,24 @@ const Hero: React.FC<HeroProps> = ({
         document.body.style.overflow = "hidden";
         setGradientState("hero1");
 
-        // Reset animations
+        // Récupérer la valeur SCSS par défaut de --gradient-size
+        const defaultValue = getComputedStyle(overlay)
+          .getPropertyValue("--gradient-size")
+          .trim();
+
+        const targetValue = defaultValue || "30%";
+
+        // Transition fluide de 0% → valeur SCSS
+        gsap.to(overlay, {
+          "--gradient-size": targetValue,
+          duration: 0.8,
+          ease: "power2.out",
+          onComplete: () => {
+            scrollBlocked = false;
+          },
+        });
+
+        // Réactiver les animations des titres et indicateurs
         const titles = container.querySelectorAll<HTMLElement>(
           ".titleLeft, .titleLeft span, .titleRight, .subtitle"
         );
@@ -195,16 +217,18 @@ const Hero: React.FC<HeroProps> = ({
       },
     });
 
+    // Si on revient depuis Projects
     if (returnFromProjects) {
-      tlRef.current.progress(1, true);
+      gsap.set(overlay, { "--gradient-size": "0%" });
+      tlRef.current.progress(1, false);
+
       if (hero2Ref.current) {
         gsap.set(hero2Ref.current, { opacity: 1 });
       }
       hasFadedOut.current = false;
-
       scrollBlocked = false;
 
-      // Disable CSS animations to avoid conflicts
+      // Même animations que dans onComplete
       const titles = container.querySelectorAll<HTMLElement>(
         ".titleLeft, .titleLeft span, .titleRight, .subtitle"
       );
@@ -219,11 +243,9 @@ const Hero: React.FC<HeroProps> = ({
         el.style.animation = "none";
       });
 
-      // Animate scroll indicators (from side)
       const icons = container.querySelectorAll<HTMLImageElement>(
         ".scrollIndicatorContainer img"
       );
-      iconsRef.current = icons;
       gsap.set(icons, { opacity: 0, x: -45 });
       gsap.to(icons, {
         opacity: 1,
@@ -234,7 +256,6 @@ const Hero: React.FC<HeroProps> = ({
         ease: "power2.out",
       });
 
-      // Animate titles based on screen size
       if (isDesktop) {
         gsap.set(titles, { opacity: 0, y: -45 });
         gsap.to(titles, {
@@ -262,15 +283,12 @@ const Hero: React.FC<HeroProps> = ({
 
     const handleWheel = (e: WheelEvent) => {
       const rect = container.getBoundingClientRect();
-      const delta = e.deltaY;
       const isAtTop = window.scrollY === 0;
-
       if (!isAtTop) return;
 
       if (rect.top <= 0 && rect.bottom > 0) {
         if (scrollBlocked) e.preventDefault();
-
-        if (delta > 0 && (tlRef.current?.progress() ?? 0) < 1) {
+        if (e.deltaY > 0 && (tlRef.current?.progress() ?? 0) < 1) {
           tlRef.current?.play();
         }
       }
@@ -282,20 +300,14 @@ const Hero: React.FC<HeroProps> = ({
 
     const handleTouchMove = (e: TouchEvent) => {
       if (touchStartY.current === null) return;
-
       const rect = container.getBoundingClientRect();
       const isAtTop = window.scrollY === 0;
-
       if (!isAtTop) return;
 
       if (rect.top <= 0 && rect.bottom > 0) {
         if (scrollBlocked) e.preventDefault();
-
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchStartY.current - touchY; // Positive for swipe down
-
+        const deltaY = touchStartY.current - e.touches[0].clientY;
         if (deltaY > 30 && (tlRef.current?.progress() ?? 0) < 1) {
-          // Swipe down threshold (30px)
           tlRef.current?.play();
         }
       }
