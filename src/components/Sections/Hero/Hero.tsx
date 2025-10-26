@@ -1,13 +1,23 @@
+// Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
 import HeroBeforeScroll from "./HeroBeforeScroll";
 import HeroAfterScroll from "./HeroAfterScroll";
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onTransitionToProjects?: () => void;
+  returnFromProjects?: boolean;
+  onResetReturnFromProjects?: () => void; // <--- ici
+}
+
+const Hero: React.FC<HeroProps> = ({
+  onTransitionToProjects,
+  returnFromProjects,
+  onResetReturnFromProjects,
+}) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const iconsRef = useRef<NodeListOf<HTMLImageElement> | null>(null);
   const hero2Ref = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const hasFadedOut = useRef(false);
@@ -15,11 +25,47 @@ const Hero: React.FC = () => {
 
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
-  >("hero1");
+  >(returnFromProjects ? "hero2" : "hero1");
 
   const handleReturnToHeroBefore = () => {
-    tlRef.current?.reverse();
-    hasFadedOut.current = false;
+    const overlay = overlayRef.current;
+    const hero2 = hero2Ref.current;
+
+    // Fade out smooth du contenu de HeroAfterScroll
+    if (hero2) {
+      gsap.to(hero2, {
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      });
+    }
+
+    // Gradient passe à 0%
+    if (overlay) {
+      gsap.to(overlay, {
+        "--gradient-size": "0%",
+        duration: 1,
+        ease: "power2.out",
+      });
+    }
+
+    setTimeout(() => {
+      // Repasser en HeroBeforeScroll
+      setGradientState("hero1");
+      onResetReturnFromProjects?.();
+
+      // Reset timeline pour que le scroll vers le bas fonctionne
+      if (tlRef.current) {
+        tlRef.current.progress(0); // reset la timeline
+        tlRef.current.pause();
+      }
+
+      // Reset l'opacité pour la prochaine animation
+      if (hero2) gsap.set(hero2, { opacity: 1 });
+
+      // Débloquer le scroll
+      document.body.style.overflow = "auto";
+    }, 1000);
   };
 
   useEffect(() => {
@@ -29,6 +75,8 @@ const Hero: React.FC = () => {
 
     let scrollBlocked = true;
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+
+    overlay.style.animation = "none";
 
     tlRef.current = gsap.timeline({
       paused: true,
@@ -78,7 +126,6 @@ const Hero: React.FC = () => {
       onComplete: () => {
         scrollBlocked = false;
 
-        // Disable CSS animations to avoid conflicts
         const titles = container.querySelectorAll<HTMLElement>(
           ".titleLeft, .titleLeft span, .titleRight, .subtitle"
         );
@@ -93,11 +140,9 @@ const Hero: React.FC = () => {
           el.style.animation = "none";
         });
 
-        // Animate scroll indicators (from side)
         const icons = container.querySelectorAll<HTMLImageElement>(
           ".scrollIndicatorContainer img"
         );
-        iconsRef.current = icons;
         gsap.set(icons, { opacity: 0, x: -45 });
         gsap.to(icons, {
           opacity: 1,
@@ -108,7 +153,6 @@ const Hero: React.FC = () => {
           ease: "power2.out",
         });
 
-        // Animate titles based on screen size
         if (isDesktop) {
           gsap.set(titles, { opacity: 0, y: -45 });
           gsap.to(titles, {
@@ -132,11 +176,23 @@ const Hero: React.FC = () => {
         }
       },
       onReverseComplete: () => {
-        scrollBlocked = true;
         document.body.style.overflow = "hidden";
         setGradientState("hero1");
 
-        // Reset animations
+        const defaultValue = getComputedStyle(overlay)
+          .getPropertyValue("--gradient-size")
+          .trim();
+        const targetValue = defaultValue || "30%";
+
+        gsap.to(overlay, {
+          "--gradient-size": targetValue,
+          duration: 0.8,
+          ease: "power2.out",
+          onComplete: () => {
+            scrollBlocked = false;
+          },
+        });
+
         const titles = container.querySelectorAll<HTMLElement>(
           ".titleLeft, .titleLeft span, .titleRight, .subtitle"
         );
@@ -181,21 +237,83 @@ const Hero: React.FC = () => {
           delay: 1.5,
           duration: 1,
           ease: "power2.out",
+          onComplete: () => {
+            scrollBlocked = false;
+          },
         });
       },
     });
 
+    if (returnFromProjects) {
+      gsap.set(overlay, { "--gradient-size": "0%" });
+      tlRef.current?.progress(1, false);
+
+      if (hero2Ref.current) {
+        gsap.set(hero2Ref.current, { opacity: 1 });
+      }
+      hasFadedOut.current = false;
+      scrollBlocked = false;
+
+      const titles = container.querySelectorAll<HTMLElement>(
+        ".titleLeft, .titleLeft span, .titleRight, .subtitle"
+      );
+      const scrollIndicators = container.querySelectorAll<HTMLElement>(
+        ".scrollIndicatorContainer"
+      );
+
+      titles.forEach((el) => {
+        el.style.animation = "none";
+      });
+      scrollIndicators.forEach((el) => {
+        el.style.animation = "none";
+      });
+
+      const icons = container.querySelectorAll<HTMLImageElement>(
+        ".scrollIndicatorContainer img"
+      );
+      gsap.set(icons, { opacity: 0, x: -45 });
+      gsap.to(icons, {
+        opacity: 1,
+        x: 0,
+        stagger: 0.2,
+        delay: 1.5,
+        duration: 1,
+        ease: "power2.out",
+      });
+
+      if (isDesktop) {
+        gsap.set(titles, { opacity: 0, y: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.set(titles, { opacity: 0, x: -45 });
+        gsap.to(titles, {
+          opacity: 1,
+          x: 0,
+          stagger: 0.2,
+          delay: 0.5,
+          duration: 1,
+          ease: "power2.out",
+        });
+      }
+    } else {
+      scrollBlocked = false;
+    }
+
     const handleWheel = (e: WheelEvent) => {
       const rect = container.getBoundingClientRect();
-      const delta = e.deltaY;
       const isAtTop = window.scrollY === 0;
-
       if (!isAtTop) return;
 
       if (rect.top <= 0 && rect.bottom > 0) {
         if (scrollBlocked) e.preventDefault();
-
-        if (delta > 0 && (tlRef.current?.progress() ?? 0) < 1) {
+        if (e.deltaY > 0 && (tlRef.current?.progress() ?? 0) < 1) {
           tlRef.current?.play();
         }
       }
@@ -207,20 +325,14 @@ const Hero: React.FC = () => {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (touchStartY.current === null) return;
-
       const rect = container.getBoundingClientRect();
       const isAtTop = window.scrollY === 0;
-
       if (!isAtTop) return;
 
       if (rect.top <= 0 && rect.bottom > 0) {
         if (scrollBlocked) e.preventDefault();
-
-        const touchY = e.touches[0].clientY;
-        const deltaY = touchStartY.current - touchY; // Positive for swipe down
-
+        const deltaY = touchStartY.current - e.touches[0].clientY;
         if (deltaY > 30 && (tlRef.current?.progress() ?? 0) < 1) {
-          // Swipe down threshold (30px)
           tlRef.current?.play();
         }
       }
@@ -237,21 +349,19 @@ const Hero: React.FC = () => {
       window.removeEventListener("touchmove", handleTouchMove);
       tlRef.current?.kill();
     };
-  }, []);
+  }, [returnFromProjects, onResetReturnFromProjects]);
 
   return (
     <div ref={containerRef} className={styles.containerHero} id="about">
-      <div
-        ref={overlayRef}
-        className={styles.overlay}
-        style={{ "--gradient-size": "0%" } as React.CSSProperties}
-      ></div>
+      <div ref={overlayRef} className={styles.overlay}></div>
 
       {gradientState === "hero1" && <HeroBeforeScroll />}
       {gradientState === "hero2" && (
         <HeroAfterScroll
           ref={hero2Ref}
           onReturnToHeroBefore={handleReturnToHeroBefore}
+          onTransitionToProjects={onTransitionToProjects}
+          returnFromProjects={returnFromProjects}
         />
       )}
     </div>
