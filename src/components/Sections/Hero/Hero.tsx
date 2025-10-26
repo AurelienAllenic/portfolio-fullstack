@@ -9,7 +9,10 @@ interface HeroProps {
   returnFromProjects?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ onTransitionToProjects, returnFromProjects }) => {
+const Hero: React.FC<HeroProps> = ({
+  onTransitionToProjects,
+  returnFromProjects,
+}) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const iconsRef = useRef<NodeListOf<HTMLImageElement> | null>(null);
@@ -26,7 +29,6 @@ const Hero: React.FC<HeroProps> = ({ onTransitionToProjects, returnFromProjects 
     tlRef.current?.reverse();
     hasFadedOut.current = false;
   };
-
 
   useEffect(() => {
     const overlay = overlayRef.current;

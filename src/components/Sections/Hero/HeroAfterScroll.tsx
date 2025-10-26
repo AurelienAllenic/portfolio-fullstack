@@ -18,7 +18,10 @@ type LinkText = {
 type TextContent = string | LinkText;
 
 const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
-  ({ onReturnToHeroBefore, onTransitionToProjects, returnFromProjects }, ref) => {
+  (
+    { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects },
+    ref
+  ) => {
     const texts: TextContent[] = [
       "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
       {
@@ -52,9 +55,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
-    const [textIndex, setTextIndex] = useState(returnFromProjects ? texts.length - 1 : 0);
+    const [textIndex, setTextIndex] = useState(
+      returnFromProjects ? texts.length - 1 : 0
+    );
     const [scrollLocked, setScrollLocked] = useState(false);
-    const [allAnimationsComplete, setAllAnimationsComplete] = useState(returnFromProjects);
+    const [allAnimationsComplete, setAllAnimationsComplete] =
+      useState(returnFromProjects);
     const firstRender = useRef(true);
 
     // Apparition progressive des icônes
@@ -67,7 +73,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       });
 
       // Détecter quand toutes les animations sont terminées
-      const lastIconDelay = 0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
+      const lastIconDelay =
+        0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
       const allAnimationsTimeout = setTimeout(() => {
         console.log("Toutes les animations sont terminées !");
         setAllAnimationsComplete(true);
@@ -115,12 +122,27 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           e.preventDefault();
           changeText(textIndex + 1);
         } else if (goingDown && textIndex === texts.length - 1) {
-          console.log("Scroll vers le bas au dernier texte - textIndex:", textIndex, "allAnimationsComplete:", allAnimationsComplete);
+          console.log(
+            "Scroll vers le bas au dernier texte - textIndex:",
+            textIndex,
+            "allAnimationsComplete:",
+            allAnimationsComplete
+          );
           if (allAnimationsComplete) {
-            // Déclencher la transition vers Projects
-            console.log("Condition remplie : Déclenchement de la transition vers Projects !");
+            // Animate gradient to close before transitioning
+            console.log(
+              "Condition remplie : Animation du gradient avant transition vers Projects !"
+            );
             e.preventDefault();
-            onTransitionToProjects?.();
+            setScrollLocked(true);
+            gsap.to(overlayRef.current, {
+              "--gradient-size": "0%",
+              duration: 0.5,
+              ease: "power2.out",
+              onComplete: () => {
+                onTransitionToProjects?.();
+              },
+            });
           } else {
             console.log("Animations pas encore terminées, on attend...");
           }
@@ -140,7 +162,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (timeoutId) clearTimeout(timeoutId);
         window.removeEventListener("wheel", handleWheel);
       };
-    }, [textIndex, scrollLocked, onReturnToHeroBefore]);
+    }, [
+      textIndex,
+      scrollLocked,
+      onReturnToHeroBefore,
+      allAnimationsComplete,
+      onTransitionToProjects,
+    ]);
 
     // Gestion du swipe touch
     const touchStartY = useRef<number | null>(null);
@@ -158,10 +186,22 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         e.preventDefault();
         changeText(textIndex + 1);
         touchStartY.current = e.touches[0].clientY;
-      } else if (deltaY > 30 && textIndex === texts.length - 1 && allAnimationsComplete) {
-        // Déclencher la transition vers Projects
+      } else if (
+        deltaY > 30 &&
+        textIndex === texts.length - 1 &&
+        allAnimationsComplete
+      ) {
+        // Animate gradient to close before transitioning
         e.preventDefault();
-        onTransitionToProjects?.();
+        setScrollLocked(true);
+        gsap.to(overlayRef.current, {
+          "--gradient-size": "0%",
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            onTransitionToProjects?.();
+          },
+        });
       } else if (deltaY < -30) {
         e.preventDefault();
         if (textIndex > 0) changeText(textIndex - 1);
@@ -185,7 +225,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           () => (touchStartY.current = null)
         );
       };
-    }, [textIndex, scrollLocked, onReturnToHeroBefore]);
+    }, [
+      textIndex,
+      scrollLocked,
+      onReturnToHeroBefore,
+      allAnimationsComplete,
+      onTransitionToProjects,
+    ]);
 
     // Animation texte + overlay
     useEffect(() => {
