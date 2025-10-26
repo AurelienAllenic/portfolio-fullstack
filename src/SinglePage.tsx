@@ -17,12 +17,25 @@ const SinglePage = () => {
     console.log("Retour vers Hero déclenché !");
     setShowProjects(false);
     setReturnFromProjects(true);
+
+    // ✅ Ajout essentiel : réinitialiser après un court délai
+    // (on laisse le temps à HeroAfterScroll de faire son fade-in)
+    setTimeout(() => {
+      setReturnFromProjects(false);
+      console.log("returnFromProjects réinitialisé à false");
+    }, 2000);
   };
 
   return (
     <>
       <Nav />
-      {!showProjects && <Hero onTransitionToProjects={handleTransitionToProjects} returnFromProjects={returnFromProjects} />}
+      {!showProjects && (
+        <Hero
+          onTransitionToProjects={handleTransitionToProjects}
+          returnFromProjects={returnFromProjects}
+          onResetReturnFromProjects={() => setReturnFromProjects(false)} // ✅ ajout
+        />
+      )}
       {showProjects && <Projects onTransitionToHero={handleReturnToHero} />}
       <Contact />
     </>

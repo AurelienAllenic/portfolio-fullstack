@@ -65,14 +65,14 @@
   animation: overlayAppear 1s ease-out forwards;
   background: radial-gradient(
     circle at center,
-    transparent var(--gradient-size, 30%),
+    transparent var(--gradient-size, 0%),
     #050505 315px
   );
   pointer-events: none;
   @media (max-height: 920px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 30%),
+      transparent var(--gradient-size, 0%),
       #050505 35%
     );
   }
@@ -86,7 +86,7 @@
   @media (max-width: 900px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 20%),
+      transparent var(--gradient-size, 0%),
       #050505 225px
     );
   }
@@ -97,21 +97,21 @@
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 20%),
+      transparent var(--gradient-size, 0%),
       #050505 180px // 200px * 0.9
     );
   }
   @media (max-width: 435px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 20%),
+      transparent var(--gradient-size, 0%),
       #050505 158px // 175px * 0.9
     );
   }
   @media (max-width: 375px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 20%),
+      transparent var(--gradient-size, 0%),
       #050505 122px // 135px * 0.9
     );
   }

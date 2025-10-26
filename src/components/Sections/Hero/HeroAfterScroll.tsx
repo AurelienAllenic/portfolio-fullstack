@@ -1,3 +1,4 @@
+// HeroAfterScroll.tsx
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
@@ -56,9 +57,17 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
     const contentContainerRef = useRef<HTMLDivElement | null>(null);
-    const [textIndex, setTextIndex] = useState(
-      returnFromProjects ? texts.length - 1 : 0
-    );
+    const [textIndex, setTextIndex] = useState(0);
+
+    // Si on arrive depuis Projects, on commence au dernier texte.
+    useEffect(() => {
+      if (returnFromProjects) {
+        setTextIndex(texts.length - 1);
+      }
+      // NOTE: on ne remet pas textIndex à 0 automatiquement ici,
+      // le parent fera le reset via returnFromProjects toggle.
+    }, [returnFromProjects]);
+
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
       useState(returnFromProjects);
@@ -66,7 +75,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
 
-    // Fade in content when returning from Projects
     useEffect(() => {
       if (returnFromProjects && contentContainerRef.current) {
         gsap.fromTo(
@@ -77,7 +85,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
     }, [returnFromProjects]);
 
-    // Apparition progressive des icônes
     useEffect(() => {
       const timeouts = iconContainers.current.map((container, index) => {
         const delay = 0.5 + index * 0.1;
@@ -86,11 +93,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }, (delay + 0.8) * 1000);
       });
 
-      // Détecter quand toutes les animations sont terminées
       const lastIconDelay =
         0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
       const allAnimationsTimeout = setTimeout(() => {
-        console.log("Toutes les animations sont terminées !");
         setAllAnimationsComplete(true);
       }, (lastIconDelay + 1) * 1000);
 
@@ -100,7 +105,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       };
     }, []);
 
-    // Fonction pour changer le texte avec animation
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
       setScrollLocked(true);
@@ -121,7 +125,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         .to(textRef.current, { opacity: 1, duration: 0.5 });
     };
 
-    // Gestion du scroll
+    // wheel / touch handlers (inchangés)
     useEffect(() => {
       let timeoutId: number | null = null;
 
@@ -141,17 +145,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           e.preventDefault();
           changeText(textIndex + 1);
         } else if (goingDown && textIndex === texts.length - 1) {
-          console.log(
-            "Scroll vers le bas au dernier texte - textIndex:",
-            textIndex,
-            "allAnimationsComplete:",
-            allAnimationsComplete
-          );
           if (allAnimationsComplete) {
-            // Animate gradient to close and fade content before transitioning
-            console.log(
-              "Condition remplie : Animation du gradient avant transition vers Projects !"
-            );
             e.preventDefault();
             setScrollLocked(true);
             const tl = gsap.timeline({
@@ -169,8 +163,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               { opacity: 0, duration: 0.5, ease: "power2.out" },
               "-=0.5"
             );
-          } else {
-            console.log("Animations pas encore terminées, on attend...");
           }
         } else if (goingUp) {
           e.preventDefault();
@@ -196,7 +188,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       onTransitionToProjects,
     ]);
 
-    // Gestion du swipe touch
+    // touch handlers (inchangés)
     const touchStartY = useRef<number | null>(null);
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -224,7 +216,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         textIndex === texts.length - 1 &&
         allAnimationsComplete
       ) {
-        // Animate gradient to close and fade content before transitioning
         e.preventDefault();
         setScrollLocked(true);
         const tl = gsap.timeline({
@@ -276,7 +267,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       onTransitionToProjects,
     ]);
 
-    // Animation texte + overlay
     useEffect(() => {
       if (textRef.current) {
         const yFrom = firstRender.current
