@@ -111,6 +111,9 @@
             font-size: 35px;
             top: 75px;
           }
+          @media (max-width: 768px) {
+            left: 150px;
+          }
           @media (max-width: 375px) {
             left: 85px;
           }
@@ -137,12 +140,13 @@
           width: 300px;
         }
         @media (max-width: 768px) {
-          margin-top: 40px;
+          margin-top: 60px;
           height: 210px;
         }
         @media (max-width: 375px) {
           width: 250px;
           height: 185px;
+          font-size: 17px;
         }
 
         .linkSubtitle {
@@ -169,12 +173,13 @@
           width: 300px;
         }
         @media (max-width: 768px) {
-          font-size: 23px;
+          font-size: 20px;
           width: 350px;
         }
         @media (max-width: 375px) {
           width: 275px;
-          font-size: 20px;
+          font-size: 17px;
+          line-height: 27.5px;
         }
       }
 
@@ -195,11 +200,14 @@
           width: 450px;
         }
         @media (max-width: 768px) {
-          width: 375px;
+          width: 350px;
+          font-size: 20px;
+          line-height: 30px;
         }
         @media (max-width: 375px) {
-          width: 300px;
-          font-size: 20px;
+          width: 275px;
+          font-size: 16px;
+          line-height: 26px;
         }
       }
     }
