@@ -349,51 +349,53 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             <h2 className={styles.titleLeft}>
               Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
             </h2>
-            <p
-              ref={textRef}
-              className={`${styles.subtitle} ${
-                textIndex === 2
-                  ? styles.mediumSubtitle
-                  : textIndex === 3
-                  ? styles.largeSubtitle
-                  : ""
-              }`}
-            >
-              {typeof texts[textIndex] === "string" ? (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: texts[textIndex] as string,
-                  }}
-                />
-              ) : (
-                (() => {
-                  const text = texts[textIndex] as LinkText;
-                  return (
-                    <>
-                      {text.beforeLink}
-                      <a
-                        href={text.linkHref}
-                        className={styles.linkSubtitle}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {text.linkText}
-                      </a>
-                      {Array.isArray(text.afterLink) ? (
-                        text.afterLink.map((line, i) => (
-                          <span key={i}>
-                            {line}
-                            <br />
-                          </span>
-                        ))
-                      ) : (
-                        <span>{text.afterLink}</span>
-                      )}
-                    </>
-                  );
-                })()
-              )}
-            </p>
+            <div className={styles.containerSubtitle}>
+              <p
+                ref={textRef}
+                className={`${styles.subtitle} ${
+                  textIndex === 2
+                    ? styles.mediumSubtitle
+                    : textIndex === 3
+                    ? styles.largeSubtitle
+                    : ""
+                }`}
+              >
+                {typeof texts[textIndex] === "string" ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: texts[textIndex] as string,
+                    }}
+                  />
+                ) : (
+                  (() => {
+                    const text = texts[textIndex] as LinkText;
+                    return (
+                      <>
+                        {text.beforeLink}
+                        <a
+                          href={text.linkHref}
+                          className={styles.linkSubtitle}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {text.linkText}
+                        </a>
+                        {Array.isArray(text.afterLink) ? (
+                          text.afterLink.map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              <br />
+                            </span>
+                          ))
+                        ) : (
+                          <span>{text.afterLink}</span>
+                        )}
+                      </>
+                    );
+                  })()
+                )}
+              </p>
+            </div>
           </div>
           <div className={styles.contentRight}>
             {allIcons.map((icon, index) => (
