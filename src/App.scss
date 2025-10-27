@@ -30,8 +30,6 @@ html {
 
 html,
 body {
-  overscroll-behavior-y: auto;
-}
-.containerHero {
   overscroll-behavior-y: contain;
+  touch-action: pan-y;
 }
