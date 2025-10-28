@@ -56,13 +56,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const textRef = useRef<HTMLParagraphElement | null>(null);
     const overlayRef = useRef<HTMLDivElement | null>(null);
     const contentContainerRef = useRef<HTMLDivElement | null>(null);
-    const [textIndex, setTextIndex] = useState(0);
-
-    useEffect(() => {
-      if (returnFromProjects) {
-        setTextIndex(texts.length - 1);
-      }
-    }, [returnFromProjects, texts.length]);
+    const [textIndex, setTextIndex] = useState(
+      returnFromProjects ? texts.length - 1 : 0
+    );
 
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
@@ -100,6 +96,22 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         clearTimeout(allAnimationsTimeout);
       };
     }, []);
+
+    useEffect(() => {
+      if (overlayRef.current) {
+        const initialProgress = textIndex / (texts.length - 1);
+        const initialTarget = `${100 - initialProgress * 75}%`;
+        if (returnFromProjects) {
+          gsap.to(overlayRef.current, {
+            "--gradient-size": initialTarget,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.set(overlayRef.current, { "--gradient-size": initialTarget });
+        }
+      }
+    }, []); // Run only on mount
 
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
@@ -284,7 +296,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         );
       }
 
-      if (overlayRef.current) {
+      if (overlayRef.current && !returnFromProjects) {
         const progress = textIndex / (texts.length - 1);
         gsap.to(overlayRef.current, {
           "--gradient-size": `${100 - progress * 75}%`,
@@ -292,7 +304,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           ease: "power2.out",
         });
       }
-    }, [textIndex, direction]);
+    }, [textIndex, direction, returnFromProjects]);
 
     const allIcons = [
       {
@@ -334,11 +346,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     ];
 
     return (
-      <div ref={ref} className={styles.containerHeroAfterScroll}>
-        <div
-          ref={overlayRef}
-          className={styles.gradientOverlay}
-        />
+      <div
+        ref={ref}
+        className={styles.containerHeroAfterScroll}
+        style={{ opacity: 0 }}
+      >
+        <div ref={overlayRef} className={styles.gradientOverlay} />
         <div ref={contentContainerRef} className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
