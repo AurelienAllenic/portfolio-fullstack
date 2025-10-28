@@ -338,11 +338,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         <div
           ref={overlayRef}
           className={styles.gradientOverlay}
-          style={
-            {
-              "--gradient-size": returnFromProjects ? "0%" : "100%",
-            } as React.CSSProperties
-          }
         />
         <div ref={contentContainerRef} className={styles.contentContainer}>
           <div className={styles.contentLeft}>
