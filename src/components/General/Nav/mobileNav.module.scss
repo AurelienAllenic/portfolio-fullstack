@@ -1,0 +1,105 @@
+@use "../../abstract/_variables.scss" as *;
+
+.containerMobileNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #000; // Assuming dark background
+  color: white;
+  padding: 35px 50px 0 50px;
+
+  .left {
+    font-size: 15px;
+    font-family: $font-family-secondary;
+    color: white;
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .socialIcons {
+      display: flex;
+      gap: 0.5rem;
+
+      a {
+        display: block;
+
+        img {
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
+
+    .burger {
+      width: 20px;
+      height: 15px;
+      position: relative;
+      bottom: 1.5px;
+      cursor: pointer;
+
+      .bar {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        transition: all 0.3s ease;
+
+        &:nth-child(1) {
+          top: 0;
+        }
+
+        &:nth-child(2) {
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        &:nth-child(3) {
+          bottom: 0;
+        }
+      }
+
+      &.open {
+        .bar {
+          &:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+          }
+
+          &:nth-child(2) {
+            opacity: 0;
+          }
+
+          &:nth-child(3) {
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+          }
+        }
+      }
+    }
+  }
+}
+@media (max-width: 475px) {
+  .containerMobileNav {
+    padding: 20px 25px 0 25px;
+  }
+  .containerMobileNav {
+    .left {
+      font-size: 14px;
+    }
+  }
+  .burger {
+    width: 15px;
+    height: 10px;
+  }
+}
+
+@media (min-width: 768px) {
+  .containerMobileNav {
+    display: none;
+  }
+}
