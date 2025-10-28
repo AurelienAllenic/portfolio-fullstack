@@ -334,9 +334,6 @@
     @media (max-width: 375px) {
       bottom: 17%;
     }
-    @media (max-height: 700px) {
-      display: none;
-    }
     @media (max-height: 880px) {
       bottom: 15%;
     }
@@ -352,6 +349,9 @@
     @media (max-width: 435px) {
       bottom: 30%;
       left: -5%;
+    }
+    @media (max-height: 700px) {
+      left: -7%;
     }
 
     .scrollIndicatorImg {
@@ -370,6 +370,10 @@
       @media (max-width: 435px) {
         width: 50px;
         height: 50px;
+      }
+      @media (max-height: 700px) {
+        width: 35px;
+        height: 35px;
       }
     }
 
@@ -401,6 +405,10 @@
       @media (max-width: 435px) {
         font-size: 20px;
         bottom: 55px;
+      }
+      @media (max-height: 700px) {
+        font-size: 16px;
+        bottom: 45px;
       }
     }
   }
