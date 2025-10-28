@@ -8,7 +8,7 @@ import HeroAfterScroll from "./HeroAfterScroll";
 interface HeroProps {
   onTransitionToProjects?: () => void;
   returnFromProjects?: boolean;
-  onResetReturnFromProjects?: () => void; // <--- ici
+  onResetReturnFromProjects?: () => void;
 }
 
 const Hero: React.FC<HeroProps> = ({
@@ -31,7 +31,6 @@ const Hero: React.FC<HeroProps> = ({
     const overlay = overlayRef.current;
     const hero2 = hero2Ref.current;
 
-    // Fade out smooth du contenu de HeroAfterScroll
     if (hero2) {
       gsap.to(hero2, {
         opacity: 0,
@@ -40,7 +39,6 @@ const Hero: React.FC<HeroProps> = ({
       });
     }
 
-    // Gradient passe à 0%
     if (overlay) {
       gsap.to(overlay, {
         "--gradient-size": "0%",
@@ -50,20 +48,16 @@ const Hero: React.FC<HeroProps> = ({
     }
 
     setTimeout(() => {
-      // Repasser en HeroBeforeScroll
       setGradientState("hero1");
       onResetReturnFromProjects?.();
 
-      // Reset timeline pour que le scroll vers le bas fonctionne
       if (tlRef.current) {
-        tlRef.current.progress(0); // reset la timeline
+        tlRef.current.progress(0);
         tlRef.current.pause();
       }
 
-      // Reset l'opacité pour la prochaine animation
       if (hero2) gsap.set(hero2, { opacity: 1 });
 
-      // Débloquer le scroll
       document.body.style.overflow = "auto";
     }, 1000);
   };
@@ -93,7 +87,6 @@ const Hero: React.FC<HeroProps> = ({
           parseFloat(
             getComputedStyle(overlay).getPropertyValue("--gradient-size")
           ) || 0;
-        //overlay.style.setProperty("--gradient-size", `${val}%`);
 
         const progress = tl.progress();
 
