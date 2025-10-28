@@ -93,7 +93,7 @@ const Hero: React.FC<HeroProps> = ({
           parseFloat(
             getComputedStyle(overlay).getPropertyValue("--gradient-size")
           ) || 0;
-        overlay.style.setProperty("--gradient-size", `${val}%`);
+        //overlay.style.setProperty("--gradient-size", `${val}%`);
 
         const progress = tl.progress();
 
