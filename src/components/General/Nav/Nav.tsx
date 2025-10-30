@@ -16,8 +16,8 @@ const Nav = () => {
 
     // Etat initial
     if (logo) gsap.set(logo, { opacity: 0, x: -30 });
-    gsap.set(links, { opacity: 0, x: -30 });
-    gsap.set(socials, { opacity: 0, x: -30 });
+    gsap.set(links, { opacity: 0, y: -30 });
+    gsap.set(socials, { opacity: 0, y: -30 });
 
     const baseDelay = 2.5;
 
@@ -25,21 +25,21 @@ const Nav = () => {
 
     // Logo
     if (logo) {
-      tl.to(logo, { opacity: 1, x: 0, duration: 0.6, delay: baseDelay }, 0);
+      tl.to(logo, { opacity: 1, y: 0, duration: 0.6, delay: baseDelay }, 0);
     }
 
     // Liens (stagger)
     tl.to(
       links,
-      { opacity: 1, x: 0, duration: 0.6, stagger: 0.12 },
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 },
       logo ? 0.1 + baseDelay : baseDelay
     );
 
     // Icônes sociales (stagger)
     tl.to(
       socials,
-      { opacity: 1, x: 0, duration: 0.6, stagger: 0.08 },
-      '>-0.6'
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 },
+      links ? 0.2 + baseDelay : baseDelay
     );
 
     return () => {
