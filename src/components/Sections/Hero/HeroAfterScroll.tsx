@@ -173,8 +173,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           }
         } else if (goingUp) {
           e.preventDefault();
-          if (textIndex > 0) changeText(textIndex - 1);
-          else changeText(0, onReturnToHeroBefore);
+          if (textIndex > 0) {
+            changeText(textIndex - 1);
+          } else {
+            // Quitter HeroAfterScroll sans ré-animer le texte
+            setScrollLocked(true);
+            onReturnToHeroBefore?.();
+          }
         }
 
         timeoutId = setTimeout(() => {
@@ -243,8 +248,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         touchStartY.current = e.touches[0].clientY;
       } else if (deltaY < -30) {
         e.preventDefault();
-        if (textIndex > 0) changeText(textIndex - 1);
-        else changeText(0, onReturnToHeroBefore);
+        if (textIndex > 0) {
+          changeText(textIndex - 1);
+        } else {
+          // Quitter HeroAfterScroll sans ré-animer le texte
+          setScrollLocked(true);
+          onReturnToHeroBefore?.();
+        }
         hasTriggeredSwipe.current = true;
         touchStartY.current = e.touches[0].clientY;
       }
