@@ -10,14 +10,34 @@ export interface ProjectCover {
   listIcons: CoverIcon[]; // icônes ou libellés
 }
 
+export interface ProjectFolderItem {
+  id: number;
+  title: string;
+  titleEn: string;
+  link: string;
+}
+
+export interface Project {
+  id: number;
+  image: string;
+  title: string;
+  titleEn: string;
+  github: string;
+  demo: string;
+  figma: string;
+  folder: string | ProjectFolderItem[];
+  technologies: string[];
+}
+
 interface ProjectCategoryProps {
   cover: ProjectCover;
-  projects: any; // laisser libre pour la suite (liste de projets)
+  projects?: Project[]; // optionnel et typé correctement
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
-const ProjectCategory = ({ cover, projects }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
+  // projects n'est pas utilisé dans le code mais reste dans les props pour la suite
   return (
     <section className={styles.cover} id="projects">
       {/* Colonne gauche: mosaïque + CTA */}
