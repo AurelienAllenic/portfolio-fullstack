@@ -48,7 +48,8 @@ const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_aut
 /* COVERS */
 
 export const openclassrooms1_cover = {
-    title: 'Formation Web',
+    titleFirstPart: 'Formation',
+    titleSecondPart: 'Web',
     content: 'Suivie en 2021, cette formation aborde largement les bases du développement web. Des projets en HTML, CSS, SCSS, Js vanilla, ReactJs et nodeJs ont pu être réalisées.',
     sideImages: [Ohmyfood, Lapanthere, Groupomania, Piiquante],
     mainImage: Booki,
@@ -56,7 +57,8 @@ export const openclassrooms1_cover = {
 }
 
 export const openclassrooms2_cover = {
-    title: 'Formation React',
+    titleFirstPart: 'Formation',
+    titleSecondPart: 'React',
     content: 'Suivie en 2021 / 2022, cette formation aborde à la fois React et node. Des projets front, et fullStacks ont pu y être réalisés.',
     sideImages: [Wealthealth, Fisheye, Plats, Kasa],
     mainImage: GameOn,
@@ -64,7 +66,8 @@ export const openclassrooms2_cover = {
 }
 
 export const openclassrooms3_cover = {
-    title: 'Formation Python',
+    titleFirstPart: 'Formation',
+    titleSecondPart: 'Python',
     content: 'Suivie en 2022, cette formation aborde à la fois Python et django. Des projets d’API flask, de SQL, django Rest ainsi que la réalisation d’une pipeline CI/CD ont pu y être réalisés.',
     sideImages: [ArgentBank, EpicEvents, SoftDesk, GudLft],
     mainImage: Python,
@@ -72,7 +75,8 @@ export const openclassrooms3_cover = {
 }
 
 export const projects_cover = {
-    title: 'Projets personnels',
+    titleFirstPart: 'Projets',
+    titleSecondPart: 'personnels',
     content: 'Ces projets, personnels ou à destination de clients reflètent une diversité dans les thématiques abordées. Un site vitrine avec backoffice complet dans le milieu du rap, un site de claquettes  pour un professeur parisien, un site de magie, et un projet placeholder dans le domaine de l’architecture.',
     sideImages: [Claquettes, Ascent, Linconnu],
     mainImage: Paro,

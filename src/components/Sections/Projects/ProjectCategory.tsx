@@ -3,11 +3,12 @@ import styles from "./projects.module.scss";
 type CoverIcon = string | { src: string; alt?: string };
 
 export interface ProjectCover {
-  title: string;
+  titleFirstPart: string;
+  titleSecondPart: string;
   content: string;
-  sideImages: string[];   // 4 images mosaïque à gauche
-  mainImage: string;      // grande image à droite
-  listIcons: CoverIcon[]; // icônes ou libellés
+  sideImages: string[];
+  mainImage: string;
+  listIcons: CoverIcon[];
 }
 
 export interface ProjectFolderItem {
@@ -31,39 +32,41 @@ export interface Project {
 
 interface ProjectCategoryProps {
   cover: ProjectCover;
-  projects?: Project[]; // optionnel et typé correctement
+  projects?: Project[];
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
 const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
-  // projects n'est pas utilisé dans le code mais reste dans les props pour la suite
   return (
     <section className={styles.cover} id="projects">
+      <div className={styles.subContainerCategory}>
       {/* Colonne gauche: mosaïque + CTA */}
       <aside className={styles.left}>
         <div className={styles.mosaic}>
-          {cover.sideImages.slice(0, 4).map((src, i) => (
-            <div key={i} className={styles.mosaicItem}>
+          {cover.sideImages.slice(0, 3).map((src, i) => (
+            <div key={i} className={`${styles.mosaicItem} ${styles[`mosaicItem${i + 1}`]}`}>
               <img src={src} alt={`side-${i + 1}`} />
             </div>
           ))}
+          <div className={`${styles.mosaicItem} ${styles.mosaicItem4}`}>
+            <img src={cover.sideImages[3]} alt="side-4" />
+            <button className={styles.cta} type="button">
+              <span className={styles.arrow} aria-hidden>—→</span>
+              <span>Voir les projets</span>
+            </button>
+          </div>
         </div>
-
-        <button className={styles.cta} type="button">
-          <span className={styles.arrow} aria-hidden>—→</span>
-          <span>Voir les projets</span>
-        </button>
       </aside>
 
       {/* Centre: titre + encadré + icônes */}
       <div className={styles.center}>
         <h2 className={styles.title}>
           <span className={styles.titleMain}>
-            {cover.title.split(" ")[0]}
+            {cover.titleFirstPart}
           </span>
           <span className={styles.titleAccent}>
-            {cover.title.split(" ").slice(1).join(" ") || "WEB"}
+            {cover.titleSecondPart}
           </span>
         </h2>
 
@@ -98,6 +101,8 @@ const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
       <aside className={styles.right}>
         <img src={cover.mainImage} alt="main" />
       </aside>
+      </div>
+      
     </section>
   );
 };
