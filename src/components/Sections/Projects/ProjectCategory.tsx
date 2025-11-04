@@ -35,7 +35,30 @@ interface ProjectCategoryProps {
   projects?: Project[];
 }
 
-const isUrl = (v: string) => /^https?:\/\//i.test(v);
+const getLabelFromPath = (path: string) => {
+  const file = path.split("/").pop() || path;
+  const base = file.split(".").slice(0, -1).join(".") || file;
+  const firstToken = base.split(/[-_.]+/)[0] || base;
+  const key = firstToken.toLowerCase();
+  const map: Record<string, string> = {
+    html: "HTML",
+    css: "CSS",
+    scss: "SCSS",
+    js: "JavaScript",
+    javascript: "JavaScript",
+    ts: "TypeScript",
+    typescript: "TypeScript",
+    react: "React",
+    next: "Next.js",
+    nextjs: "Next.js",
+    node: "Node.js",
+    nodejs: "Node.js",
+    python: "Python",
+    django: "Django",
+  };
+  if (map[key]) return map[key];
+  return key.charAt(0).toUpperCase() + key.slice(1);
+};
 
 const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
   return (
@@ -82,15 +105,21 @@ const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
         <ul className={styles.icons}>
           {cover.listIcons.map((it, i) => {
             if (typeof it === "string") {
+              const src = it;
+              const label = getLabelFromPath(src);
               return (
-                <li key={i} className={styles.iconBadge} data-label={isUrl(it) ? undefined : it}>
-                  {isUrl(it) ? <img src={it} alt={`icon-${i}`} /> : it}
+                <li key={i} className={styles.iconBadge}>
+                  <img src={src} alt={label} />
+                  <span className={styles.tooltip}>{label}</span>
                 </li>
               );
             }
+            const src = it.src;
+            const label = it.alt ?? getLabelFromPath(src);
             return (
-              <li key={i} className={styles.iconBadge} data-label={it.alt}>
-                <img src={it.src} alt={it.alt ?? `icon-${i}`} />
+              <li key={i} className={styles.iconBadge}>
+                <img src={src} alt={label} />
+                <span className={styles.tooltip}>{label}</span>
               </li>
             );
           })}
