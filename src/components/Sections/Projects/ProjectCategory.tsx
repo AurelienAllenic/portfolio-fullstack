@@ -36,12 +36,29 @@ interface ProjectCategoryProps {
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
+const getTechName = (url: string): string => {
+  // Extrait le nom de la techno depuis l'URL
+  // Ex: "https://.../html_yzkdbv.webp" -> "HTML"
+  const match = url.match(/\/([^\/]+)_[^_]+\.webp$/);
+  if (match) {
+    const name = match[1];
+    // Cas spéciaux
+    if (name === 'nodejs') return 'Node.js';
+    if (name === 'reactjs') return 'React';
+    if (name === 'nextjs') return 'Next.js';
+    // Capitalisation normale
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+  return 'Technologie';
+};
+
 const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
   // projects n'est pas utilisé dans le code mais reste dans les props pour la suite
   return (
     <section className={styles.cover} id="projects">
-      {/* Colonne gauche: mosaïque + CTA */}
-      <aside className={styles.left}>
+      <div className={styles.coverInner}>
+        {/* Colonne gauche: mosaïque + CTA */}
+        <aside className={styles.left}>
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => (
             <div key={i} className={styles.mosaicItem}>
@@ -76,28 +93,40 @@ const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
           ))}
         </div>
 
-        <ul className={styles.icons}>
+        <div className={styles.icons}>
           {cover.listIcons.map((it, i) => {
             if (typeof it === "string") {
               return (
-                <li key={i} className={styles.iconBadge} data-label={isUrl(it) ? undefined : it}>
-                  {isUrl(it) ? <img src={it} alt={`icon-${i}`} /> : it}
-                </li>
+                <div key={i} className={styles.iconContainer}>
+                  {isUrl(it) ? (
+                    <>
+                      <img src={it} alt={getTechName(it)} />
+                      <span className={styles.tooltip}>{getTechName(it)}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{it}</span>
+                      <span className={styles.tooltip}>{it}</span>
+                    </>
+                  )}
+                </div>
               );
             }
             return (
-              <li key={i} className={styles.iconBadge} data-label={it.alt}>
-                <img src={it.src} alt={it.alt ?? `icon-${i}`} />
-              </li>
+              <div key={i} className={styles.iconContainer}>
+                <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
 
-      {/* Droite: grande image */}
-      <aside className={styles.right}>
-        <img src={cover.mainImage} alt="main" />
-      </aside>
+        {/* Droite: grande image */}
+        <aside className={styles.right}>
+          <img src={cover.mainImage} alt="main" />
+        </aside>
+      </div>
     </section>
   );
 };

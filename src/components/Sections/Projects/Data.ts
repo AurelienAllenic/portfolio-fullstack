@@ -48,7 +48,7 @@ const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_aut
 /* COVERS */
 
 export const openclassrooms1_cover = {
-    title: 'Formation Web',
+    title: 'Formation WEB',
     content: 'Suivie en 2021, cette formation aborde largement les bases du développement web. Des projets en HTML, CSS, SCSS, Js vanilla, ReactJs et nodeJs ont pu être réalisées.',
     sideImages: [Ohmyfood, Lapanthere, Groupomania, Piiquante],
     mainImage: Booki,

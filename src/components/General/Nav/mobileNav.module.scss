@@ -8,7 +8,7 @@
   top: 0px;
   padding: 1rem;
   color: white;
-  z-index: 1;
+  z-index: 100;
   width: 100%;
   padding: 35px 50px 0 50px;
 
@@ -16,23 +16,32 @@
     font-size: 15px;
     font-family: $font-family-secondary;
     color: white;
+    z-index: 100;
   }
 
   .right {
     display: flex;
     align-items: center;
     gap: 1rem;
+    z-index: 100;
 
     .socialIcons {
       display: flex;
       gap: 0.5rem;
+      align-items: center;
 
       a {
         display: block;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.1);
+        }
 
         img {
           width: 22px;
           height: 22px;
+          display: block;
         }
       }
     }
@@ -43,6 +52,7 @@
       position: relative;
       bottom: 1.5px;
       cursor: pointer;
+      z-index: 100;
 
       .bar {
         position: absolute;

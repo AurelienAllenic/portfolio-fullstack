@@ -53,6 +53,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  z-index: 1;
 }
 .hero1Animation {
   animation: hero1FadeOut 5s ease-out forwards;
@@ -70,6 +71,7 @@
     #050505 315px
   );
   pointer-events: none;
+  z-index: 2;
   @media (max-height: 920px) {
     background: radial-gradient(
       circle at center,
@@ -130,6 +132,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5;
   @media (max-width: 768px) {
     top: 40%;
   }
@@ -142,6 +145,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: $font-weight-regular;
+    z-index: 10;
     @media (max-height: 920px) {
       width: 50%;
     }
@@ -419,4 +423,5 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.7);
+  z-index: 5;
 }
