@@ -57,6 +57,29 @@ const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
   return (
     <section className={styles.cover} id="projects">
       <div className={styles.coverInner}>
+        {/* Mobile: Ligne 1 - Titre + Image */}
+        <div className={styles.mobileHeaderRow}>
+          <div className={styles.mobileTitle}>
+            <h2 className={styles.mobileTitleMain}>
+              {cover.title.split(" ")[0]}
+            </h2>
+            <h3 className={styles.mobileTitleAccent}>
+              {cover.title.split(" ").slice(1).join(" ") || "WEB"}
+            </h3>
+          </div>
+          <img src={cover.mainImage} alt="main" className={styles.mobileImage} />
+        </div>
+
+        {/* Mobile: Ligne 2 - Description */}
+        <div className={styles.mobileDescription}>
+          {cover.content.split(". ").map((line, i, arr) => (
+            <p key={i}>
+              {line.trim()}
+              {i < arr.length - 1 ? "." : ""}
+            </p>
+          ))}
+        </div>
+
         {/* Colonne gauche: mosaïque + CTA */}
         <aside className={styles.left}>
         <div className={styles.mosaic}>
@@ -126,6 +149,55 @@ const ProjectCategory = ({ cover }: ProjectCategoryProps) => {
         <aside className={styles.right}>
           <img src={cover.mainImage} alt="main" />
         </aside>
+
+        {/* Mobile: Ligne 3 - Image gauche + Icônes + Image droite + Bouton */}
+        <div className={styles.mobileBottomSection}>
+          <img
+            src={cover.sideImages[2]}
+            alt="mobile-1"
+            className={styles.mobileImageLeft}
+          />
+          <div className={styles.mobileIcons}>
+            {cover.listIcons.map((it, i) => {
+              if (typeof it === "string") {
+                return (
+                  <div key={i} className={styles.iconContainer}>
+                    {isUrl(it) ? (
+                      <>
+                        <img src={it} alt={getTechName(it)} />
+                        <span className={styles.tooltip}>{getTechName(it)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{it}</span>
+                        <span className={styles.tooltip}>{it}</span>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className={styles.iconContainer}>
+                  <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                  <span className={styles.tooltip}>
+                    {it.alt ?? getTechName(it.src)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <img
+            src={cover.sideImages[3]}
+            alt="mobile-2"
+            className={styles.mobileImageRight}
+          />
+          <button className={styles.mobileCta} type="button">
+            <span className={styles.arrow} aria-hidden>
+              —→
+            </span>
+            <span>Voir les projets</span>
+          </button>
+        </div>
       </div>
     </section>
   );
