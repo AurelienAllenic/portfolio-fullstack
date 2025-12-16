@@ -541,4 +541,12 @@
 
 /* Single Project component - styles à venir */
 
-/* Slider Projects component - styles à venir */
+/* Slider Projects component */
+
+.containerSlider {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}

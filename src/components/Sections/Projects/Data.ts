@@ -32,7 +32,8 @@ const JustStreamIt = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q
 const AlgoInvestAndTrade = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/algoInvest&Trade_ln0g8u.webp'
 const LitRevu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/litRevu_hdeeac.webp'
 const SoftDesk = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/softDesk_lrsdb0.webp'
-const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gudLft_o23r4z.webp'
+/*const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gudLft_o23r4z.webp'*/
+const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/softDesk_lrsdb0.webp'
 const EpicEvents = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/epic_events_bxl3af.webp'
 const Orange = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/orange_eejpng.webp'
 
@@ -67,7 +68,7 @@ export const openclassrooms3_cover = {
     title: 'Formation Python',
     content: 'Suivie en 2022, cette formation aborde à la fois Python et django. Des projets d’API flask, de SQL, django Rest ainsi que la réalisation d’une pipeline CI/CD ont pu y être réalisés.',
     sideImages: [ArgentBank, EpicEvents, SoftDesk, GudLft],
-    mainImage: Python,
+    mainImage: BooksToScrape,
     listIcons: [Python, Django]
 }
 

@@ -31,6 +31,18 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
       }
     );
 
+    const canReturnToHero = (): boolean => {
+      // ✅ Vérifier si SliderProjects existe et est à l'index 0 et non verrouillé
+      const sliderContainer = document.querySelector('[data-slider-index]') as HTMLElement;
+      if (!sliderContainer) return true; // Si pas de slider, on peut retourner
+      
+      const sliderIndex = parseInt(sliderContainer.getAttribute('data-slider-index') || '0');
+      const sliderLocked = sliderContainer.getAttribute('data-slider-locked') === 'true';
+      
+      // ✅ Ne retourner au Hero que si on est à l'index 0 ET que le slider n'est pas verrouillé
+      return sliderIndex === 0 && !sliderLocked;
+    };
+
     const handleWheel = (e: WheelEvent) => {
       if (scrollBlocked || timeoutId) {
         e.preventDefault();
@@ -42,7 +54,8 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
       const goingUp = e.deltaY < 0;
 
-      if (goingUp) {
+      // ✅ Vérifier si on peut retourner au Hero
+      if (goingUp && canReturnToHero()) {
         e.preventDefault();
         scrollBlocked = true;
         gsap.to(container, {
@@ -72,7 +85,8 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
       const deltaY = e.touches[0].clientY - touchStartY.current;
 
-      if (deltaY > 30) {
+      // ✅ Vérifier si on peut retourner au Hero
+      if (deltaY > 30 && canReturnToHero()) {
         e.preventDefault();
         scrollBlocked = true;
         gsap.to(container, {

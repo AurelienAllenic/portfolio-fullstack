@@ -4,6 +4,7 @@ import Contact from "./components/Sections/Contact/Contact";
 import Hero from "./components/Sections/Hero/Hero";
 import Projects from "./components/Sections/Projects/Projects";
 import MobileNav from "./components/General/Nav/MobileNav";
+import SliderProjects from "./components/Sections/Projects/SliderProjects";
 
 const SinglePage = () => {
   const [showProjects, setShowProjects] = useState(false);
@@ -38,7 +39,12 @@ const SinglePage = () => {
           onResetReturnFromProjects={() => setReturnFromProjects(false)} // ✅ ajout
         />
       )}
-      {showProjects && <Projects onTransitionToHero={handleReturnToHero} />}
+      {showProjects && (
+        <>
+          <Projects onTransitionToHero={handleReturnToHero} />
+          <SliderProjects />
+        </>
+      )}
       <Contact />
     </>
   );
