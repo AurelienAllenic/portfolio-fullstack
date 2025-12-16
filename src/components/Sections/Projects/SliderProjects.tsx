@@ -135,6 +135,26 @@ const SliderProjects = () => {
     // S'assurer que l'élément suivant est bien positionné
     gsap.set(nextElement, { y: 100, opacity: 0 });
 
+    // ✅ INITIALISER les éléments internes AVANT de rendre le parent visible
+    const nextCategoryContainer = nextElement.querySelector('section');
+    if (nextCategoryContainer) {
+      const mosaicItems = nextCategoryContainer.querySelectorAll(`[class*="mosaicItem"]`);
+      const ctaButton = nextCategoryContainer.querySelector(`[class*="cta"]`);
+      const titleMain = nextCategoryContainer.querySelector(`[class*="titleMain"]`);
+      const titleAccent = nextCategoryContainer.querySelector(`[class*="titleAccent"]`);
+      const contentBox = nextCategoryContainer.querySelector(`[class*="contentBox"]`);
+      const icons = nextCategoryContainer.querySelectorAll(`[class*="iconContainer"]`);
+      const rightImage = nextCategoryContainer.querySelector(`[class*="right"] img`);
+
+      // ✅ Initialiser immédiatement tous les éléments internes
+      if (mosaicItems.length > 0) gsap.set(mosaicItems, { opacity: 0 });
+      if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
+      if (titleMain && titleAccent) gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
+      if (contentBox) gsap.set(contentBox, { opacity: 0 });
+      if (icons.length > 0) gsap.set(icons, { opacity: 0 });
+      if (rightImage) gsap.set(rightImage, { opacity: 0, x: 50 });
+    }
+
     const tl = gsap.timeline({
       onComplete: () => {
         console.log("Animation terminée, nouvel index:", nextIndex);
@@ -292,12 +312,15 @@ const SliderProjects = () => {
             top: 0,
             left: 0,
             width: "100%",
-            opacity: 0, // TOUS les éléments commencent à 0
+            opacity: index === currentIndex ? 1 : 0, // ✅ Changer pour permettre l'animation
             pointerEvents: index === currentIndex ? "auto" : "none",
             zIndex: index === currentIndex ? 10 : 1,
           }}
         >
-          <ProjectCategory cover={cover} />
+          <ProjectCategory 
+            cover={cover} 
+            categoryIndex={index === currentIndex ? currentIndex : undefined}
+          />
         </div>
       ))}
     </div>
