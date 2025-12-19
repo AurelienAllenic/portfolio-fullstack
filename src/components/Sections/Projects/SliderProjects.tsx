@@ -20,6 +20,9 @@ const SliderProjects = () => {
   // ✅ Ajouter une ref pour avoir toujours la valeur à jour de currentIndex
   const currentIndexRef = useRef(0);
   const scrollLockedRef = useRef(true); // ✅ Ajouter aussi une ref pour scrollLocked
+  // ✅ Ref pour suivre si on est au bout (bas ou haut)
+  const isAtBottomRef = useRef(false);
+  const isAtTopRef = useRef(false);
 
   const covers: ProjectCover[] = [
     openclassrooms1_cover,
@@ -87,14 +90,14 @@ const SliderProjects = () => {
   }, []);
 
   // ✅ Utiliser useCallback pour mémoriser changeCategory
-  const changeCategory = useCallback((nextIndex: number) => {
+  const changeCategory = useCallback((nextIndex: number, direction: 'up' | 'down' = 'down') => {
     if (nextIndex < 0 || nextIndex >= covers.length) {
       console.log("Index invalide:", nextIndex);
       return;
     }
 
     const currentIdx = currentIndexRef.current;
-    console.log("Changement de catégorie:", currentIdx, "->", nextIndex);
+    console.log("Changement de catégorie:", currentIdx, "->", nextIndex, "direction:", direction);
     console.log("scrollLocked avant:", scrollLockedRef.current);
 
     // Vérifier si on est déjà en train d'animer
@@ -106,6 +109,9 @@ const SliderProjects = () => {
     setScrollLocked(true);
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
+    
+    // ✅ Ne pas réinitialiser le scroll immédiatement
+    // On le fera seulement quand la nouvelle catégorie est prête à apparaître
 
     const safetyTimeout = setTimeout(() => {
       console.warn("Timeout de sécurité - déblocage du scroll");
@@ -132,7 +138,8 @@ const SliderProjects = () => {
       return;
     }
 
-    // S'assurer que l'élément suivant est bien positionné
+    // S'assurer que l'élément suivant est bien positionné et invisible
+    // On le garde invisible jusqu'à ce que le scroll soit en haut
     gsap.set(nextElement, { y: 100, opacity: 0 });
 
     // ✅ INITIALISER les éléments internes AVANT de rendre le parent visible
@@ -159,10 +166,15 @@ const SliderProjects = () => {
       onComplete: () => {
         console.log("Animation terminée, nouvel index:", nextIndex);
         clearTimeout(safetyTimeout);
-        setCurrentIndex(nextIndex);
-        setScrollLocked(false);
-        scrollLockedRef.current = false;
-        document.body.style.overflow = "";
+        // ✅ S'assurer que le scroll est bien en haut avant de rendre visible
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        // ✅ Attendre un frame pour être sûr que le scroll est bien en haut
+        requestAnimationFrame(() => {
+          setCurrentIndex(nextIndex);
+          setScrollLocked(false);
+          scrollLockedRef.current = false;
+          document.body.style.overflow = "";
+        });
       },
     });
 
@@ -174,18 +186,26 @@ const SliderProjects = () => {
       ease: "power2.in",
     });
 
-    // Apparition du nouvel élément
-    tl.fromTo(
-      nextElement,
-      { y: 100, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.out",
-      },
-      "-=0.3"
-    );
+    // Apparition du nouvel élément avec animation fluide
+    // On anime d'abord le translate
+    tl.to(nextElement, {
+      y: 0,
+      duration: 0.6,
+      ease: "power2.out",
+    }, "-=0.3");
+    
+    // ✅ Réinitialiser le scroll en haut pendant l'animation de transition
+    // On le fait juste avant l'animation d'opacity pour que ce soit fluide
+    tl.call(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+    
+    // ✅ Animation d'opacity fluide après que le scroll soit en haut
+    tl.to(nextElement, {
+      opacity: 1,
+      duration: 0.4,
+      ease: "power2.out",
+    });
   }, [covers.length]);
 
   useEffect(() => {
@@ -196,38 +216,149 @@ const SliderProjects = () => {
         return;
       }
 
-      const isAtTop = window.scrollY === 0;
-      if (!isAtTop) return;
+      // ✅ Vérifier si on est dans la zone du slider (même si on a scrollé)
+      // On vérifie si le container du slider est visible dans le viewport
+      const container = containerRef.current;
+      if (!container) return;
+      
+      const containerRect = container.getBoundingClientRect();
+      // Si le container n'est pas visible dans le viewport, ne pas gérer le scroll
+      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) return;
 
       const goingDown = e.deltaY > 0;
       const goingUp = e.deltaY < 0;
       const currentIdx = currentIndexRef.current;
 
+      // ✅ Vérifier si on est au bout du scroll du composant actuel
+      const currentElement = containerRef.current?.querySelector(
+        `[data-category-index="${currentIdx}"]`
+      );
+      
+      if (!currentElement) return;
+
+      // ✅ Obtenir les informations de scroll du composant
+      const categorySection = currentElement.querySelector('section');
+      if (!categorySection) return;
+
+      const sectionRect = categorySection.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const sectionTop = sectionRect.top;
+      const sectionBottom = sectionRect.bottom;
+      const sectionHeight = sectionRect.height;
+      
+      // ✅ Vérifier si le contenu dépasse la hauteur du viewport
+      const contentOverflows = sectionHeight > viewportHeight;
+      
+      // ✅ Vérifier si on est sur mobile (viewport < 900px)
+      const isMobile = window.innerWidth <= 900;
+      
+      // ✅ Vérifier si on est au bout en bas
+      // Sur mobile, on vérifie si mobileCta ou mobileBottomSection est visible
+      let isSectionAtBottom = false;
+      if (isMobile) {
+        // Sur mobile, chercher mobileCta ou mobileBottomSection
+        const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
+        const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
+        const bottomElement = mobileCta || mobileBottomSection;
+        
+        if (bottomElement) {
+          const bottomRect = bottomElement.getBoundingClientRect();
+          // Si le bas de l'élément est visible dans le viewport (avec une marge)
+          isSectionAtBottom = bottomRect.bottom <= viewportHeight + 50;
+        } else {
+          // Fallback : utiliser la position du composant
+          const distanceFromBottom = sectionBottom - viewportHeight;
+          isSectionAtBottom = contentOverflows 
+            ? distanceFromBottom <= 50
+            : true;
+        }
+      } else {
+        // Sur desktop, utiliser la logique précédente
+        const distanceFromBottom = sectionBottom - viewportHeight;
+        isSectionAtBottom = contentOverflows 
+          ? distanceFromBottom <= 50
+          : true;
+      }
+      
+      // On est au bout en haut si le haut du composant est visible dans le viewport
+      // Le composant est positionné à top: 0, donc on est au bout si sectionTop est proche de 0
+      const isSectionAtTop = sectionTop >= -20;
+      
+      // ✅ On peut scroller vers le bas seulement si le contenu dépasse ET qu'on n'est pas au bout
+      const canScrollDown = contentOverflows && !isSectionAtBottom;
+      // ✅ On peut scroller vers le haut seulement si le contenu dépasse ET qu'on n'est pas au bout
+      const canScrollUp = contentOverflows && !isSectionAtTop;
+
+      // ✅ Logs pour débogage (récupérer les éléments pour les logs)
+      const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
+      const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
+      const bottomElement = mobileCta || mobileBottomSection;
+      const bottomElementRect = bottomElement?.getBoundingClientRect();
+      
       console.log("Scroll détecté:", {
         goingDown,
         goingUp,
         currentIdx,
-        maxIndex: covers.length - 1,
-        scrollLocked: scrollLockedRef.current,
+        canScrollDown,
+        canScrollUp,
+        contentOverflows,
+        isSectionAtBottom,
+        isSectionAtTop,
+        isMobile,
+        bottomElementFound: !!bottomElement,
+        bottomElementBottom: bottomElementRect?.bottom,
+        distanceFromBottom: sectionBottom - viewportHeight,
+        sectionBottom: sectionRect.bottom,
+        sectionTop: sectionRect.top,
+        sectionHeight,
+        viewportHeight,
       });
 
-      // ✅ Gérer le scroll vers le bas
-      if (goingDown && currentIdx < covers.length - 1) {
-        e.preventDefault();
-        e.stopPropagation(); // ✅ Empêcher la propagation vers Projects
-        changeCategory(currentIdx + 1);
+      // ✅ Si on scroll vers le bas
+      if (goingDown) {
+        // Si on peut encore scroller dans le composant, laisser faire
+        if (canScrollDown) {
+          isAtBottomRef.current = false; // On n'est plus au bout si on peut scroller
+          return; // Laisser le scroll normal se faire
+        }
+        
+        // On est au bout maintenant
+        // Ne changer de catégorie que si on était déjà au bout avant (scroll supplémentaire au bout)
+        if (isAtBottomRef.current && currentIdx < covers.length - 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          changeCategory(currentIdx + 1, 'down');
+          // Réinitialiser après le changement
+          isAtBottomRef.current = false;
+        } else {
+          // On vient d'arriver au bout, mémoriser pour le prochain scroll
+          isAtBottomRef.current = true;
+        }
       } 
-      // ✅ Gérer le scroll vers le haut SEULEMENT si on n'est pas au premier index
-      else if (goingUp && currentIdx > 0) {
-        e.preventDefault();
-        e.stopPropagation(); // ✅ Empêcher la propagation vers Projects
-        changeCategory(currentIdx - 1);
-      }
-      // ✅ Si on est à l'index 0 et qu'on scroll vers le haut, laisser passer l'événement
-      // pour que Projects puisse gérer le retour vers Hero
-      else if (goingUp && currentIdx === 0) {
-        // Ne rien faire, laisser Projects gérer
-        return;
+      // ✅ Si on scroll vers le haut
+      else if (goingUp) {
+        // Si on peut encore scroller dans le composant, laisser faire
+        if (canScrollUp) {
+          isAtTopRef.current = false; // On n'est plus au bout si on peut scroller
+          return; // Laisser le scroll normal se faire
+        }
+        
+        // On est au bout maintenant
+        // Ne changer de catégorie que si on était déjà au bout avant (scroll supplémentaire au bout)
+        if (isAtTopRef.current && currentIdx > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+          changeCategory(currentIdx - 1, 'up');
+          // Réinitialiser après le changement
+          isAtTopRef.current = false;
+        } else {
+          // On vient d'arriver au bout, mémoriser pour le prochain scroll
+          isAtTopRef.current = true;
+        }
+        // Si on est à l'index 0 et au bout, laisser passer pour Projects
+        if (currentIdx === 0) {
+          return; // Laisser Projects gérer le retour vers Hero
+        }
       }
 
       timeoutId.current = setTimeout(() => {
@@ -249,28 +380,120 @@ const SliderProjects = () => {
   const handleTouchMove = (e: TouchEvent) => {
     if (scrollLockedRef.current || touchStartY.current === null) return;
 
-    const isAtTop = window.scrollY === 0;
-    if (!isAtTop) return;
+    // ✅ Vérifier si on est dans la zone du slider (même si on a scrollé)
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    // Si le container n'est pas visible dans le viewport, ne pas gérer le scroll
+    if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) return;
 
     const deltaY = touchStartY.current - e.touches[0].clientY;
     const currentIdx = currentIndexRef.current;
 
-    // ✅ Gérer le swipe vers le bas
-    if (deltaY > 30 && currentIdx < covers.length - 1) {
-      e.preventDefault();
-      e.stopPropagation(); // ✅ Empêcher la propagation
-      changeCategory(currentIdx + 1);
-    } 
-    // ✅ Gérer le swipe vers le haut SEULEMENT si on n'est pas au premier index
-    else if (deltaY < -30 && currentIdx > 0) {
-      e.preventDefault();
-      e.stopPropagation(); // ✅ Empêcher la propagation
-      changeCategory(currentIdx - 1);
+    // ✅ Vérifier si on est au bout du scroll du composant actuel
+    const currentElement = containerRef.current?.querySelector(
+      `[data-category-index="${currentIdx}"]`
+    );
+    
+    if (!currentElement) return;
+
+    const categorySection = currentElement.querySelector('section');
+    if (!categorySection) return;
+
+    const sectionRect = categorySection.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const sectionTop = sectionRect.top;
+    const sectionBottom = sectionRect.bottom;
+    const sectionHeight = sectionRect.height;
+    
+    // ✅ Vérifier si le contenu dépasse la hauteur du viewport
+    const contentOverflows = sectionHeight > viewportHeight;
+    
+    // ✅ Vérifier si on est sur mobile (viewport < 900px)
+    const isMobile = window.innerWidth <= 900;
+    
+    // ✅ Vérifier si on est au bout en bas
+    // Sur mobile, on vérifie si mobileCta ou mobileBottomSection est visible
+    let isSectionAtBottom = false;
+    if (isMobile) {
+      // Sur mobile, chercher mobileCta ou mobileBottomSection
+      const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
+      const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
+      const bottomElement = mobileCta || mobileBottomSection;
+      
+      if (bottomElement) {
+        const bottomRect = bottomElement.getBoundingClientRect();
+        // Si le bas de l'élément est visible dans le viewport (avec une marge)
+        isSectionAtBottom = bottomRect.bottom <= viewportHeight + 50;
+      } else {
+        // Fallback : utiliser la position du composant
+        const distanceFromBottom = sectionBottom - viewportHeight;
+        isSectionAtBottom = contentOverflows 
+          ? distanceFromBottom <= 50
+          : true;
+      }
+    } else {
+      // Sur desktop, utiliser la logique précédente
+      const distanceFromBottom = sectionBottom - viewportHeight;
+      isSectionAtBottom = contentOverflows 
+        ? distanceFromBottom <= 50
+        : true;
     }
-    // ✅ Si on est à l'index 0 et qu'on swipe vers le haut, laisser passer l'événement
-    else if (deltaY < -30 && currentIdx === 0) {
-      // Ne rien faire, laisser Projects gérer
-      return;
+    
+    // Le composant est positionné à top: 0, donc on est au bout si sectionTop est proche de 0
+    const isSectionAtTop = sectionTop >= -20;
+    
+    // ✅ On peut scroller vers le bas seulement si le contenu dépasse ET qu'on n'est pas au bout
+    const canScrollDown = contentOverflows && !isSectionAtBottom;
+    // ✅ On peut scroller vers le haut seulement si le contenu dépasse ET qu'on n'est pas au bout
+    const canScrollUp = contentOverflows && !isSectionAtTop;
+
+    // ✅ Gérer le swipe vers le bas
+    if (deltaY > 30) {
+      // Si on peut encore scroller dans le composant, laisser faire
+      if (canScrollDown) {
+        isAtBottomRef.current = false; // On n'est plus au bout si on peut scroller
+        return; // Laisser le scroll normal se faire
+      }
+      
+      // On est au bout maintenant
+      // Ne changer de catégorie que si on était déjà au bout avant (swipe supplémentaire au bout)
+      if (isAtBottomRef.current && currentIdx < covers.length - 1) {
+        e.preventDefault();
+        e.stopPropagation();
+        changeCategory(currentIdx + 1, 'down');
+        // Réinitialiser après le changement
+        isAtBottomRef.current = false;
+      } else {
+        // On vient d'arriver au bout, mémoriser pour le prochain swipe
+        isAtBottomRef.current = true;
+      }
+    } 
+    // ✅ Gérer le swipe vers le haut
+    else if (deltaY < -30) {
+      // Si on peut encore scroller dans le composant, laisser faire
+      if (canScrollUp) {
+        isAtTopRef.current = false; // On n'est plus au bout si on peut scroller
+        return; // Laisser le scroll normal se faire
+      }
+      
+      // On est au bout maintenant
+      // Ne changer de catégorie que si on était déjà au bout avant (swipe supplémentaire au bout)
+      if (isAtTopRef.current && currentIdx > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        changeCategory(currentIdx - 1, 'up');
+        // Réinitialiser après le changement
+        isAtTopRef.current = false;
+      } else {
+        // On vient d'arriver au bout, mémoriser pour le prochain swipe
+        isAtTopRef.current = true;
+      }
+      // Si on est à l'index 0 et au bout, laisser passer pour Projects
+      if (currentIdx === 0) {
+        return; // Laisser Projects gérer le retour vers Hero
+      }
     }
   };
 

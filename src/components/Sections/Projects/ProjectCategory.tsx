@@ -283,7 +283,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         {/* Mobile: Ligne 3 - Image gauche + Icônes + Image droite + Bouton */}
         <div className={styles.mobileBottomSection}>
           <img
-            src={cover.sideImages[2]}
+            src={cover.sideImages[1]}
             alt="mobile-1"
             className={styles.mobileImageLeft}
           />
@@ -317,7 +317,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             })}
           </div>
           <img
-            src={cover.sideImages[3]}
+            src={cover.sideImages[2]}
             alt="mobile-2"
             className={styles.mobileImageRight}
           />

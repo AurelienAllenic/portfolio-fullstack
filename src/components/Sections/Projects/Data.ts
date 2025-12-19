@@ -32,8 +32,7 @@ const JustStreamIt = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q
 const AlgoInvestAndTrade = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/algoInvest&Trade_ln0g8u.webp'
 const LitRevu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/litRevu_hdeeac.webp'
 const SoftDesk = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/softDesk_lrsdb0.webp'
-/*const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gudLft_o23r4z.webp'*/
-const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/softDesk_lrsdb0.webp'
+const GudLft = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/gudlft_p9fspb.webp'
 const EpicEvents = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/epic_events_bxl3af.webp'
 const Orange = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/orange_eejpng.webp'
 
