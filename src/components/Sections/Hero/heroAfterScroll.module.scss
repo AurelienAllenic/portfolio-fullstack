@@ -38,7 +38,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  overflow: hidden;
+  
   padding-bottom: 15vh;
   z-index: 5;
 
@@ -338,13 +338,13 @@
         }
 
         .tooltipTop {
-          bottom: 99px;
+          bottom: 55px;
           @media (max-width: 768px) {
             bottom: 65px !important;
           }
         }
         .tooltipBottom {
-          top: 99px;
+          top: -18px;
           @media (max-width: 768px) {
             top: inherit !important;
             bottom: 65px !important;

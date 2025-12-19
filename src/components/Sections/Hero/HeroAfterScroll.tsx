@@ -353,6 +353,22 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
         name: "Django",
       },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
+        name: "Wordpress",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
+        name: "MongoDb",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
+        name: "Docker",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
+        name: "Prisma",
+      },
     ];
 
     return (
