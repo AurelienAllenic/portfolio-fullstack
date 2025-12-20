@@ -113,7 +113,7 @@ const SliderProjects = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const changeCategory = useCallback((nextIndex: number, direction: 'up' | 'down' = 'down') => {
+  const changeCategory = useCallback((nextIndex: number) => {
     if (nextIndex < 0 || nextIndex >= covers.length) {
       return;
     }
@@ -289,11 +289,6 @@ const SliderProjects = () => {
       const canScrollDown = contentOverflows && !isSectionAtBottom;
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
-      const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
-      const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
-      const bottomElement = mobileCta || mobileBottomSection;
-      const bottomElementRect = bottomElement?.getBoundingClientRect();
-
       if (goingDown) {
         if (canScrollDown) {
           isAtBottomRef.current = false;
@@ -303,7 +298,7 @@ const SliderProjects = () => {
         if (isAtBottomRef.current && currentIdx < covers.length - 1) {
           e.preventDefault();
           e.stopPropagation();
-          changeCategory(currentIdx + 1, 'down');
+          changeCategory(currentIdx + 1);
           isAtBottomRef.current = false;
         } else {
           isAtBottomRef.current = true;
@@ -318,7 +313,7 @@ const SliderProjects = () => {
         if (isAtTopRef.current && currentIdx > 0) {
           e.preventDefault();
           e.stopPropagation();
-          changeCategory(currentIdx - 1, 'up');
+          changeCategory(currentIdx - 1);
           isAtTopRef.current = false;
         } else {
           isAtTopRef.current = true;
@@ -411,7 +406,7 @@ const SliderProjects = () => {
       if (isAtBottomRef.current && currentIdx < covers.length - 1) {
         e.preventDefault();
         e.stopPropagation();
-        changeCategory(currentIdx + 1, 'down');
+        changeCategory(currentIdx + 1);
         isAtBottomRef.current = false;
       } else {
         isAtBottomRef.current = true;
@@ -426,7 +421,7 @@ const SliderProjects = () => {
       if (isAtTopRef.current && currentIdx > 0) {
         e.preventDefault();
         e.stopPropagation();
-        changeCategory(currentIdx - 1, 'up');
+        changeCategory(currentIdx - 1);
         isAtTopRef.current = false;
       } else {
         isAtTopRef.current = true;
