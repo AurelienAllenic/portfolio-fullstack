@@ -209,7 +209,39 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         gsap.set(item, { opacity: 0 });
       });
 
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+      const tl = gsap.timeline({ 
+        defaults: { ease: "power2.out" },
+        onComplete: () => {
+          // ✅ Vérification CRUCIALE : s'assurer que les images 1 et 2 sont bien animées
+          // Si elles ne le sont pas, on les force immédiatement
+          if (mosaicArray.length >= 2) {
+            const image1 = mosaicArray[0];
+            const image2 = mosaicArray[1];
+            
+            if (image1 && image1.isConnected) {
+              const opacity1 = parseFloat(getComputedStyle(image1).opacity);
+              if (opacity1 < 0.9) {
+                gsap.to(image1, {
+                  opacity: 1,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+              }
+            }
+            
+            if (image2 && image2.isConnected) {
+              const opacity2 = parseFloat(getComputedStyle(image2).opacity);
+              if (opacity2 < 0.9) {
+                gsap.to(image2, {
+                  opacity: 1,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+              }
+            }
+          }
+        }
+      });
       timelineRef.current = tl;
 
       // ✅ Animer chaque image individuellement avec vérification
@@ -221,6 +253,24 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             duration: 0.35,
             ease: "power2.out",
           }, index * 0.08);
+          
+          // ✅ Vérification spécifique pour les images 1 et 2 après leur animation prévue
+          if (index === 0 || index === 1) {
+            const checkDelay = (index * 0.08 * 1000) + 400; // Après la fin de l'animation
+            setTimeout(() => {
+              if (item && item.isConnected) {
+                const currentOpacity = parseFloat(getComputedStyle(item).opacity);
+                if (currentOpacity < 0.9) {
+                  // Forcer l'animation si elle n'a pas fonctionné
+                  gsap.to(item, {
+                    opacity: 1,
+                    duration: 0.3,
+                    ease: "power2.out",
+                  });
+                }
+              }
+            }, checkDelay);
+          }
         } else {
           // ✅ Si l'élément n'est pas prêt, forcer l'opacité après un délai
           setTimeout(() => {
