@@ -78,7 +78,16 @@ const SliderProjects = () => {
           const mobileImageRight = firstCategoryContainer.querySelector(`[class*="mobileImageRight"]`);
           const mobileCta = firstCategoryContainer.querySelector(`[class*="mobileCta"]`);
 
-          if (mosaicItems.length > 0) gsap.set(mosaicItems, { opacity: 0 });
+          // ✅ Initialiser chaque élément individuellement pour garantir qu'ils sont tous trouvés
+          if (mosaicItems.length > 0) {
+            const mosaicArray = Array.from(mosaicItems);
+            mosaicArray.forEach((item) => {
+              // ✅ S'assurer que chaque élément est bien initialisé, surtout les 2 premiers
+              if (item && item.isConnected) {
+                gsap.set(item, { opacity: 0 });
+              }
+            });
+          }
           if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
           if (titleMain && titleAccent) gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
           if (contentBox) gsap.set(contentBox, { opacity: 0 });

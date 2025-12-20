@@ -244,41 +244,45 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       });
       timelineRef.current = tl;
 
-      // ✅ Animer chaque image individuellement avec vérification
-      // CRUCIAL : Les images 1 et 2 doivent être animées en premier et de manière forcée
+      // ✅ CRUCIAL : Animer les images 1 et 2 EN PREMIER, avant les autres
+      // Pour la première apparition, les images 1 et 2 doivent être prioritaires
+      if (mosaicArray.length >= 2) {
+        const image1 = mosaicArray[0];
+        const image2 = mosaicArray[1];
+        
+        // ✅ Image 1 : animation immédiate en premier (position 0)
+        if (image1 && image1.isConnected) {
+          tl.to(image1, {
+            opacity: 1,
+            duration: 0.4,
+            ease: "power2.out",
+            force3D: true,
+          }, 0);
+        }
+        
+        // ✅ Image 2 : animation juste après (position 0.08)
+        if (image2 && image2.isConnected) {
+          tl.to(image2, {
+            opacity: 1,
+            duration: 0.4,
+            ease: "power2.out",
+            force3D: true,
+          }, 0.08);
+        }
+      }
+      
+      // ✅ Animer les images 3 et 4 après
       mosaicArray.forEach((item, index) => {
-        // ✅ Double vérification : élément existe et est connecté
+        // ✅ Skip les images 1 et 2 car elles sont déjà animées
+        if (index === 0 || index === 1) return;
+        
         if (item && item.isConnected) {
-          // ✅ Pour les images 1 et 2, utiliser une animation directe et immédiate
-          if (index === 0 || index === 1) {
-            // Animer immédiatement sans délai pour les images 1 et 2
-            tl.to(item, {
-              opacity: 1,
-              duration: 0.4,
-              ease: "power2.out",
-              force3D: true, // Forcer l'accélération GPU
-            }, index * 0.08);
-            
-            // ✅ Vérification immédiate après un court délai pour les images 1 et 2
-            setTimeout(() => {
-              if (item && item.isConnected) {
-                const currentOpacity = parseFloat(getComputedStyle(item).opacity);
-                if (currentOpacity < 0.9) {
-                  // Forcer l'animation immédiatement si elle n'a pas fonctionné
-                  gsap.set(item, { opacity: 1 });
-                }
-              }
-            }, (index * 0.08 * 1000) + 450);
-          } else {
-            // Pour les images 3 et 4, animation normale
-            tl.to(item, {
-              opacity: 1,
-              duration: 0.35,
-              ease: "power2.out",
-            }, index * 0.08);
-          }
+          tl.to(item, {
+            opacity: 1,
+            duration: 0.35,
+            ease: "power2.out",
+          }, index * 0.08);
         } else {
-          // ✅ Si l'élément n'est pas prêt, forcer l'opacité après un délai
           setTimeout(() => {
             if (item && item.isConnected) {
               gsap.to(item, {
@@ -290,6 +294,28 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           }, (index * 0.08 * 1000) + 100);
         }
       });
+      
+      // ✅ Vérification finale pour les images 1 et 2 après un délai
+      if (mosaicArray.length >= 2) {
+        setTimeout(() => {
+          const image1 = mosaicArray[0];
+          const image2 = mosaicArray[1];
+          
+          if (image1 && image1.isConnected) {
+            const opacity1 = parseFloat(getComputedStyle(image1).opacity);
+            if (opacity1 < 0.9) {
+              gsap.set(image1, { opacity: 1 });
+            }
+          }
+          
+          if (image2 && image2.isConnected) {
+            const opacity2 = parseFloat(getComputedStyle(image2).opacity);
+            if (opacity2 < 0.9) {
+              gsap.set(image2, { opacity: 1 });
+            }
+          }
+        }, 500);
+      }
 
       tl.to(ctaButton, {
         opacity: 1,
