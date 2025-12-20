@@ -78,11 +78,9 @@ const SliderProjects = () => {
           const mobileImageRight = firstCategoryContainer.querySelector(`[class*="mobileImageRight"]`);
           const mobileCta = firstCategoryContainer.querySelector(`[class*="mobileCta"]`);
 
-          // ✅ Initialiser chaque élément individuellement pour garantir qu'ils sont tous trouvés
           if (mosaicItems.length > 0) {
             const mosaicArray = Array.from(mosaicItems);
             mosaicArray.forEach((item) => {
-              // ✅ S'assurer que chaque élément est bien initialisé, surtout les 2 premiers
               if (item && item.isConnected) {
                 gsap.set(item, { opacity: 0 });
               }

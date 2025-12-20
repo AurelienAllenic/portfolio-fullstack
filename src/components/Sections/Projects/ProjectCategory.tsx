@@ -160,7 +160,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         timelineRef.current.kill();
       }
 
-      // ✅ Récupérer les éléments à nouveau pour s'assurer qu'ils existent
       const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
       const ctaButton = container.querySelector(`.${styles.cta}`);
       const titleMain = container.querySelector(`.${styles.titleMain}`);
@@ -178,33 +177,24 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
       const mobileCta = container.querySelector(`.${styles.mobileCta}`);
 
-      // ✅ Vérifier que les éléments existent avant d'animer
       if (mosaicItems.length === 0) {
-        // En production, les éléments peuvent ne pas être encore montés
-        // Réessayer après un court délai
         setTimeout(() => runAnimation(), 50);
         return;
       }
 
-      // ✅ Vérifier qu'on a au moins 3 images (certaines catégories ont 3, d'autres 4)
-      // Si on a moins de 3, on attend un peu plus car les éléments peuvent ne pas être encore montés
       if (mosaicItems.length < 3) {
-        // En production, les éléments peuvent ne pas être encore tous montés
         setTimeout(() => runAnimation(), 100);
         return;
       }
 
-      // ✅ Convertir en Array et vérifier que chaque élément est bien dans le DOM
       const mosaicArray = Array.from(mosaicItems);
       
-      // ✅ Vérifier que tous les éléments sont connectés au DOM
       const allConnected = mosaicArray.every((item) => item.isConnected);
       if (!allConnected) {
         setTimeout(() => runAnimation(), 100);
         return;
       }
 
-      // ✅ S'assurer que tous les éléments de la mosaïque sont bien initialisés
       mosaicArray.forEach((item) => {
         gsap.set(item, { opacity: 0 });
       });
@@ -212,8 +202,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       const tl = gsap.timeline({ 
         defaults: { ease: "power2.out" },
         onComplete: () => {
-          // ✅ Vérification CRUCIALE : s'assurer que les images 1 et 2 sont bien animées
-          // Si elles ne le sont pas, on les force immédiatement
           if (mosaicArray.length >= 2) {
             const image1 = mosaicArray[0];
             const image2 = mosaicArray[1];
@@ -244,13 +232,10 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       });
       timelineRef.current = tl;
 
-      // ✅ CRUCIAL : Animer les images 1 et 2 EN PREMIER, avant les autres
-      // Pour la première apparition, les images 1 et 2 doivent être prioritaires
       if (mosaicArray.length >= 2) {
         const image1 = mosaicArray[0];
         const image2 = mosaicArray[1];
         
-        // ✅ Image 1 : animation immédiate en premier (position 0)
         if (image1 && image1.isConnected) {
           tl.to(image1, {
             opacity: 1,
@@ -260,7 +245,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           }, 0);
         }
         
-        // ✅ Image 2 : animation juste après (position 0.08)
         if (image2 && image2.isConnected) {
           tl.to(image2, {
             opacity: 1,
@@ -271,9 +255,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         }
       }
       
-      // ✅ Animer les images 3 et 4 après
       mosaicArray.forEach((item, index) => {
-        // ✅ Skip les images 1 et 2 car elles sont déjà animées
         if (index === 0 || index === 1) return;
         
         if (item && item.isConnected) {
@@ -295,7 +277,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         }
       });
       
-      // ✅ Vérification finale pour les images 1 et 2 après un délai
       if (mosaicArray.length >= 2) {
         setTimeout(() => {
           const image1 = mosaicArray[0];

@@ -159,8 +159,13 @@
         width: 100%;
         line-height: 38px;
         opacity: 0;
-        animation: overlayAppearClassic 1s ease-out forwards;
-        animation-delay: 1s;
+        // ✅ Animation CSS désactivée, on utilise GSAP à la place
+        // animation: overlayAppearClassic 1s ease-out forwards;
+        // animation-delay: 1s;
+        
+        &.noAnimation {
+          animation: none !important;
+        }
 
         @media (max-width: 1400px) {
           font-size: 25px;

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
 
@@ -67,6 +67,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
 
+    useLayoutEffect(() => {
+      if (textRef.current) {
+        textRef.current.style.setProperty('animation', 'none', 'important');
+        gsap.set(textRef.current, { opacity: 0, y: 0 });
+      }
+    }, []);
+
     useEffect(() => {
       if (returnFromProjects && contentContainerRef.current) {
         gsap.fromTo(
@@ -74,6 +81,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           { opacity: 0 },
           { opacity: 1, duration: 0.5, ease: "power2.out" }
         );
+        
+        if (textRef.current) {
+          textRef.current.style.setProperty('animation', 'none', 'important');
+          textRef.current.style.setProperty('opacity', '0', 'important');
+        }
       }
     }, [returnFromProjects]);
 
@@ -111,7 +123,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           gsap.set(overlayRef.current, { "--gradient-size": initialTarget });
         }
       }
-    }, []); // Run only on mount
+    }, []);
 
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
@@ -176,7 +188,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           if (textIndex > 0) {
             changeText(textIndex - 1);
           } else {
-            // Quitter HeroAfterScroll sans ré-animer le texte
             setScrollLocked(true);
             onReturnToHeroBefore?.();
           }
@@ -251,7 +262,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (textIndex > 0) {
           changeText(textIndex - 1);
         } else {
-          // Quitter HeroAfterScroll sans ré-animer le texte
           setScrollLocked(true);
           onReturnToHeroBefore?.();
         }
@@ -284,12 +294,25 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     ]);
 
     useEffect(() => {
+      if (returnFromProjects && textIndex === texts.length - 1) {
+        if (textRef.current) {
+          // Désactiver l'animation CSS et forcer opacity: 0 avec !important
+          textRef.current.style.setProperty('animation', 'none', 'important');
+          textRef.current.style.setProperty('opacity', '0', 'important');
+          gsap.set(textRef.current, { opacity: 0, y: 0 });
+        }
+        return;
+      }
+
       if (textRef.current) {
+        gsap.set(textRef.current, { opacity: 0 });
+        
         const yFrom = firstRender.current
           ? 20
           : direction === "down"
           ? 100
           : -100;
+        
         gsap.fromTo(
           textRef.current,
           { opacity: 0, y: yFrom },
@@ -298,7 +321,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             y: 0,
             duration: firstRender.current ? 0.8 : 0.5,
             ease: "power2.out",
-            delay: firstRender.current ? 1 : 0,
+            delay: firstRender.current ? 1.2 : 0,
             onComplete: () => {
               firstRender.current = false;
             },
@@ -391,6 +414,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                     ? styles.mediumSubtitle
                     : textIndex === 3
                     ? styles.largeSubtitle
+                    : ""
+                } ${
+                  returnFromProjects && textIndex === texts.length - 1
+                    ? styles.noAnimation
                     : ""
                 }`}
               >
