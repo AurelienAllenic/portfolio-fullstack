@@ -186,21 +186,53 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         return;
       }
 
+      // ✅ Vérifier qu'on a au moins 3 images (certaines catégories ont 3, d'autres 4)
+      // Si on a moins de 3, on attend un peu plus car les éléments peuvent ne pas être encore montés
+      if (mosaicItems.length < 3) {
+        // En production, les éléments peuvent ne pas être encore tous montés
+        setTimeout(() => runAnimation(), 100);
+        return;
+      }
+
+      // ✅ Convertir en Array et vérifier que chaque élément est bien dans le DOM
+      const mosaicArray = Array.from(mosaicItems);
+      
+      // ✅ Vérifier que tous les éléments sont connectés au DOM
+      const allConnected = mosaicArray.every((item) => item.isConnected);
+      if (!allConnected) {
+        setTimeout(() => runAnimation(), 100);
+        return;
+      }
+
       // ✅ S'assurer que tous les éléments de la mosaïque sont bien initialisés
-      gsap.set(mosaicItems, { opacity: 0 });
+      mosaicArray.forEach((item) => {
+        gsap.set(item, { opacity: 0 });
+      });
 
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
       timelineRef.current = tl;
 
-      // ✅ Animer chaque image individuellement pour garantir qu'elles sont toutes animées
-      // Problème en production : stagger ne fonctionne pas toujours pour les 2 premières images
-      const mosaicArray = Array.from(mosaicItems);
+      // ✅ Animer chaque image individuellement avec vérification
       mosaicArray.forEach((item, index) => {
-        tl.to(item, {
-          opacity: 1,
-          duration: 0.35,
-          ease: "power2.out",
-        }, index * 0.08);
+        // ✅ Double vérification : élément existe et est connecté
+        if (item && item.isConnected) {
+          tl.to(item, {
+            opacity: 1,
+            duration: 0.35,
+            ease: "power2.out",
+          }, index * 0.08);
+        } else {
+          // ✅ Si l'élément n'est pas prêt, forcer l'opacité après un délai
+          setTimeout(() => {
+            if (item && item.isConnected) {
+              gsap.to(item, {
+                opacity: 1,
+                duration: 0.35,
+                ease: "power2.out",
+              });
+            }
+          }, (index * 0.08 * 1000) + 100);
+        }
       });
 
       tl.to(ctaButton, {
