@@ -192,11 +192,16 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
       timelineRef.current = tl;
 
-      tl.to(mosaicItems, {
-        opacity: 1,
-        duration: 0.35,
-        stagger: 0.08,
-      }, 0);
+      // ✅ Animer chaque image individuellement pour garantir qu'elles sont toutes animées
+      // Problème en production : stagger ne fonctionne pas toujours pour les 2 premières images
+      const mosaicArray = Array.from(mosaicItems);
+      mosaicArray.forEach((item, index) => {
+        tl.to(item, {
+          opacity: 1,
+          duration: 0.35,
+          ease: "power2.out",
+        }, index * 0.08);
+      });
 
       tl.to(ctaButton, {
         opacity: 1,
