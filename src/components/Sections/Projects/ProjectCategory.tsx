@@ -245,31 +245,37 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       timelineRef.current = tl;
 
       // ✅ Animer chaque image individuellement avec vérification
+      // CRUCIAL : Les images 1 et 2 doivent être animées en premier et de manière forcée
       mosaicArray.forEach((item, index) => {
         // ✅ Double vérification : élément existe et est connecté
         if (item && item.isConnected) {
-          tl.to(item, {
-            opacity: 1,
-            duration: 0.35,
-            ease: "power2.out",
-          }, index * 0.08);
-          
-          // ✅ Vérification spécifique pour les images 1 et 2 après leur animation prévue
+          // ✅ Pour les images 1 et 2, utiliser une animation directe et immédiate
           if (index === 0 || index === 1) {
-            const checkDelay = (index * 0.08 * 1000) + 400; // Après la fin de l'animation
+            // Animer immédiatement sans délai pour les images 1 et 2
+            tl.to(item, {
+              opacity: 1,
+              duration: 0.4,
+              ease: "power2.out",
+              force3D: true, // Forcer l'accélération GPU
+            }, index * 0.08);
+            
+            // ✅ Vérification immédiate après un court délai pour les images 1 et 2
             setTimeout(() => {
               if (item && item.isConnected) {
                 const currentOpacity = parseFloat(getComputedStyle(item).opacity);
                 if (currentOpacity < 0.9) {
-                  // Forcer l'animation si elle n'a pas fonctionné
-                  gsap.to(item, {
-                    opacity: 1,
-                    duration: 0.3,
-                    ease: "power2.out",
-                  });
+                  // Forcer l'animation immédiatement si elle n'a pas fonctionné
+                  gsap.set(item, { opacity: 1 });
                 }
               }
-            }, checkDelay);
+            }, (index * 0.08 * 1000) + 450);
+          } else {
+            // Pour les images 3 et 4, animation normale
+            tl.to(item, {
+              opacity: 1,
+              duration: 0.35,
+              ease: "power2.out",
+            }, index * 0.08);
           }
         } else {
           // ✅ Si l'élément n'est pas prêt, forcer l'opacité après un délai
