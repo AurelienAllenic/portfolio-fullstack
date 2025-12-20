@@ -137,15 +137,21 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       const checkVisibility = setInterval(() => {
         if (getComputedStyle(parentElement).opacity !== "0") {
           clearInterval(checkVisibility);
-          runAnimation();
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              runAnimation();
+            });
+          });
         }
       }, 50);
       return () => clearInterval(checkVisibility);
     }
 
-    const timer = setTimeout(() => {
-      runAnimation();
-    }, 10);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        runAnimation();
+      });
+    });
 
     function runAnimation() {
       if (!container) return;
@@ -153,6 +159,15 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
+
+      // ✅ Récupérer les éléments à nouveau pour s'assurer qu'ils existent
+      const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
+      const ctaButton = container.querySelector(`.${styles.cta}`);
+      const titleMain = container.querySelector(`.${styles.titleMain}`);
+      const titleAccent = container.querySelector(`.${styles.titleAccent}`);
+      const contentBox = container.querySelector(`.${styles.contentBox}`);
+      const icons = container.querySelectorAll(`.${styles.iconContainer}`);
+      const rightImage = container.querySelector(`.${styles.right} img`);
 
       const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`);
       const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`);
@@ -162,6 +177,17 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       const mobileImageLeft = container.querySelector(`.${styles.mobileImageLeft}`);
       const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
       const mobileCta = container.querySelector(`.${styles.mobileCta}`);
+
+      // ✅ Vérifier que les éléments existent avant d'animer
+      if (mosaicItems.length === 0) {
+        // En production, les éléments peuvent ne pas être encore montés
+        // Réessayer après un court délai
+        setTimeout(() => runAnimation(), 50);
+        return;
+      }
+
+      // ✅ S'assurer que tous les éléments de la mosaïque sont bien initialisés
+      gsap.set(mosaicItems, { opacity: 0 });
 
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
       timelineRef.current = tl;
@@ -258,10 +284,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         }, 0.7);
       }
     }
-
-    return () => {
-      clearTimeout(timer);
-    };
   }, [categoryIndex]);
 
   return (
