@@ -32,14 +32,12 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     );
 
     const canReturnToHero = (): boolean => {
-      // ✅ Vérifier si SliderProjects existe et est à l'index 0 et non verrouillé
       const sliderContainer = document.querySelector('[data-slider-index]') as HTMLElement;
-      if (!sliderContainer) return true; // Si pas de slider, on peut retourner
+      if (!sliderContainer) return true;
       
       const sliderIndex = parseInt(sliderContainer.getAttribute('data-slider-index') || '0');
       const sliderLocked = sliderContainer.getAttribute('data-slider-locked') === 'true';
       
-      // ✅ Ne retourner au Hero que si on est à l'index 0 ET que le slider n'est pas verrouillé
       return sliderIndex === 0 && !sliderLocked;
     };
 
@@ -54,7 +52,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
       const goingUp = e.deltaY < 0;
 
-      // ✅ Vérifier si on peut retourner au Hero
       if (goingUp && canReturnToHero()) {
         e.preventDefault();
         scrollBlocked = true;
@@ -85,7 +82,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
       const deltaY = e.touches[0].clientY - touchStartY.current;
 
-      // ✅ Vérifier si on peut retourner au Hero
       if (deltaY > 30 && canReturnToHero()) {
         e.preventDefault();
         scrollBlocked = true;

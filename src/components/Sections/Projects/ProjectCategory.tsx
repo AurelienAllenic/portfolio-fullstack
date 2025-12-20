@@ -7,9 +7,9 @@ type CoverIcon = string | { src: string; alt?: string };
 export interface ProjectCover {
   title: string;
   content: string;
-  sideImages: string[];   // 4 images mosaïque à gauche
-  mainImage: string;      // grande image à droite
-  listIcons: CoverIcon[]; // icônes ou libellés
+  sideImages: string[];
+  mainImage: string;
+  listIcons: CoverIcon[];
 }
 
 export interface ProjectFolderItem {
@@ -33,23 +33,19 @@ export interface Project {
 
 interface ProjectCategoryProps {
   cover: ProjectCover;
-  projects?: Project[]; // optionnel et typé correctement
-  categoryIndex?: number; // ✅ Nouveau prop pour déclencher les animations
+  projects?: Project[];
+  categoryIndex?: number;
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
 const getTechName = (url: string): string => {
-  // Extrait le nom de la techno depuis l'URL
-  // Ex: "https://.../html_yzkdbv.webp" -> "HTML"
   const match = url.match(/\/([^\/]+)_[^_]+\.webp$/);
   if (match) {
     const name = match[1];
-    // Cas spéciaux
     if (name === 'nodejs') return 'Node.js';
     if (name === 'reactjs') return 'React';
     if (name === 'nextjs') return 'Next.js';
-    // Capitalisation normale
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
   return 'Technologie';
@@ -59,12 +55,10 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // ✅ INITIALISATION IMMÉDIATE : éviter le flash
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // ✅ Initialiser immédiatement tous les éléments à leur état initial
     const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
     const ctaButton = container.querySelector(`.${styles.cta}`);
     const titleMain = container.querySelector(`.${styles.titleMain}`);
@@ -79,19 +73,33 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     gsap.set(contentBox, { opacity: 0 });
     gsap.set(icons, { opacity: 0 });
     gsap.set(rightImage, { opacity: 0, x: 50 });
+
+    const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`);
+    const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`);
+    const mobileDescription = container.querySelector(`.${styles.mobileDescription}`);
+    const mobileImage = container.querySelector(`.${styles.mobileImage}`);
+    const mobileIcons = container.querySelectorAll(`.${styles.mobileIcons} .${styles.iconContainer}`);
+    const mobileImageLeft = container.querySelector(`.${styles.mobileImageLeft}`);
+    const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
+    const mobileCta = container.querySelector(`.${styles.mobileCta}`);
+
+    if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
+    if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
+    if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
+    if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
+    if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
+    if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
+    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
   }, []);
 
-  // ✅ ANIMATION : lancer les animations
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // ✅ Si categoryIndex est undefined, ne pas animer (élément caché)
     if (categoryIndex === undefined) {
       return;
     }
 
-    // ✅ Réinitialiser immédiatement AVANT de vérifier la visibilité
     const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
     const ctaButton = container.querySelector(`.${styles.cta}`);
     const titleMain = container.querySelector(`.${styles.titleMain}`);
@@ -100,7 +108,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     const icons = container.querySelectorAll(`.${styles.iconContainer}`);
     const rightImage = container.querySelector(`.${styles.right} img`);
 
-    // ✅ Initialiser immédiatement pour éviter le pop
     gsap.set(mosaicItems, { opacity: 0 });
     gsap.set(ctaButton, { opacity: 0, y: 30 });
     gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
@@ -108,10 +115,25 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     gsap.set(icons, { opacity: 0 });
     gsap.set(rightImage, { opacity: 0, x: 50 });
 
-    // ✅ Vérifier si l'élément est visible
+    const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`);
+    const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`);
+    const mobileDescription = container.querySelector(`.${styles.mobileDescription}`);
+    const mobileImage = container.querySelector(`.${styles.mobileImage}`);
+    const mobileIcons = container.querySelectorAll(`.${styles.mobileIcons} .${styles.iconContainer}`);
+    const mobileImageLeft = container.querySelector(`.${styles.mobileImageLeft}`);
+    const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
+    const mobileCta = container.querySelector(`.${styles.mobileCta}`);
+
+    if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
+    if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
+    if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
+    if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
+    if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
+    if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
+    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+
     const parentElement = container.parentElement;
     if (parentElement && getComputedStyle(parentElement).opacity === "0") {
-      // Attendre que l'élément devienne visible
       const checkVisibility = setInterval(() => {
         if (getComputedStyle(parentElement).opacity !== "0") {
           clearInterval(checkVisibility);
@@ -121,36 +143,41 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       return () => clearInterval(checkVisibility);
     }
 
-    // ✅ Lancer l'animation directement
     const timer = setTimeout(() => {
       runAnimation();
-    }, 10); // Délai très court
+    }, 10);
 
     function runAnimation() {
-      // ✅ Tuer l'animation précédente si elle existe
+      if (!container) return;
+
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
 
-      // ✅ Timeline d'animation optimisée pour 1.5s maximum
+      const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`);
+      const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`);
+      const mobileDescription = container.querySelector(`.${styles.mobileDescription}`);
+      const mobileImage = container.querySelector(`.${styles.mobileImage}`);
+      const mobileIcons = container.querySelectorAll(`.${styles.mobileIcons} .${styles.iconContainer}`);
+      const mobileImageLeft = container.querySelector(`.${styles.mobileImageLeft}`);
+      const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
+      const mobileCta = container.querySelector(`.${styles.mobileCta}`);
+
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
       timelineRef.current = tl;
 
-      // 1. Images mosaïque (0s) : opacité 0 à 1, une après l'autre
       tl.to(mosaicItems, {
         opacity: 1,
         duration: 0.35,
         stagger: 0.08,
       }, 0);
 
-      // 2. Bouton "Voir les projets" : translate depuis le bas + opacité
       tl.to(ctaButton, {
         opacity: 1,
         y: 0,
         duration: 0.4,
       }, 0.3);
 
-      // 3. Titre principal : translate depuis le haut + opacité
       tl.to([titleMain, titleAccent], {
         opacity: 1,
         y: 0,
@@ -158,25 +185,78 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         stagger: 0.05,
       }, 0.4);
 
-      // 4. Texte de description : apparaît avec opacité
       tl.to(contentBox, {
         opacity: 1,
         duration: 0.4,
       }, 0.5);
 
-      // 5. Icônes de langages : opacité, les uns après les autres
       tl.to(icons, {
         opacity: 1,
         duration: 0.4,
         stagger: 0.05,
       }, 0.6);
 
-      // 6. Image de droite : translate depuis la droite + opacité
       tl.to(rightImage, {
         opacity: 1,
         x: 0,
         duration: 0.5,
       }, 0.2);
+
+      if (mobileTitleMain && mobileTitleAccent) {
+        tl.to([mobileTitleMain, mobileTitleAccent], {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.05,
+        }, 0.2);
+      }
+
+      if (mobileImage) {
+        tl.to(mobileImage, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.4,
+        }, 0.3);
+      }
+
+      if (mobileDescription) {
+        tl.to(mobileDescription, {
+          opacity: 1,
+          duration: 0.4,
+        }, 0.4);
+      }
+
+      if (mobileImageLeft) {
+        tl.to(mobileImageLeft, {
+          opacity: 1,
+          x: 0,
+          duration: 0.4,
+        }, 0.5);
+      }
+
+      if (mobileImageRight) {
+        tl.to(mobileImageRight, {
+          opacity: 1,
+          x: 0,
+          duration: 0.4,
+        }, 0.5);
+      }
+
+      if (mobileIcons.length > 0) {
+        tl.to(mobileIcons, {
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.05,
+        }, 0.6);
+      }
+
+      if (mobileCta) {
+        tl.to(mobileCta, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+        }, 0.7);
+      }
     }
 
     return () => {
@@ -200,7 +280,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           <img src={cover.mainImage} alt="main" className={styles.mobileImage} />
         </div>
 
-        {/* Mobile: Ligne 2 - Description */}
         <div className={styles.mobileDescription}>
           {cover.content.split(". ").map((line, i, arr) => (
             <p key={i}>
@@ -210,7 +289,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           ))}
         </div>
 
-        {/* Colonne gauche: mosaïque + CTA */}
         <aside className={styles.left}>
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => (
@@ -226,7 +304,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         </button>
       </aside>
 
-      {/* Centre: titre + encadré + icônes */}
       <div className={styles.center}>
         <h2 className={styles.title}>
           <span className={styles.titleMain}>
@@ -275,12 +352,10 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         </div>
       </div>
 
-        {/* Droite: grande image */}
         <aside className={styles.right}>
           <img src={cover.mainImage} alt="main" />
         </aside>
 
-        {/* Mobile: Ligne 3 - Image gauche + Icônes + Image droite + Bouton */}
         <div className={styles.mobileBottomSection}>
           <img
             src={cover.sideImages[1]}

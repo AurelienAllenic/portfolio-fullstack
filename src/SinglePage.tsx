@@ -11,12 +11,10 @@ const SinglePage = () => {
   const [returnFromProjects, setReturnFromProjects] = useState(false);
 
   const handleTransitionToProjects = () => {
-    console.log("Transition vers Projects déclenchée !");
     setShowProjects(true);
   };
 
   const handleReturnToHero = () => {
-    console.log("Retour vers Hero déclenché !");
     setShowProjects(false);
     setReturnFromProjects(true);
 
@@ -24,7 +22,6 @@ const SinglePage = () => {
     // (on laisse le temps à HeroAfterScroll de faire son fade-in)
     setTimeout(() => {
       setReturnFromProjects(false);
-      console.log("returnFromProjects réinitialisé à false");
     }, 2000);
   };
 

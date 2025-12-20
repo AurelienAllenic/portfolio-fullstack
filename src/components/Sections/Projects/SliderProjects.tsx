@@ -17,10 +17,8 @@ const SliderProjects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutId = useRef<number | null>(null);
   const isInitialMount = useRef(true);
-  // ✅ Ajouter une ref pour avoir toujours la valeur à jour de currentIndex
   const currentIndexRef = useRef(0);
-  const scrollLockedRef = useRef(true); // ✅ Ajouter aussi une ref pour scrollLocked
-  // ✅ Ref pour suivre si on est au bout (bas ou haut)
+  const scrollLockedRef = useRef(true);
   const isAtBottomRef = useRef(false);
   const isAtTopRef = useRef(false);
 
@@ -31,44 +29,71 @@ const SliderProjects = () => {
     projects_cover,
   ];
 
-  // ✅ Synchroniser la ref avec le state
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
-  // Synchroniser les refs avec les states
   useEffect(() => {
     scrollLockedRef.current = scrollLocked;
   }, [scrollLocked]);
 
-  // Mettre tous les éléments à opacity 0 dès le montage
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Mettre tous les éléments à opacity 0 immédiatement
     const allElements = container.querySelectorAll('[data-category-index]');
     gsap.set(allElements, { opacity: 0, y: 100 });
     
-    // Mettre le container visible
     gsap.set(container, { opacity: 1 });
   }, []);
 
-  // Animation initiale : apparaître exactement quand le gradient a tout recouvert
   useEffect(() => {
     if (!isInitialMount.current) return;
     
     const container = containerRef.current;
     if (!container) return;
     
-    // Attendre que les éléments soient montés
     const timer = setTimeout(() => {
       const firstElement = container.querySelector(
         `[data-category-index="0"]`
       );
       
       if (firstElement) {
-        // Animation d'apparition depuis le bas
+        const firstCategoryContainer = firstElement.querySelector('section');
+        if (firstCategoryContainer) {
+          const mosaicItems = firstCategoryContainer.querySelectorAll(`[class*="mosaicItem"]`);
+          const ctaButton = firstCategoryContainer.querySelector(`[class*="cta"]`);
+          const titleMain = firstCategoryContainer.querySelector(`[class*="titleMain"]`);
+          const titleAccent = firstCategoryContainer.querySelector(`[class*="titleAccent"]`);
+          const contentBox = firstCategoryContainer.querySelector(`[class*="contentBox"]`);
+          const icons = firstCategoryContainer.querySelectorAll(`[class*="iconContainer"]`);
+          const rightImage = firstCategoryContainer.querySelector(`[class*="right"] img`);
+          
+          const mobileTitleMain = firstCategoryContainer.querySelector(`[class*="mobileTitleMain"]`);
+          const mobileTitleAccent = firstCategoryContainer.querySelector(`[class*="mobileTitleAccent"]`);
+          const mobileDescription = firstCategoryContainer.querySelector(`[class*="mobileDescription"]`);
+          const mobileImage = firstCategoryContainer.querySelector(`[class*="mobileImage"]`);
+          const mobileIcons = firstCategoryContainer.querySelectorAll(`[class*="mobileIcons"] [class*="iconContainer"]`);
+          const mobileImageLeft = firstCategoryContainer.querySelector(`[class*="mobileImageLeft"]`);
+          const mobileImageRight = firstCategoryContainer.querySelector(`[class*="mobileImageRight"]`);
+          const mobileCta = firstCategoryContainer.querySelector(`[class*="mobileCta"]`);
+
+          if (mosaicItems.length > 0) gsap.set(mosaicItems, { opacity: 0 });
+          if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
+          if (titleMain && titleAccent) gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
+          if (contentBox) gsap.set(contentBox, { opacity: 0 });
+          if (icons.length > 0) gsap.set(icons, { opacity: 0 });
+          if (rightImage) gsap.set(rightImage, { opacity: 0, x: 50 });
+          
+          if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
+          if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
+          if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
+          if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
+          if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
+          if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
+          if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+        }
+        
         gsap.to(firstElement, {
           y: 0,
           opacity: 1,
@@ -80,29 +105,22 @@ const SliderProjects = () => {
           },
         });
       } else {
-        // Fallback
         setScrollLocked(false);
         isInitialMount.current = false;
       }
-    }, 500); // Synchronisé avec la fin de l'animation du gradient
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // ✅ Utiliser useCallback pour mémoriser changeCategory
   const changeCategory = useCallback((nextIndex: number, direction: 'up' | 'down' = 'down') => {
     if (nextIndex < 0 || nextIndex >= covers.length) {
-      console.log("Index invalide:", nextIndex);
       return;
     }
 
     const currentIdx = currentIndexRef.current;
-    console.log("Changement de catégorie:", currentIdx, "->", nextIndex, "direction:", direction);
-    console.log("scrollLocked avant:", scrollLockedRef.current);
 
-    // Vérifier si on est déjà en train d'animer
     if (scrollLockedRef.current) {
-      console.log("Scroll déjà verrouillé, annulation");
       return;
     }
 
@@ -110,11 +128,7 @@ const SliderProjects = () => {
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
     
-    // ✅ Ne pas réinitialiser le scroll immédiatement
-    // On le fera seulement quand la nouvelle catégorie est prête à apparaître
-
     const safetyTimeout = setTimeout(() => {
-      console.warn("Timeout de sécurité - déblocage du scroll");
       setCurrentIndex(nextIndex);
       setScrollLocked(false);
       scrollLockedRef.current = false;
@@ -129,7 +143,6 @@ const SliderProjects = () => {
     );
 
     if (!currentElement || !nextElement) {
-      console.error("Éléments non trouvés:", { currentIdx, nextIndex });
       clearTimeout(safetyTimeout);
       setCurrentIndex(nextIndex);
       setScrollLocked(false);
@@ -138,11 +151,8 @@ const SliderProjects = () => {
       return;
     }
 
-    // S'assurer que l'élément suivant est bien positionné et invisible
-    // On le garde invisible jusqu'à ce que le scroll soit en haut
     gsap.set(nextElement, { y: 100, opacity: 0 });
 
-    // ✅ INITIALISER les éléments internes AVANT de rendre le parent visible
     const nextCategoryContainer = nextElement.querySelector('section');
     if (nextCategoryContainer) {
       const mosaicItems = nextCategoryContainer.querySelectorAll(`[class*="mosaicItem"]`);
@@ -153,22 +163,35 @@ const SliderProjects = () => {
       const icons = nextCategoryContainer.querySelectorAll(`[class*="iconContainer"]`);
       const rightImage = nextCategoryContainer.querySelector(`[class*="right"] img`);
 
-      // ✅ Initialiser immédiatement tous les éléments internes
       if (mosaicItems.length > 0) gsap.set(mosaicItems, { opacity: 0 });
       if (ctaButton) gsap.set(ctaButton, { opacity: 0, y: 30 });
       if (titleMain && titleAccent) gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
       if (contentBox) gsap.set(contentBox, { opacity: 0 });
       if (icons.length > 0) gsap.set(icons, { opacity: 0 });
       if (rightImage) gsap.set(rightImage, { opacity: 0, x: 50 });
+
+      const mobileTitleMain = nextCategoryContainer.querySelector(`[class*="mobileTitleMain"]`);
+      const mobileTitleAccent = nextCategoryContainer.querySelector(`[class*="mobileTitleAccent"]`);
+      const mobileDescription = nextCategoryContainer.querySelector(`[class*="mobileDescription"]`);
+      const mobileImage = nextCategoryContainer.querySelector(`[class*="mobileImage"]`);
+      const mobileIcons = nextCategoryContainer.querySelectorAll(`[class*="mobileIcons"] [class*="iconContainer"]`);
+      const mobileImageLeft = nextCategoryContainer.querySelector(`[class*="mobileImageLeft"]`);
+      const mobileImageRight = nextCategoryContainer.querySelector(`[class*="mobileImageRight"]`);
+      const mobileCta = nextCategoryContainer.querySelector(`[class*="mobileCta"]`);
+
+      if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
+      if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
+      if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
+      if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
+      if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
+      if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
+      if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
     }
 
     const tl = gsap.timeline({
       onComplete: () => {
-        console.log("Animation terminée, nouvel index:", nextIndex);
         clearTimeout(safetyTimeout);
-        // ✅ S'assurer que le scroll est bien en haut avant de rendre visible
         window.scrollTo({ top: 0, behavior: 'instant' });
-        // ✅ Attendre un frame pour être sûr que le scroll est bien en haut
         requestAnimationFrame(() => {
           setCurrentIndex(nextIndex);
           setScrollLocked(false);
@@ -178,7 +201,6 @@ const SliderProjects = () => {
       },
     });
 
-    // Disparition de l'élément actuel
     tl.to(currentElement, {
       y: -100,
       opacity: 0,
@@ -186,21 +208,16 @@ const SliderProjects = () => {
       ease: "power2.in",
     });
 
-    // Apparition du nouvel élément avec animation fluide
-    // On anime d'abord le translate
     tl.to(nextElement, {
       y: 0,
       duration: 0.6,
       ease: "power2.out",
     }, "-=0.3");
     
-    // ✅ Réinitialiser le scroll en haut pendant l'animation de transition
-    // On le fait juste avant l'animation d'opacity pour que ce soit fluide
     tl.call(() => {
       window.scrollTo({ top: 0, behavior: 'instant' });
     });
     
-    // ✅ Animation d'opacity fluide après que le scroll soit en haut
     tl.to(nextElement, {
       opacity: 1,
       duration: 0.4,
@@ -212,31 +229,26 @@ const SliderProjects = () => {
     const handleWheel = (e: WheelEvent) => {
       if (scrollLockedRef.current || timeoutId.current) {
         e.preventDefault();
-        e.stopPropagation(); // ✅ Empêcher la propagation
+        e.stopPropagation();
         return;
       }
 
-      // ✅ Vérifier si on est dans la zone du slider (même si on a scrollé)
-      // On vérifie si le container du slider est visible dans le viewport
       const container = containerRef.current;
       if (!container) return;
       
       const containerRect = container.getBoundingClientRect();
-      // Si le container n'est pas visible dans le viewport, ne pas gérer le scroll
       if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) return;
 
       const goingDown = e.deltaY > 0;
       const goingUp = e.deltaY < 0;
       const currentIdx = currentIndexRef.current;
 
-      // ✅ Vérifier si on est au bout du scroll du composant actuel
       const currentElement = containerRef.current?.querySelector(
         `[data-category-index="${currentIdx}"]`
       );
       
       if (!currentElement) return;
 
-      // ✅ Obtenir les informations de scroll du composant
       const categorySection = currentElement.querySelector('section');
       if (!categorySection) return;
 
@@ -246,118 +258,73 @@ const SliderProjects = () => {
       const sectionBottom = sectionRect.bottom;
       const sectionHeight = sectionRect.height;
       
-      // ✅ Vérifier si le contenu dépasse la hauteur du viewport
       const contentOverflows = sectionHeight > viewportHeight;
       
-      // ✅ Vérifier si on est sur mobile (viewport < 900px)
       const isMobile = window.innerWidth <= 900;
       
-      // ✅ Vérifier si on est au bout en bas
-      // Sur mobile, on vérifie si mobileCta ou mobileBottomSection est visible
       let isSectionAtBottom = false;
       if (isMobile) {
-        // Sur mobile, chercher mobileCta ou mobileBottomSection
         const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
         const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
         const bottomElement = mobileCta || mobileBottomSection;
         
         if (bottomElement) {
           const bottomRect = bottomElement.getBoundingClientRect();
-          // Si le bas de l'élément est visible dans le viewport (avec une marge)
           isSectionAtBottom = bottomRect.bottom <= viewportHeight + 50;
         } else {
-          // Fallback : utiliser la position du composant
           const distanceFromBottom = sectionBottom - viewportHeight;
           isSectionAtBottom = contentOverflows 
             ? distanceFromBottom <= 50
             : true;
         }
       } else {
-        // Sur desktop, utiliser la logique précédente
         const distanceFromBottom = sectionBottom - viewportHeight;
         isSectionAtBottom = contentOverflows 
           ? distanceFromBottom <= 50
           : true;
       }
       
-      // On est au bout en haut si le haut du composant est visible dans le viewport
-      // Le composant est positionné à top: 0, donc on est au bout si sectionTop est proche de 0
       const isSectionAtTop = sectionTop >= -20;
       
-      // ✅ On peut scroller vers le bas seulement si le contenu dépasse ET qu'on n'est pas au bout
       const canScrollDown = contentOverflows && !isSectionAtBottom;
-      // ✅ On peut scroller vers le haut seulement si le contenu dépasse ET qu'on n'est pas au bout
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
-      // ✅ Logs pour débogage (récupérer les éléments pour les logs)
       const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
       const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
       const bottomElement = mobileCta || mobileBottomSection;
       const bottomElementRect = bottomElement?.getBoundingClientRect();
-      
-      console.log("Scroll détecté:", {
-        goingDown,
-        goingUp,
-        currentIdx,
-        canScrollDown,
-        canScrollUp,
-        contentOverflows,
-        isSectionAtBottom,
-        isSectionAtTop,
-        isMobile,
-        bottomElementFound: !!bottomElement,
-        bottomElementBottom: bottomElementRect?.bottom,
-        distanceFromBottom: sectionBottom - viewportHeight,
-        sectionBottom: sectionRect.bottom,
-        sectionTop: sectionRect.top,
-        sectionHeight,
-        viewportHeight,
-      });
 
-      // ✅ Si on scroll vers le bas
       if (goingDown) {
-        // Si on peut encore scroller dans le composant, laisser faire
         if (canScrollDown) {
-          isAtBottomRef.current = false; // On n'est plus au bout si on peut scroller
-          return; // Laisser le scroll normal se faire
+          isAtBottomRef.current = false;
+          return;
         }
         
-        // On est au bout maintenant
-        // Ne changer de catégorie que si on était déjà au bout avant (scroll supplémentaire au bout)
         if (isAtBottomRef.current && currentIdx < covers.length - 1) {
           e.preventDefault();
           e.stopPropagation();
           changeCategory(currentIdx + 1, 'down');
-          // Réinitialiser après le changement
           isAtBottomRef.current = false;
         } else {
-          // On vient d'arriver au bout, mémoriser pour le prochain scroll
           isAtBottomRef.current = true;
         }
       } 
-      // ✅ Si on scroll vers le haut
       else if (goingUp) {
-        // Si on peut encore scroller dans le composant, laisser faire
         if (canScrollUp) {
-          isAtTopRef.current = false; // On n'est plus au bout si on peut scroller
-          return; // Laisser le scroll normal se faire
+          isAtTopRef.current = false;
+          return;
         }
         
-        // On est au bout maintenant
-        // Ne changer de catégorie que si on était déjà au bout avant (scroll supplémentaire au bout)
         if (isAtTopRef.current && currentIdx > 0) {
           e.preventDefault();
           e.stopPropagation();
           changeCategory(currentIdx - 1, 'up');
-          // Réinitialiser après le changement
           isAtTopRef.current = false;
         } else {
-          // On vient d'arriver au bout, mémoriser pour le prochain scroll
           isAtTopRef.current = true;
         }
-        // Si on est à l'index 0 et au bout, laisser passer pour Projects
         if (currentIdx === 0) {
-          return; // Laisser Projects gérer le retour vers Hero
+          return;
         }
       }
 
@@ -371,7 +338,7 @@ const SliderProjects = () => {
       if (timeoutId.current) clearTimeout(timeoutId.current);
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [changeCategory, covers.length]); // ✅ Ajouter changeCategory dans les dépendances
+  }, [changeCategory, covers.length]);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -380,18 +347,15 @@ const SliderProjects = () => {
   const handleTouchMove = (e: TouchEvent) => {
     if (scrollLockedRef.current || touchStartY.current === null) return;
 
-    // ✅ Vérifier si on est dans la zone du slider (même si on a scrollé)
     const container = containerRef.current;
     if (!container) return;
     
     const containerRect = container.getBoundingClientRect();
-    // Si le container n'est pas visible dans le viewport, ne pas gérer le scroll
     if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) return;
 
     const deltaY = touchStartY.current - e.touches[0].clientY;
     const currentIdx = currentIndexRef.current;
 
-    // ✅ Vérifier si on est au bout du scroll du composant actuel
     const currentElement = containerRef.current?.querySelector(
       `[data-category-index="${currentIdx}"]`
     );
@@ -407,92 +371,68 @@ const SliderProjects = () => {
     const sectionBottom = sectionRect.bottom;
     const sectionHeight = sectionRect.height;
     
-    // ✅ Vérifier si le contenu dépasse la hauteur du viewport
     const contentOverflows = sectionHeight > viewportHeight;
     
-    // ✅ Vérifier si on est sur mobile (viewport < 900px)
     const isMobile = window.innerWidth <= 900;
     
-    // ✅ Vérifier si on est au bout en bas
-    // Sur mobile, on vérifie si mobileCta ou mobileBottomSection est visible
     let isSectionAtBottom = false;
     if (isMobile) {
-      // Sur mobile, chercher mobileCta ou mobileBottomSection
       const mobileCta = categorySection.querySelector('[class*="mobileCta"]');
       const mobileBottomSection = categorySection.querySelector('[class*="mobileBottomSection"]');
       const bottomElement = mobileCta || mobileBottomSection;
       
       if (bottomElement) {
         const bottomRect = bottomElement.getBoundingClientRect();
-        // Si le bas de l'élément est visible dans le viewport (avec une marge)
         isSectionAtBottom = bottomRect.bottom <= viewportHeight + 50;
       } else {
-        // Fallback : utiliser la position du composant
         const distanceFromBottom = sectionBottom - viewportHeight;
         isSectionAtBottom = contentOverflows 
           ? distanceFromBottom <= 50
           : true;
       }
     } else {
-      // Sur desktop, utiliser la logique précédente
       const distanceFromBottom = sectionBottom - viewportHeight;
       isSectionAtBottom = contentOverflows 
         ? distanceFromBottom <= 50
         : true;
     }
     
-    // Le composant est positionné à top: 0, donc on est au bout si sectionTop est proche de 0
     const isSectionAtTop = sectionTop >= -20;
     
-    // ✅ On peut scroller vers le bas seulement si le contenu dépasse ET qu'on n'est pas au bout
     const canScrollDown = contentOverflows && !isSectionAtBottom;
-    // ✅ On peut scroller vers le haut seulement si le contenu dépasse ET qu'on n'est pas au bout
     const canScrollUp = contentOverflows && !isSectionAtTop;
 
-    // ✅ Gérer le swipe vers le bas
     if (deltaY > 30) {
-      // Si on peut encore scroller dans le composant, laisser faire
       if (canScrollDown) {
-        isAtBottomRef.current = false; // On n'est plus au bout si on peut scroller
-        return; // Laisser le scroll normal se faire
+        isAtBottomRef.current = false;
+        return;
       }
       
-      // On est au bout maintenant
-      // Ne changer de catégorie que si on était déjà au bout avant (swipe supplémentaire au bout)
       if (isAtBottomRef.current && currentIdx < covers.length - 1) {
         e.preventDefault();
         e.stopPropagation();
         changeCategory(currentIdx + 1, 'down');
-        // Réinitialiser après le changement
         isAtBottomRef.current = false;
       } else {
-        // On vient d'arriver au bout, mémoriser pour le prochain swipe
         isAtBottomRef.current = true;
       }
     } 
-    // ✅ Gérer le swipe vers le haut
     else if (deltaY < -30) {
-      // Si on peut encore scroller dans le composant, laisser faire
       if (canScrollUp) {
-        isAtTopRef.current = false; // On n'est plus au bout si on peut scroller
-        return; // Laisser le scroll normal se faire
+        isAtTopRef.current = false;
+        return;
       }
       
-      // On est au bout maintenant
-      // Ne changer de catégorie que si on était déjà au bout avant (swipe supplémentaire au bout)
       if (isAtTopRef.current && currentIdx > 0) {
         e.preventDefault();
         e.stopPropagation();
         changeCategory(currentIdx - 1, 'up');
-        // Réinitialiser après le changement
         isAtTopRef.current = false;
       } else {
-        // On vient d'arriver au bout, mémoriser pour le prochain swipe
         isAtTopRef.current = true;
       }
-      // Si on est à l'index 0 et au bout, laisser passer pour Projects
       if (currentIdx === 0) {
-        return; // Laisser Projects gérer le retour vers Hero
+        return;
       }
     }
   };
@@ -507,14 +447,12 @@ const SliderProjects = () => {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", () => (touchStartY.current = null));
     };
-  }, [changeCategory]); // ✅ Ajouter changeCategory dans les dépendances
+  }, [changeCategory]);
 
-  // ✅ Exposer l'état via un attribut data sur le container
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     
-    // Mettre à jour les attributs data pour que Projects puisse les lire
     container.setAttribute('data-slider-index', currentIndex.toString());
     container.setAttribute('data-slider-locked', scrollLocked.toString());
   }, [currentIndex, scrollLocked]);
@@ -535,7 +473,7 @@ const SliderProjects = () => {
             top: 0,
             left: 0,
             width: "100%",
-            opacity: index === currentIndex ? 1 : 0, // ✅ Changer pour permettre l'animation
+            opacity: index === currentIndex ? 1 : 0,
             pointerEvents: index === currentIndex ? "auto" : "none",
             zIndex: index === currentIndex ? 10 : 1,
           }}
