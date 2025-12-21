@@ -162,18 +162,41 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         }
       }
 
-      if (!isMobile || !iconsWrapperRef.current || !contentRightRef.current || !allAnimationsComplete) {
+      if (!isMobile || !iconsWrapperRef.current || !contentRightRef.current) {
         return;
       }
 
-      const wrapper = iconsWrapperRef.current;
-      const container = contentRightRef.current;
-      const icons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-      
-      if (icons.length === 0) return;
+      // Attendre un peu que les icônes soient rendues, mais pas trop longtemps
+      const checkAndStart = () => {
+        const wrapper = iconsWrapperRef.current;
+        const container = contentRightRef.current;
+        if (!wrapper || !container) return;
 
-      // Attendre que les icônes soient rendues
-      const initAnimation = () => {
+        const icons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+        if (icons.length === 0) {
+          setTimeout(checkAndStart, 50);
+          return;
+        }
+
+        // Vérifier si au moins une icône a une largeur (est rendue)
+        const firstIcon = icons[0] as HTMLElement;
+        if (firstIcon.offsetWidth === 0) {
+          setTimeout(checkAndStart, 50);
+          return;
+        }
+
+        // Lancer l'animation même si toutes les animations d'apparition ne sont pas terminées
+        startScrollAnimation();
+      };
+
+      const startScrollAnimation = () => {
+        const wrapper = iconsWrapperRef.current;
+        const container = contentRightRef.current;
+        if (!wrapper || !container) return;
+
+        const icons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+        if (icons.length === 0) return;
+
         // Calculer la largeur totale nécessaire pour la boucle
         let totalWidth = 0;
         icons.forEach((icon) => {
@@ -181,7 +204,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         });
 
         if (totalWidth === 0) {
-          setTimeout(initAnimation, 100);
+          // Réessayer après un court délai si les largeurs ne sont pas encore calculées
+          setTimeout(startScrollAnimation, 50);
           return;
         }
 
@@ -247,25 +271,29 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         });
 
         scrollAnimationRef.current = scrollTimeline;
+      };
 
-        return () => {
-          if (scrollAnimationRef.current) {
-            scrollAnimationRef.current.kill();
-            scrollAnimationRef.current = null;
-          }
-          // Nettoyer les icônes dupliquées
-          duplicateIcons.forEach((icon) => {
+      // Démarrer la vérification immédiatement
+      checkAndStart();
+
+      return () => {
+        if (scrollAnimationRef.current) {
+          scrollAnimationRef.current.kill();
+          scrollAnimationRef.current = null;
+        }
+        // Nettoyer les icônes dupliquées
+        if (iconsWrapperRef.current) {
+          const wrapper = iconsWrapperRef.current;
+          const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+          const originalCount = allIcons.length / 2;
+          Array.from(allIcons).slice(originalCount).forEach((icon) => {
             if (icon.parentNode) {
               icon.parentNode.removeChild(icon);
             }
           });
-        };
+        }
       };
-
-      const cleanup = initAnimation();
-      
-      return cleanup;
-    }, [allAnimationsComplete, isMobile]);
+    }, [isMobile]);
 
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
@@ -626,15 +654,23 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               ref={contentRightRef}
               className={styles.contentRight}
               onTouchStart={(e) => {
-                // Empêcher la propagation si on touche dans la zone des icônes (mobile uniquement)
-                if (isMobile) {
-                  e.stopPropagation();
+                // Enregistrer la position initiale pour détecter le type de scroll
+                if (isMobile && e.touches.length > 0) {
+                  touchStartX.current = e.touches[0].clientX;
+                  touchStartY.current = e.touches[0].clientY;
                 }
               }}
               onTouchMove={(e) => {
-                // Empêcher la propagation du scroll horizontal (mobile uniquement)
-                if (isMobile) {
-                  e.stopPropagation();
+                // Bloquer uniquement le scroll horizontal, laisser passer le vertical
+                if (isMobile && e.touches.length > 0 && touchStartX.current !== null && touchStartY.current !== null) {
+                  const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
+                  const deltaY = Math.abs(e.touches[0].clientY - touchStartY.current);
+                  
+                  // Si c'est un scroll horizontal (deltaX > deltaY), empêcher la propagation
+                  // Sinon, laisser passer pour le scroll vertical
+                  if (deltaX > deltaY && deltaX > 10) {
+                    e.stopPropagation();
+                  }
                 }
               }}
             >

@@ -176,12 +176,12 @@
       .containerSubtitle {
         @media (max-width: 768px) {
           position: relative;
-          height: 250px;
+          height: 325px;
           width: 300px;
           display: grid;
           place-items: center;
         }
-        @media (max-height: 490px) {
+        @media (max-height: 590px) {
           height: 150px;
         }
         @media (max-height: 350px) {
@@ -237,6 +237,10 @@
             opacity: 0.7;
           }
         }
+        @media (max-height: 490px) {
+          font-size: 14px;
+          line-height: 21px;
+        }
       }
 
       .mediumSubtitle {
@@ -262,6 +266,10 @@
           font-size: 17px;
           line-height: 27.5px;
           height: 190px;
+        }
+        @media (max-height: 490px) {
+          font-size: 14px;
+          line-height: 21px;
         }
       }
 
@@ -293,6 +301,10 @@
           line-height: 26px;
           height: 190px;
         }
+        @media (max-height: 490px) {
+          font-size: 14px;
+          line-height: 21px;
+        }
       }
     }
 
@@ -316,6 +328,12 @@
       }
       @media (max-width: 450px) {
         width: 90%;
+      }
+      @media (max-height: 590px) {
+        padding-top: 80px;
+      }
+      @media (max-height: 490px) {
+        padding-top: 0px;
       }
     }
 
@@ -351,9 +369,7 @@
       @media (max-height: 400px) {
         height: 135px;
       }
-      @media (max-height: 350px) {
-        height: 65px;
-      }
+
 
       .iconContainer {
         flex: 0 1 calc(100% / 6 - 16px);
@@ -460,9 +476,6 @@
           @media (max-height: 545px) {
             bottom: 45px!important;
           }
-          @media (max-height: 350px) {
-            bottom: 35px!important;
-          }
         }
         .tooltipBottom {
           top: -18px;
@@ -472,9 +485,6 @@
           }
           @media (max-height: 545px) {
             bottom: 45px!important;
-          }
-          @media (max-height: 350px) {
-            bottom: 35px!important;
           }
         }
       }
