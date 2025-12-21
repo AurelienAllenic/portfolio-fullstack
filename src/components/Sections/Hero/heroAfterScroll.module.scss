@@ -39,16 +39,16 @@
   justify-content: center;
   align-items: flex-end;
   
-  padding-top: 120px; // Éviter que le contenu passe derrière la nav (100px nav + 20px marge)
+  padding-top: 120px;
   padding-bottom: 15vh;
   z-index: 5;
-  overflow: visible; // Permettre aux tooltips de dépasser
+  overflow: visible;
 
   @media (max-width: 768px) {
     align-items: center;
-    padding-top: 80px; // Moins de padding en mobile (nav mobile plus petite)
+    padding-top: 80px;
     padding-bottom: 0;
-    overflow: visible; // S'assurer que les tooltips ne sont pas coupés
+    overflow: visible;
   }
   @media (max-height: 430px) {
     padding-top: 55px;
@@ -75,7 +75,7 @@
     color: #fff;
     gap: 40px;
     z-index: 10;
-    overflow: visible; // Permettre aux tooltips de dépasser
+    overflow: visible;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -83,7 +83,7 @@
       text-align: center;
       justify-content: center;
       width: 90%;
-      overflow: visible; // S'assurer que les tooltips ne sont pas coupés
+      overflow: visible;
     }
     @media(max-height: 600px){
       gap: 0px;
@@ -301,14 +301,13 @@
       align-items: center;
       position: relative;
       width: 100%;
-      overflow: visible !important; // Permettre aux tooltips de dépasser (force)
+      overflow: visible !important;
 
       @media (max-width: 768px) {
         gap: 10px;
-        overflow: visible !important; // S'assurer que les tooltips ne sont pas coupés (force)
+        overflow: visible !important;
         width: 80%;
         max-width: 400px;
-        // Créer un contexte de stacking pour les tooltips
         isolation: isolate;
       }
       @media (max-width: 450px) {
@@ -332,16 +331,15 @@
         gap: 15px;
         flex-wrap: nowrap;
         overflow-x: auto;
-        overflow-y: visible !important; // Permettre aux tooltips de dépasser (force)
+        overflow-y: visible !important;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; // Firefox
-        -ms-overflow-style: none; // IE et Edge
+        scrollbar-width: none;
+        -ms-overflow-style: none;
         width: 100%;
-        padding: 80px 0 60px 0; // Plus de padding en haut pour éviter que les tooltips soient coupés
+        padding: 0px 0 60px 0;
         justify-content: flex-start;
-        position: relative; // Pour que les tooltips positionnés en absolute puissent dépasser
+        position: relative;
         height: 175px;
-        // Masquer la scrollbar sur Chrome, Safari et Opera
         &::-webkit-scrollbar {
           display: none;
         }
@@ -369,7 +367,7 @@
         justify-content: center;
         position: relative;
         z-index: 20;
-        overflow: visible; // Permettre aux tooltips de dépasser
+        overflow: visible;
 
         @media (max-width: 1400px) {
           flex: 0 1 calc(100% / 5 - 16px);
@@ -378,8 +376,8 @@
           flex: 0 1 calc(100% / 4 - 16px);
         }
         @media (max-width: 768px) {
-          flex: 0 0 auto; // Ne pas rétrécir, taille fixe
-          min-width: 55px; // Largeur minimale pour chaque icône
+          flex: 0 0 auto;
+          min-width: 55px;
         }
         @media (max-width: 435px) {
           min-width: 45px;
@@ -430,11 +428,10 @@
           transform: translateY(9px);
           pointer-events: none;
           transition: opacity 0.5s ease, transform 0.5s ease;
-          z-index: 10000; // Z-index très élevé pour être sûr
+          z-index: 10000;
           
           @media (max-width: 768px) {
-            z-index: 10000; // Z-index très élevé en mobile
-            // S'assurer que le tooltip peut dépasser
+            z-index: 10000;
             position: absolute;
           }
         }
@@ -444,7 +441,6 @@
           transform: translateY(0);
         }
 
-        // Tooltip visible en mobile (clic/touch)
         &.tooltipActive .tooltip,
         .tooltip.tooltipVisible {
           opacity: 1;
@@ -452,7 +448,6 @@
         }
 
         @media (max-width: 768px) {
-          // En mobile, le hover ne fonctionne pas, on utilise le clic/touch
           &.appeared:hover .tooltip {
             opacity: 0;
             transform: translateY(9px);
@@ -510,7 +505,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    align-self: center; // Aligner avec le centre des icônes
+    align-self: center;
     width: 40px;
     height: 40px;
     background: rgba(255, 255, 255, 0.1);
@@ -523,13 +518,13 @@
     flex-shrink: 0;
     z-index: 30;
     backdrop-filter: blur(5px);
-    outline: none; // Enlever l'outline au focus
-    -webkit-tap-highlight-color: transparent; // Enlever le highlight bleu sur mobile
-    -webkit-touch-callout: none; // Désactiver le menu contextuel
-    user-select: none; // Empêcher la sélection du texte
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
     -webkit-user-select: none;
-    margin-top: 20px; // Compenser le padding asymétrique (30px en haut vs 60px en bas)
-    opacity: 0; // Initialement invisible, sera animé par GSAP
+    margin-top: -60px; 
+    opacity: 0;
 
     @media (max-height: 545px) {
       margin-top: -85px;
@@ -549,7 +544,7 @@
     }
 
     &:focus {
-      outline: none; // Pas d'outline au focus
+      outline: none;
     }
   }
 }

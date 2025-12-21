@@ -121,6 +121,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               opacity: 1,
               duration: 0.5,
               ease: "power2.out",
+              animationDelay: 5
             });
           }
           if (scrollLeft < scrollWidth - clientWidth - 1 && rightArrowRef.current) {
@@ -128,6 +129,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               opacity: 1,
               duration: 0.5,
               ease: "power2.out",
+              animationDelay: 5
             });
           }
         }
