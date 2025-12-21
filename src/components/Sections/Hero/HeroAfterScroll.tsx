@@ -173,12 +173,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
       if (activeTooltipIndex !== null) {
         document.addEventListener('click', handleClickOutside);
-        document.addEventListener('touchstart', handleClickOutside);
+        document.addEventListener('touchend', handleClickOutside);
       }
 
       return () => {
         document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('touchstart', handleClickOutside);
+        document.removeEventListener('touchend', handleClickOutside);
       };
     }, [activeTooltipIndex]);
 
@@ -679,13 +679,18 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                       setActiveTooltipIndex(activeTooltipIndex === index ? null : index);
                     }
                   }}
+                  onTouchEnd={(e) => {
+                    // Empêcher la propagation pour ne pas déclencher les transitions
+                    e.stopPropagation();
+                    e.preventDefault();
+                    // Afficher le tooltip au clic (touchEnd) en mobile
+                    if (window.innerWidth <= 768) {
+                      setActiveTooltipIndex(activeTooltipIndex === index ? null : index);
+                    }
+                  }}
                   onTouchStart={(e) => {
                     // Empêcher la propagation pour ne pas déclencher les transitions
                     e.stopPropagation();
-                    // Afficher le tooltip au touch en mobile
-                    if (window.innerWidth <= 768) {
-                      setActiveTooltipIndex(index);
-                    }
                   }}
                 >
                   <img

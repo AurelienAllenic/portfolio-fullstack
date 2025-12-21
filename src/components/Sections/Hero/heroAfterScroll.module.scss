@@ -464,12 +464,24 @@
           @media (max-width: 768px) {
             bottom: 65px !important;
           }
+          @media (max-height: 545px) {
+            bottom: 45px!important;
+          }
+          @media (max-height: 350px) {
+            bottom: 35px!important;
+          }
         }
         .tooltipBottom {
           top: -18px;
           @media (max-width: 768px) {
             top: inherit !important;
             bottom: 65px !important;
+          }
+          @media (max-height: 545px) {
+            bottom: 45px!important;
+          }
+          @media (max-height: 350px) {
+            bottom: 35px!important;
           }
         }
       }
