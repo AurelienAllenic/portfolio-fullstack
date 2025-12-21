@@ -291,9 +291,11 @@
           height: 215px;
         }
         @media (max-width: 768px) {
-          width: 350px;
           font-size: 20px;
           line-height: 30px;
+        }
+        @media (max-width: 475px) {
+          width: 350px;
         }
         @media (max-width: 375px) {
           width: 275px;
