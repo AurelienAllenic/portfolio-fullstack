@@ -39,13 +39,23 @@
   justify-content: center;
   align-items: flex-end;
   
+  padding-top: 120px; // Éviter que le contenu passe derrière la nav (100px nav + 20px marge)
   padding-bottom: 15vh;
   z-index: 5;
+  overflow: visible; // Permettre aux tooltips de dépasser
 
   @media (max-width: 768px) {
     align-items: center;
+    padding-top: 80px; // Moins de padding en mobile (nav mobile plus petite)
     padding-bottom: 0;
+    overflow: visible; // S'assurer que les tooltips ne sont pas coupés
   }
+  @media (max-height: 430px) {
+    padding-top: 55px;
+  }
+  @media (max-height: 270px) {
+    padding-top: 30px;
+  }  
 
   .overlay {
     position: absolute;
@@ -65,15 +75,20 @@
     color: #fff;
     gap: 40px;
     z-index: 10;
+    overflow: visible; // Permettre aux tooltips de dépasser
 
     @media (max-width: 768px) {
       flex-direction: column;
       align-items: center;
       text-align: center;
       justify-content: center;
-      gap: 60px;
       width: 90%;
+      overflow: visible; // S'assurer que les tooltips ne sont pas coupés
     }
+    @media(max-height: 600px){
+      gap: 0px;
+    }
+
 
     .contentLeft {
       flex: 1;
@@ -108,6 +123,12 @@
         @media (max-width: 375px) {
           font-size: 50px;
         }
+        @media (max-height: 400px) {
+          font-size: 35px;
+        }
+        @media (max-height: 270px) {
+          font-size: 30px;
+        }  
 
         .titleLeftHighlight {
           position: absolute;
@@ -141,6 +162,14 @@
             top: 50px;
             left: 95px;
           }
+          @media (max-height: 400px) {
+            font-size: 22px;
+            left: 150px;
+            top: 45px;
+          }
+          @media (max-height: 270px) {
+            top: 35px;
+          }  
         }
       }
       .containerSubtitle {
@@ -151,6 +180,15 @@
           display: grid;
           place-items: center;
         }
+        @media (max-height: 490px) {
+          height: 150px;
+        }
+        @media (max-height: 350px) {
+          height: 100px;
+        }
+        @media (max-height: 270px) {
+          height: 80px;
+        }
       }
       .subtitle {
         margin-top: 75px;
@@ -159,9 +197,7 @@
         width: 100%;
         line-height: 38px;
         opacity: 0;
-        // ✅ Animation CSS désactivée, on utilise GSAP à la place
-        // animation: overlayAppearClassic 1s ease-out forwards;
-        // animation-delay: 1s;
+        
         
         &.noAnimation {
           animation: none !important;
@@ -185,7 +221,13 @@
           width: 250px;
           font-size: 17px;
         }
-
+        @media (max-height: 400px) {
+          font-size: 17px;
+        }
+        @media (max-height: 350px) {
+          font-size: 14px;
+          line-height: 20px;
+        }
         .linkSubtitle {
           color: #fff;
           text-decoration: underline;
@@ -253,6 +295,30 @@
       }
     }
 
+    .iconsWrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+      width: 100%;
+      overflow: visible !important; // Permettre aux tooltips de dépasser (force)
+
+      @media (max-width: 768px) {
+        gap: 10px;
+        overflow: visible !important; // S'assurer que les tooltips ne sont pas coupés (force)
+        width: 80%;
+        max-width: 400px;
+        // Créer un contexte de stacking pour les tooltips
+        isolation: isolate;
+      }
+      @media (max-width: 450px) {
+        width: 85%;
+      }
+      @media (max-width: 450px) {
+        width: 90%;
+      }
+    }
+
     .contentRight {
       flex: 1;
       display: flex;
@@ -263,10 +329,37 @@
 
       @media (max-width: 768px) {
         align-items: center;
-        gap: 5px;
+        gap: 15px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: visible !important; // Permettre aux tooltips de dépasser (force)
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; // Firefox
+        -ms-overflow-style: none; // IE et Edge
+        width: 100%;
+        padding: 80px 0 60px 0; // Plus de padding en haut pour éviter que les tooltips soient coupés
+        justify-content: flex-start;
+        position: relative; // Pour que les tooltips positionnés en absolute puissent dépasser
+        height: 175px;
+        // Masquer la scrollbar sur Chrome, Safari et Opera
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
       @media (max-width: 445px) {
         gap: 15px;
+      }
+      @media (max-height: 545px) {
+        padding: 0 0 85px 0;
+      }
+      @media (max-height: 490px) {
+        padding: 10px 0 0 0;
+      }
+      @media (max-height: 400px) {
+        height: 135px;
+      }
+      @media (max-height: 350px) {
+        height: 65px;
       }
 
       .iconContainer {
@@ -276,6 +369,7 @@
         justify-content: center;
         position: relative;
         z-index: 20;
+        overflow: visible; // Permettre aux tooltips de dépasser
 
         @media (max-width: 1400px) {
           flex: 0 1 calc(100% / 5 - 16px);
@@ -284,10 +378,11 @@
           flex: 0 1 calc(100% / 4 - 16px);
         }
         @media (max-width: 768px) {
-          flex: 0 1 calc(23% - 10px);
+          flex: 0 0 auto; // Ne pas rétrécir, taille fixe
+          min-width: 55px; // Largeur minimale pour chaque icône
         }
         @media (max-width: 435px) {
-          flex: 0 1 calc(30% - 10px);
+          min-width: 45px;
         }
 
         img {
@@ -335,11 +430,33 @@
           transform: translateY(9px);
           pointer-events: none;
           transition: opacity 0.5s ease, transform 0.5s ease;
+          z-index: 10000; // Z-index très élevé pour être sûr
+          
+          @media (max-width: 768px) {
+            z-index: 10000; // Z-index très élevé en mobile
+            // S'assurer que le tooltip peut dépasser
+            position: absolute;
+          }
         }
 
         &.appeared:hover .tooltip {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        // Tooltip visible en mobile (clic/touch)
+        &.tooltipActive .tooltip,
+        .tooltip.tooltipVisible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+          // En mobile, le hover ne fonctionne pas, on utilise le clic/touch
+          &.appeared:hover .tooltip {
+            opacity: 0;
+            transform: translateY(9px);
+          }
         }
 
         .tooltipTop {
@@ -371,4 +488,68 @@
   );
   z-index: 0;
   transition: background 0.8s ease;
+}
+
+.scrollArrowLeft,
+.scrollArrowRight {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center; // Aligner avec le centre des icônes
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    z-index: 30;
+    backdrop-filter: blur(5px);
+    outline: none; // Enlever l'outline au focus
+    -webkit-tap-highlight-color: transparent; // Enlever le highlight bleu sur mobile
+    -webkit-touch-callout: none; // Désactiver le menu contextuel
+    user-select: none; // Empêcher la sélection du texte
+    -webkit-user-select: none;
+    margin-top: 20px; // Compenser le padding asymétrique (30px en haut vs 60px en bas)
+    opacity: 0; // Initialement invisible, sera animé par GSAP
+
+    @media (max-height: 545px) {
+      margin-top: -85px;
+    }
+    @media (max-height: 490px) {
+      margin-top: 0px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    &:focus {
+      outline: none; // Pas d'outline au focus
+    }
+  }
+}
+
+.scrollArrowLeft {
+  @media (max-width: 768px) {
+    margin-right: 5px;
+  }
+}
+
+.scrollArrowRight {
+  @media (max-width: 768px) {
+    margin-left: 5px;
+  }
 }
