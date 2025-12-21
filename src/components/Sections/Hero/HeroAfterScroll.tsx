@@ -66,12 +66,20 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const [direction, setDirection] = useState<"up" | "down">("down");
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
-    const [activeTooltipIndex, setActiveTooltipIndex] = useState<number | null>(null);
     const contentRightRef = useRef<HTMLDivElement | null>(null);
-    const [showLeftArrow, setShowLeftArrow] = useState(false);
-    const [showRightArrow, setShowRightArrow] = useState(false);
-    const leftArrowRef = useRef<HTMLButtonElement | null>(null);
-    const rightArrowRef = useRef<HTMLButtonElement | null>(null);
+    const iconsWrapperRef = useRef<HTMLDivElement | null>(null);
+    const scrollAnimationRef = useRef<gsap.core.Timeline | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Détecter si on est en mobile
+    useEffect(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useLayoutEffect(() => {
       if (textRef.current) {
@@ -105,35 +113,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
       const lastIconDelay =
         0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
-      
-      // Animer les flèches après toutes les icônes
-      const arrowsAnimationDelay = (lastIconDelay + 0.8) * 1000; // Après la dernière icône + 0.8s
-      const arrowsTimeout = setTimeout(() => {
-        // Vérifier si les flèches doivent être affichées et les animer
-        if (contentRightRef.current && window.innerWidth <= 768) {
-          const container = contentRightRef.current;
-          const scrollLeft = container.scrollLeft;
-          const scrollWidth = container.scrollWidth;
-          const clientWidth = container.clientWidth;
-
-          if (scrollLeft > 0 && leftArrowRef.current) {
-            gsap.to(leftArrowRef.current, {
-              opacity: 1,
-              duration: 0.5,
-              ease: "power2.out",
-              animationDelay: 5
-            });
-          }
-          if (scrollLeft < scrollWidth - clientWidth - 1 && rightArrowRef.current) {
-            gsap.to(rightArrowRef.current, {
-              opacity: 1,
-              duration: 0.5,
-              ease: "power2.out",
-              animationDelay: 5
-            });
-          }
-        }
-      }, arrowsAnimationDelay);
 
       const allAnimationsTimeout = setTimeout(() => {
         setAllAnimationsComplete(true);
@@ -141,7 +120,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
       return () => {
         timeouts.forEach(clearTimeout);
-        clearTimeout(arrowsTimeout);
         clearTimeout(allAnimationsTimeout);
       };
     }, []);
@@ -162,132 +140,132 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
     }, []);
 
-    // Fermer le tooltip quand on clique ailleurs
+    // Animation de défilement automatique infini avec tooltips
     useEffect(() => {
-      const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-        if (window.innerWidth <= 768 && activeTooltipIndex !== null) {
-          const target = e.target as HTMLElement;
-          if (!target.closest(`.${styles.iconContainer}`)) {
-            setActiveTooltipIndex(null);
-          }
-        }
-      };
-
-      if (activeTooltipIndex !== null) {
-        document.addEventListener('click', handleClickOutside);
-        document.addEventListener('touchend', handleClickOutside);
+      // Nettoyer l'animation précédente si elle existe
+      if (scrollAnimationRef.current) {
+        scrollAnimationRef.current.kill();
+        scrollAnimationRef.current = null;
       }
 
-      return () => {
-        document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('touchend', handleClickOutside);
-      };
-    }, [activeTooltipIndex]);
+      // Nettoyer les icônes dupliquées si elles existent
+      if (iconsWrapperRef.current) {
+        const wrapper = iconsWrapperRef.current;
+        const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+        // Supprimer les icônes dupliquées (celles après les originales)
+        if (allIcons.length > allIcons.length / 2) {
+          Array.from(allIcons).slice(allIcons.length / 2).forEach((icon) => {
+            if (icon.parentNode) {
+              icon.parentNode.removeChild(icon);
+            }
+          });
+        }
+      }
 
-    // Gérer l'affichage des flèches selon la position du scroll
-    useEffect(() => {
-      const checkScrollPosition = () => {
-        if (!contentRightRef.current || window.innerWidth > 768) {
-          setShowLeftArrow(false);
-          setShowRightArrow(false);
-          if (leftArrowRef.current) gsap.set(leftArrowRef.current, { opacity: 0 });
-          if (rightArrowRef.current) gsap.set(rightArrowRef.current, { opacity: 0 });
+      if (!isMobile || !iconsWrapperRef.current || !contentRightRef.current || !allAnimationsComplete) {
+        return;
+      }
+
+      const wrapper = iconsWrapperRef.current;
+      const container = contentRightRef.current;
+      const icons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+      
+      if (icons.length === 0) return;
+
+      // Attendre que les icônes soient rendues
+      const initAnimation = () => {
+        // Calculer la largeur totale nécessaire pour la boucle
+        let totalWidth = 0;
+        icons.forEach((icon) => {
+          totalWidth += (icon as HTMLElement).offsetWidth + 25; // 25px = gap
+        });
+
+        if (totalWidth === 0) {
+          setTimeout(initAnimation, 100);
           return;
         }
 
-        const container = contentRightRef.current;
-        const scrollLeft = container.scrollLeft;
-        const scrollWidth = container.scrollWidth;
-        const clientWidth = container.clientWidth;
+        // Dupliquer les icônes pour créer une boucle infinie
+        const duplicateIcons: HTMLElement[] = [];
+        Array.from(icons).forEach((icon) => {
+          const clone = icon.cloneNode(true) as HTMLElement;
+          wrapper.appendChild(clone);
+          duplicateIcons.push(clone);
+        });
 
-        const shouldShowLeft = scrollLeft > 0;
-        const shouldShowRight = scrollLeft < scrollWidth - clientWidth - 1;
+        // Position initiale
+        gsap.set(wrapper, { x: 0 });
 
-        // Animer l'apparition/disparition des flèches
-        if (shouldShowLeft) {
-          if (!showLeftArrow) {
-            setShowLeftArrow(true);
-          }
-          if (leftArrowRef.current) {
-            gsap.to(leftArrowRef.current, {
-              opacity: 1,
-              duration: 0.3,
-              ease: "power2.out"
-            });
-          }
-        } else {
-          if (showLeftArrow) {
-            setShowLeftArrow(false);
-          }
-          if (leftArrowRef.current) {
-            gsap.to(leftArrowRef.current, {
-              opacity: 0,
-              duration: 0.3,
-              ease: "power2.in"
-            });
-          }
-        }
+        // Animation de défilement infini
+        const scrollTimeline = gsap.timeline({ repeat: -1 });
+        scrollTimeline.to(wrapper, {
+          x: -totalWidth,
+          duration: totalWidth / 30, // Vitesse de défilement (ajustable)
+          ease: "none",
+          onUpdate: () => {
+            const currentX = gsap.getProperty(wrapper, "x") as number;
+            
+            // Réinitialiser la position pour créer la boucle
+            if (Math.abs(currentX) >= totalWidth) {
+              gsap.set(wrapper, { x: 0 });
+              scrollTimeline.progress(0);
+            }
 
-        if (shouldShowRight) {
-          if (!showRightArrow) {
-            setShowRightArrow(true);
-          }
-          if (rightArrowRef.current) {
-            gsap.to(rightArrowRef.current, {
-              opacity: 1,
-              duration: 0.3,
-              ease: "power2.out"
+            // Animer les tooltips au fur et à mesure
+            const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+            allIconsElements.forEach((iconEl) => {
+              const iconRect = (iconEl as HTMLElement).getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
+              const iconCenterX = iconRect.left + iconRect.width / 2;
+              const containerCenterX = containerRect.left + containerRect.width / 2;
+              const distanceFromCenter = Math.abs(iconCenterX - containerCenterX);
+              const maxDistance = containerRect.width / 2;
+
+              // Afficher le tooltip si l'icône est proche du centre
+              const tooltip = iconEl.querySelector(`.${styles.tooltip}`) as HTMLElement;
+              if (tooltip) {
+                if (distanceFromCenter < maxDistance * 0.5) {
+                  const opacity = Math.max(0, 1 - (distanceFromCenter / (maxDistance * 0.5)));
+                  // Utiliser set pour éviter les conflits avec les transitions CSS
+                  gsap.set(tooltip, {
+                    opacity: opacity,
+                    y: 9 * (1 - opacity),
+                    force3D: true,
+                    immediateRender: true
+                  });
+                } else {
+                  gsap.set(tooltip, {
+                    opacity: 0,
+                    y: 9,
+                    force3D: true,
+                    immediateRender: true
+                  });
+                }
+              }
             });
           }
-        } else {
-          if (showRightArrow) {
-            setShowRightArrow(false);
+        });
+
+        scrollAnimationRef.current = scrollTimeline;
+
+        return () => {
+          if (scrollAnimationRef.current) {
+            scrollAnimationRef.current.kill();
+            scrollAnimationRef.current = null;
           }
-          if (rightArrowRef.current) {
-            gsap.to(rightArrowRef.current, {
-              opacity: 0,
-              duration: 0.3,
-              ease: "power2.in"
-            });
-          }
-        }
+          // Nettoyer les icônes dupliquées
+          duplicateIcons.forEach((icon) => {
+            if (icon.parentNode) {
+              icon.parentNode.removeChild(icon);
+            }
+          });
+        };
       };
 
-      // Vérifier immédiatement au montage
-      const initialCheck = setTimeout(() => {
-        checkScrollPosition();
-      }, 100);
-
-      if (contentRightRef.current) {
-        contentRightRef.current.addEventListener('scroll', checkScrollPosition);
-        
-        // Vérifier aussi au resize
-        window.addEventListener('resize', checkScrollPosition);
-      }
-
-      return () => {
-        clearTimeout(initialCheck);
-        if (contentRightRef.current) {
-          contentRightRef.current.removeEventListener('scroll', checkScrollPosition);
-        }
-        window.removeEventListener('resize', checkScrollPosition);
-      };
-    }, [showLeftArrow, showRightArrow]);
-
-    const scrollIcons = (direction: 'left' | 'right') => {
-      if (!contentRightRef.current) return;
+      const cleanup = initAnimation();
       
-      const container = contentRightRef.current;
-      const scrollAmount = 200; // Distance de scroll en pixels
-      const currentScroll = container.scrollLeft;
-      
-      container.scrollTo({
-        left: direction === 'left' 
-          ? currentScroll - scrollAmount 
-          : currentScroll + scrollAmount,
-        behavior: 'smooth'
-      });
-    };
+      return cleanup;
+    }, [allAnimationsComplete, isMobile]);
 
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
@@ -644,83 +622,79 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             </div>
           </div>
           <div className={styles.iconsWrapper}>
-            {showLeftArrow && (
-              <button
-                ref={leftArrowRef}
-                className={styles.scrollArrowLeft}
-                onClick={() => scrollIcons('left')}
-                aria-label="Défiler vers la gauche"
-              >
-                ←
-              </button>
-            )}
             <div 
               ref={contentRightRef}
               className={styles.contentRight}
               onTouchStart={(e) => {
-                // Empêcher la propagation si on touche dans la zone des icônes
-                e.stopPropagation();
+                // Empêcher la propagation si on touche dans la zone des icônes (mobile uniquement)
+                if (isMobile) {
+                  e.stopPropagation();
+                }
               }}
               onTouchMove={(e) => {
-                // Empêcher la propagation du scroll horizontal
-                e.stopPropagation();
+                // Empêcher la propagation du scroll horizontal (mobile uniquement)
+                if (isMobile) {
+                  e.stopPropagation();
+                }
               }}
             >
-              {allIcons.map((icon, index) => (
-                <div
-                  key={index}
-                  ref={(el) => {
-                    iconContainers.current[index] = el;
-                  }}
-                  className={`${styles.iconContainer} ${
-                    activeTooltipIndex === index ? styles.tooltipActive : ""
-                  }`}
-                  onClick={() => {
-                    // Toggle tooltip au clic en mobile
-                    if (window.innerWidth <= 768) {
-                      setActiveTooltipIndex(activeTooltipIndex === index ? null : index);
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    // Empêcher la propagation pour ne pas déclencher les transitions
-                    e.stopPropagation();
-                    e.preventDefault();
-                    // Afficher le tooltip au clic (touchEnd) en mobile
-                    if (window.innerWidth <= 768) {
-                      setActiveTooltipIndex(activeTooltipIndex === index ? null : index);
-                    }
-                  }}
-                  onTouchStart={(e) => {
-                    // Empêcher la propagation pour ne pas déclencher les transitions
-                    e.stopPropagation();
-                  }}
+              {isMobile ? (
+                <div 
+                  ref={iconsWrapperRef} 
+                  style={{ display: 'flex', gap: '25px', willChange: 'transform' }}
                 >
-                  <img
-                    src={icon.src}
-                    alt={icon.name}
-                    className={styles.icon}
-                    style={{ animationDelay: `${0.5 + index * 0.1}s` }}
-                  />
-                  <span
-                    className={`${styles.tooltip} ${
-                      index < 6 ? styles.tooltipTop : styles.tooltipBottom
-                    } ${activeTooltipIndex === index ? styles.tooltipVisible : ""}`}
-                  >
-                    {icon.name}
-                  </span>
+                  {allIcons.map((icon, index) => (
+                    <div
+                      key={index}
+                      ref={(el) => {
+                        iconContainers.current[index] = el;
+                      }}
+                      className={styles.iconContainer}
+                    >
+                      <img
+                        src={icon.src}
+                        alt={icon.name}
+                        className={styles.icon}
+                        style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                      />
+                      <span
+                        className={`${styles.tooltip} ${
+                          index < 6 ? styles.tooltipTop : styles.tooltipBottom
+                        }`}
+                      >
+                        {icon.name}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <>
+                  {allIcons.map((icon, index) => (
+                    <div
+                      key={index}
+                      ref={(el) => {
+                        iconContainers.current[index] = el;
+                      }}
+                      className={styles.iconContainer}
+                    >
+                      <img
+                        src={icon.src}
+                        alt={icon.name}
+                        className={styles.icon}
+                        style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                      />
+                      <span
+                        className={`${styles.tooltip} ${
+                          index < 6 ? styles.tooltipTop : styles.tooltipBottom
+                        }`}
+                      >
+                        {icon.name}
+                      </span>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
-            {showRightArrow && (
-              <button
-                ref={rightArrowRef}
-                className={styles.scrollArrowRight}
-                onClick={() => scrollIcons('right')}
-                aria-label="Défiler vers la droite"
-              >
-                →
-              </button>
-            )}
           </div>
         </div>
       </div>

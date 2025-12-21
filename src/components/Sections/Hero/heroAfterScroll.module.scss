@@ -329,21 +329,15 @@
 
       @media (max-width: 768px) {
         align-items: center;
-        gap: 15px;
+        gap: 0;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: hidden;
         overflow-y: visible !important;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
         width: 100%;
         padding: 0px 0 60px 0;
         justify-content: flex-start;
         position: relative;
         height: 175px;
-        &::-webkit-scrollbar {
-          display: none;
-        }
       }
       @media (max-width: 445px) {
         gap: 15px;
@@ -434,6 +428,9 @@
           @media (max-width: 768px) {
             z-index: 10000;
             position: absolute;
+            // Désactiver les transitions CSS en mobile pour laisser GSAP gérer l'animation automatique
+            transition: none !important;
+            will-change: opacity, transform;
           }
         }
 
@@ -458,7 +455,7 @@
         .tooltipTop {
           bottom: 55px;
           @media (max-width: 768px) {
-            bottom: 65px !important;
+            bottom: 50px !important;
           }
           @media (max-height: 545px) {
             bottom: 45px!important;
@@ -471,7 +468,7 @@
           top: -18px;
           @media (max-width: 768px) {
             top: inherit !important;
-            bottom: 65px !important;
+            bottom: 50px !important;
           }
           @media (max-height: 545px) {
             bottom: 45px!important;
