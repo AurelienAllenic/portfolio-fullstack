@@ -28,6 +28,8 @@ const Contact = () => {
     console.log("Formulaire soumis:", formData);
   };
 
+  // L'animation est entièrement gérée par SliderProjects, pas besoin de logique ici
+
   return (
     <section className={styles.containerContact} id="contact">
       <div className={styles.contactInner}>

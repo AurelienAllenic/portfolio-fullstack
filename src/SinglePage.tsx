@@ -9,6 +9,7 @@ import SliderProjects from "./components/Sections/Projects/SliderProjects";
 const SinglePage = () => {
   const [showProjects, setShowProjects] = useState(false);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const handleTransitionToProjects = () => {
     setShowProjects(true);
@@ -25,6 +26,10 @@ const SinglePage = () => {
     }, 2000);
   };
 
+  const handleTransitionToContact = () => {
+    setShowContact(true);
+  };
+
   return (
     <>
       <Nav />
@@ -39,10 +44,10 @@ const SinglePage = () => {
       {showProjects && (
         <>
           <Projects onTransitionToHero={handleReturnToHero} />
-          <SliderProjects />
+          <SliderProjects onTransitionToContact={handleTransitionToContact} />
         </>
       )}
-      <Contact />
+      {showContact && <Contact />}
     </>
   );
 };

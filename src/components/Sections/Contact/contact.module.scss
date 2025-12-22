@@ -11,6 +11,7 @@
   background: #000;
   color: #fff;
   position: relative;
+  z-index: 10;
 
   // ✅ Pseudo-élément pour l'image de fond à droite
   &::after {
