@@ -7,6 +7,7 @@ import ProjectPage from "./components/Sections/Projects/SingleProject";
 import NotFound from "./components/General/NotFound/NotFound";
 import ProjectCategory from "./components/Sections/Projects/ProjectCategory";
 import { openclassrooms1_cover } from "./components/Sections/Projects/Data";
+import Contact from "./components/Sections/Contact/Contact";
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Route path="/project" element={
           <ProjectCategory cover={openclassrooms1_cover} />
         } />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/projects/:name" element={<ProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
