@@ -44,9 +44,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
-  max-width: 1400px;
   width: 100%;
   align-items: center;
+  max-width: 1400px;
   position: relative;
   z-index: 1; // ✅ Le contenu passe devant l'image
 
@@ -87,6 +87,14 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+  padding: 50px;
+  @media (max-width: 900px) {
+    position: relative;
+    top: 150px;
+  }
+  @media (max-width: 450px) {
+    padding: 25px;
+  }
 }
 
 .formGroup {
@@ -129,6 +137,7 @@
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
+  resize: none;
 }
 
 .formFooter {
@@ -139,17 +148,23 @@
   margin-top: 10px;
 
   @media (max-width: 600px) {
-    flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+  }
+  @media (max-width: 400px) {
+    flex-direction: column;
   }
 }
 
 .checkboxGroup {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 20px;
   flex: 1;
+  label{
+    width: 165px;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 .checkbox {
@@ -158,6 +173,7 @@
   height: 18px;
   cursor: pointer;
   accent-color: #fff;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .checkboxLabel {
@@ -171,15 +187,24 @@
 .submitButton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   background: transparent;
   border: none;
   color: #cfcfcf;
   font-family: $font-family-primary;
-  font-size: 14px;
+  font-size: 17px;
   cursor: pointer;
   padding: 6px 0;
   transition: color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  @media (max-width: 400px) {
+    position: relative;
+    left: 65%;
+  }
+  @media (max-width: 380px) {
+    left: 55%;
+  }
 
   &:hover {
     color: #fff;
@@ -188,6 +213,7 @@
   .arrow {
     opacity: 0.8;
     font-size: 18px;
+    display: flex;
   }
 }
 
@@ -313,12 +339,18 @@
   }
 
   @media (max-width: 900px) {
-    font-size: 15px;
+    font-size: 18px;
     margin-top: 40px;
-    max-width: 100%;
+    max-width: 80%;
   }
 
   @media (max-width: 768px) {
     font-size: 14px;
+  }
+  @media (max-width: 600px) {
+    max-width: 90%;
+  }
+  @media (max-width: 380px) {
+    max-width: 95%;
   }
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./contact.module.scss";
+import { BsArrowRight } from "react-icons/bs";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,6 @@ const Contact = () => {
       <div className={styles.contactInner}>
         {/* Section gauche : Formulaire */}
         <div className={styles.formSection}>
-          <h2 className={styles.formTitle}>Contact</h2>
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label htmlFor="name" className={styles.label}>
@@ -91,14 +91,14 @@ const Contact = () => {
                   required
                 />
                 <label htmlFor="consent" className={styles.checkboxLabel}>
-                  J'accepte que mes données soient utilisées pour me recontacter
+                En envoyant ce message, je consens à être recontacté via l’adresse email fouirnie
                 </label>
               </div>
               <button type="submit" className={styles.submitButton}>
-                <span>ENVOYER</span>
                 <span className={styles.arrow} aria-hidden>
-                  →
+                  <BsArrowRight />
                 </span>
+                <span>ENVOYER</span>
               </button>
             </div>
           </form>
@@ -108,7 +108,7 @@ const Contact = () => {
         <div className={styles.infoSection}>
           <div className={styles.infoContent}>
             <h2 className={styles.infoTitle}>
-              <span className={styles.titleMain}>ME</span>
+              <span className={styles.titleMain}>Me</span>
               <span className={styles.titleAccent}>CONTACTER</span>
             </h2>
             <p className={styles.description}>
