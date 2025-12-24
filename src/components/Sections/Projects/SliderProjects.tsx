@@ -237,11 +237,13 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
   }, [covers.length]);
 
   const transitionToContact = useCallback(() => {
+    
     if (scrollLockedRef.current) {
       return;
     }
 
     const currentIdx = currentIndexRef.current;
+
     if (currentIdx !== covers.length - 1) {
       return;
     }
@@ -262,10 +264,8 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
       return;
     }
 
-    // Ajouter Contact au DOM immédiatement
     onTransitionToContact?.();
 
-    // Attendre que Contact soit monté dans le DOM avec retry
     const checkAndAnimate = (attempts = 0) => {
       const contactElement = document.querySelector('#contact') as HTMLElement;
       
@@ -281,35 +281,49 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
         return;
       }
 
-      // S'assurer que Contact est visible
-      if (contactElement.offsetHeight === 0) {
-        setTimeout(() => checkAndAnimate(attempts), 50);
+      const computedStyle = window.getComputedStyle(contactElement);
+
+      if (computedStyle.display === 'none') {
+        gsap.set(contactElement, { display: 'flex' });
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            checkAndAnimate(attempts + 1);
+          });
+        });
         return;
       }
 
-        // Positionner Contact au même endroit que la catégorie actuelle
-        const currentRect = currentElement.getBoundingClientRect();
-        const scrollY = window.scrollY;
-        
-        // Sauvegarder la position naturelle de Contact
-        const contactNaturalTop = contactElement.getBoundingClientRect().top + scrollY;
-        
-        // Positionner Contact en fixed au même endroit que la catégorie
+      const isHidden = computedStyle.visibility === 'hidden' || contactElement.offsetHeight === 0;
+      
+      if (isHidden) {
+        if (attempts < 30) {
+          setTimeout(() => checkAndAnimate(attempts + 1), 50);
+        } else {
+          gsap.set(contactElement, { display: "flex", visibility: "visible" });
+          setScrollLocked(false);
+          scrollLockedRef.current = false;
+          document.body.style.overflow = "";
+        }
+        return;
+      }
+
         gsap.set(contactElement, {
           position: "fixed",
-          top: `${currentRect.top}px`,
-          left: `${currentRect.left}px`,
-          width: `${currentRect.width}px`,
+          top: "0px",
+          left: "0px",
+          width: "100%",
           zIndex: 20,
         });
 
-        // Initialiser Contact comme une nouvelle catégorie
         gsap.set(contactElement, { opacity: 0, y: 100 });
 
-        // Animer la disparition de la dernière catégorie ET l'apparition de Contact
         const tl = gsap.timeline({
           onComplete: () => {
-            // Remettre Contact en position normale et scroller vers lui
+            const projectsContainer = document.querySelector('#projects') as HTMLElement;
+            if (projectsContainer) {
+              gsap.set(projectsContainer, { display: "none" });
+            }
+
             gsap.set(contactElement, {
               position: "relative",
               top: "auto",
@@ -317,11 +331,7 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
               width: "100%",
             });
             
-            // Scroller vers Contact
-            window.scrollTo({ 
-              top: contactNaturalTop - 100, 
-              behavior: 'smooth' 
-            });
+            window.scrollTo({ top: 0, behavior: 'instant' });
             
             requestAnimationFrame(() => {
               setScrollLocked(false);
@@ -331,15 +341,20 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
           },
         });
 
-        // Disparition de la dernière catégorie
         tl.to(currentElement, {
           y: -100,
           opacity: 0,
           duration: 0.6,
           ease: "power2.in",
+          onComplete: () => {
+            gsap.set(currentElement, { 
+              display: "none",
+              y: 0,
+              pointerEvents: "none"
+            });
+          }
         });
 
-        // Apparition de Contact (comme une nouvelle catégorie)
         tl.to(contactElement, {
           y: 0,
           duration: 0.6,
@@ -350,10 +365,13 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
           opacity: 1,
           duration: 0.4,
           ease: "power2.out",
+          onStart: () => {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
         });
     };
 
-    // Démarrer la vérification
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         checkAndAnimate();
@@ -361,8 +379,135 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
     });
   }, [covers.length, onTransitionToContact]);
 
+  const transitionFromContact = useCallback(() => {
+    if (scrollLockedRef.current) {
+      return;
+    }
+
+    const contactElement = document.querySelector('#contact') as HTMLElement;
+    if (!contactElement) return;
+
+    const lastCategoryIndex = covers.length - 1;
+    const lastCategoryElement = containerRef.current?.querySelector(
+      `[data-category-index="${lastCategoryIndex}"]`
+    );
+
+    if (!lastCategoryElement) return;
+
+    setScrollLocked(true);
+    scrollLockedRef.current = true;
+    document.body.style.overflow = "hidden";
+
+    // Réafficher le container Projects
+    const projectsContainer = document.querySelector('#projects') as HTMLElement;
+    if (projectsContainer) {
+      gsap.set(projectsContainer, { display: "block" });
+    }
+
+    // Réafficher la dernière catégorie
+    gsap.set(lastCategoryElement, { 
+      display: "block",
+      y: 100,
+      opacity: 0,
+      pointerEvents: "auto"
+    });
+
+    // Scroller immédiatement vers le haut
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    // Positionner Contact en fixed en haut
+    gsap.set(contactElement, {
+      position: "fixed",
+      top: "0px",
+      left: "0px",
+      width: "100%",
+      zIndex: 20,
+    });
+
+    // Animation inverse : Contact disparaît, dernière catégorie apparaît
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // Remettre le currentIndex à la dernière catégorie AVANT de réinitialiser les styles
+        setCurrentIndex(lastCategoryIndex);
+        currentIndexRef.current = lastCategoryIndex;
+
+        // Réinitialiser les styles GSAP pour que le style inline React prenne le dessus
+        gsap.set(lastCategoryElement, {
+          display: "",
+          y: 0,
+          opacity: "",
+          pointerEvents: ""
+        });
+
+        // Réinitialiser les refs pour permettre la détection du scroll
+        isAtBottomRef.current = false;
+        isAtTopRef.current = true; // On est en haut après le retour
+
+        // Mettre Contact en display: none
+        gsap.set(contactElement, {
+          display: "none",
+          position: "relative",
+          top: "auto",
+          left: "auto",
+          width: "100%",
+        });
+
+        // S'assurer qu'on est bien en haut
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        requestAnimationFrame(() => {
+          setScrollLocked(false);
+          scrollLockedRef.current = false;
+          document.body.style.overflow = "";
+        });
+      },
+    });
+
+    // Disparition de Contact
+    tl.to(contactElement, {
+      y: -100,
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.in",
+    });
+
+    // Apparition de la dernière catégorie
+    tl.to(lastCategoryElement, {
+      y: 0,
+      duration: 0.6,
+      ease: "power2.out",
+    }, "-=0.3");
+
+    tl.to(lastCategoryElement, {
+      opacity: 1,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  }, [covers.length]);
+
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // ✅ Vérifier si Contact est déjà affiché et visible
+      const contactElement = document.querySelector('#contact') as HTMLElement;
+      const isContactVisible = contactElement && 
+        contactElement.offsetParent !== null && 
+        window.getComputedStyle(contactElement).display !== 'none';
+      
+      if (isContactVisible) {
+        // Contact est visible, vérifier si on scroll vers le haut en haut de Contact
+        const isAtTop = window.scrollY === 0 || window.scrollY < 50;
+        const goingUp = e.deltaY < 0;
+
+        if (isAtTop && goingUp && !scrollLockedRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          transitionFromContact();
+          return;
+        }
+        return;
+      }
+
+      
       if (scrollLockedRef.current || timeoutId.current) {
         e.preventDefault();
         e.stopPropagation();
@@ -370,10 +515,14 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
       }
 
       const container = containerRef.current;
-      if (!container) return;
+      if (!container) {
+        return;
+      }
       
       const containerRect = container.getBoundingClientRect();
-      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) return;
+      if (containerRect.bottom < 0 || containerRect.top > window.innerHeight) {
+        return;
+      }
 
       const goingDown = e.deltaY > 0;
       const goingUp = e.deltaY < 0;
@@ -383,10 +532,14 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
         `[data-category-index="${currentIdx}"]`
       );
       
-      if (!currentElement) return;
+      if (!currentElement) {
+        return;
+      }
 
       const categorySection = currentElement.querySelector('section');
-      if (!categorySection) return;
+      if (!categorySection) {
+        return;
+      }
 
       const sectionRect = categorySection.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
@@ -430,9 +583,11 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
           isAtBottomRef.current = false;
           return;
         }
-        
-        // Si on est à la dernière catégorie et qu'on scroll vers le bas, déclencher Contact
-        if (isAtBottomRef.current && currentIdx === covers.length - 1) {
+
+        if (currentIdx === covers.length - 1) {
+          if (!isAtBottomRef.current) {
+            isAtBottomRef.current = true;
+          }
           e.preventDefault();
           e.stopPropagation();
           transitionToContact();
@@ -477,13 +632,32 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
       if (timeoutId.current) clearTimeout(timeoutId.current);
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [changeCategory, covers.length, transitionToContact]);
+  }, [changeCategory, covers.length, transitionToContact, transitionFromContact]);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchMove = (e: TouchEvent) => {
+    const contactElement = document.querySelector('#contact') as HTMLElement;
+    const isContactVisible = contactElement && 
+      contactElement.offsetParent !== null && 
+      window.getComputedStyle(contactElement).display !== 'none';
+    
+    if (isContactVisible) {
+      const isAtTop = window.scrollY === 0 || window.scrollY < 50;
+      const deltaY = touchStartY.current ? touchStartY.current - e.touches[0].clientY : 0;
+      const goingUp = deltaY < -30;
+
+      if (isAtTop && goingUp && !scrollLockedRef.current && touchStartY.current !== null) {
+        e.preventDefault();
+        e.stopPropagation();
+        transitionFromContact();
+        return;
+      }
+      return;
+    }
+
     if (scrollLockedRef.current || touchStartY.current === null) return;
 
     const container = containerRef.current;
@@ -546,15 +720,17 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
         isAtBottomRef.current = false;
         return;
       }
-      
-      // Si on est à la dernière catégorie et qu'on swipe vers le bas, déclencher Contact
-      if (isAtBottomRef.current && currentIdx === covers.length - 1) {
+
+      if (currentIdx === covers.length - 1) {
+        if (!isAtBottomRef.current) {
+          isAtBottomRef.current = true;
+        }
         e.preventDefault();
         e.stopPropagation();
         transitionToContact();
         return;
       }
-      
+
       if (isAtBottomRef.current && currentIdx < covers.length - 1) {
         e.preventDefault();
         e.stopPropagation();
@@ -594,7 +770,7 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", () => (touchStartY.current = null));
     };
-  }, [changeCategory]);
+  }, [changeCategory, transitionFromContact]);
 
   useEffect(() => {
     const container = containerRef.current;
