@@ -30,7 +30,7 @@ const Hero: React.FC<HeroProps> = ({
   >(forceHeroState || (returnFromProjects ? "hero2" : "hero1"));
   
   const isForcedNavigationRef = useRef(false);
-  const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(forceHeroState);
+  const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(undefined);
   const currentGradientStateRef = useRef<"hero1" | "hero2" | "transition">(gradientState);
 
   // Mettre à jour le ref quand gradientState change
@@ -42,6 +42,8 @@ const Hero: React.FC<HeroProps> = ({
   useEffect(() => {
     if (forceHeroState === undefined) {
       isForcedNavigationRef.current = false;
+      // Réinitialiser lastForceHeroStateRef quand forceHeroState devient undefined
+      lastForceHeroStateRef.current = undefined;
       return;
     }
     
@@ -62,6 +64,7 @@ const Hero: React.FC<HeroProps> = ({
                           (forceHeroState === "hero2" && currentGradient !== "hero2");
     
     // Toujours forcer le changement si forceHeroState a changé OU si l'état actuel ne correspond pas
+    // IMPORTANT: On force toujours si stateMismatch est true, même si forceChanged est false
     if (forceChanged || stateMismatch) {
       isForcedNavigationRef.current = true;
       lastForceHeroStateRef.current = forceHeroState;
@@ -163,11 +166,11 @@ const Hero: React.FC<HeroProps> = ({
           isForcedNavigationRef.current = false;
         }, 100);
       }
-    } else {
-      // Même si on ne force pas le changement, mettre à jour lastForceHeroStateRef
-      // pour éviter les problèmes de synchronisation
-      lastForceHeroStateRef.current = forceHeroState;
     }
+    
+    // Toujours mettre à jour lastForceHeroStateRef après avoir traité le changement
+    // pour éviter les problèmes de synchronisation
+    lastForceHeroStateRef.current = forceHeroState;
   }, [forceHeroState]);
 
   const handleReturnToHeroBefore = () => {
