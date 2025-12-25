@@ -300,6 +300,11 @@ const Hero: React.FC<HeroProps> = ({
     }
 
     const handleWheel = (e: WheelEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       const rect = container.getBoundingClientRect();
       const isAtTop = window.scrollY === 0;
       if (!isAtTop) return;
@@ -317,6 +322,11 @@ const Hero: React.FC<HeroProps> = ({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       if (touchStartY.current === null) return;
       const rect = container.getBoundingClientRect();
       const isAtTop = window.scrollY === 0;

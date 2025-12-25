@@ -1,10 +1,12 @@
 import { Link } from "react-scroll";
 import styles from "./nav.module.scss";
 import { gsap } from "gsap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import ModalCV from "./ModalCV";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const navEl = navRef.current;
@@ -12,9 +14,8 @@ const Nav = () => {
 
     const logo = navEl.querySelector<HTMLElement>(`.${styles.logo}`);
     const links = navEl.querySelectorAll<HTMLElement>(`.${styles.navLinks} li`);
-    const socials = navEl.querySelectorAll<HTMLElement>(`.${styles.socialIcons} a`);
+    const socials = navEl.querySelectorAll<HTMLElement>(`.${styles.socialIcons} > *`);
 
-    // Etat initial
     if (logo) gsap.set(logo, { opacity: 0, x: -30 });
     gsap.set(links, { opacity: 0, y: -30 });
     gsap.set(socials, { opacity: 0, y: -30 });
@@ -23,19 +24,16 @@ const Nav = () => {
 
     const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-    // Logo
     if (logo) {
       tl.to(logo, { opacity: 1, y: 0, duration: 0.6, delay: baseDelay }, 0);
     }
 
-    // Liens (stagger)
     tl.to(
       links,
       { opacity: 1, y: 0, duration: 0.6, stagger: 0.12 },
       logo ? 0.1 + baseDelay : baseDelay
     );
 
-    // Icônes sociales (stagger)
     tl.to(
       socials,
       { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 },
@@ -87,6 +85,12 @@ const Nav = () => {
           </li>
         </ul>
         <div className={styles.socialIcons}>
+          <div onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
+            <img
+              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
+              alt="CV"
+            />
+          </div>
           <a
             href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
             target="_blank"
@@ -103,12 +107,13 @@ const Nav = () => {
             rel="noopener noreferrer"
           >
             <img
-              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/github_logo_kxkhvp.webp"
+              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/Github_logo_kmfq2g.webp"
               alt="GitHub"
             />
           </a>
         </div>
       </nav>
+      <ModalCV isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

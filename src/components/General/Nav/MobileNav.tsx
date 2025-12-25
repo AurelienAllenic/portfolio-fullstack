@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./mobileNav.module.scss";
+import ModalCV from "./ModalCV";
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
@@ -15,15 +17,14 @@ const MobileNav = () => {
     if (!root) return;
 
     const left = root.querySelector<HTMLElement>(`.${styles.left}`);
-    const socials = root.querySelectorAll<HTMLElement>(`.${styles.socialIcons} a`);
+    const socials = root.querySelectorAll<HTMLElement>(`.${styles.socialIcons} > *`);
     const burger = root.querySelector<HTMLElement>(`.${styles.burger}`);
 
-    // Etat initial (slide from top)
     if (left) gsap.set(left, { opacity: 0, y: -30 });
     gsap.set(socials, { opacity: 0, y: -30 });
     if (burger) gsap.set(burger, { opacity: 0, y: -30 });
 
-    const baseDelay = 2.5; // aligne avec Nav et HeroBeforeScroll
+    const baseDelay = 2.5;
 
     const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
@@ -47,6 +48,12 @@ const MobileNav = () => {
       <div className={styles.left}>AURELIEN ALLENIC</div>
       <div className={styles.right}>
         <div className={styles.socialIcons}>
+          <div onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
+            <img
+              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
+              alt="CV"
+            />
+          </div>
           <a
             href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
             target="_blank"
@@ -63,7 +70,7 @@ const MobileNav = () => {
             rel="noopener noreferrer"
           >
             <img
-              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/github_logo_kxkhvp.webp"
+              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/Github_logo_kmfq2g.webp"
               alt="GitHub"
             />
           </a>
@@ -77,6 +84,7 @@ const MobileNav = () => {
           <div className={styles.bar}></div>
         </div>
       </div>
+      <ModalCV isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

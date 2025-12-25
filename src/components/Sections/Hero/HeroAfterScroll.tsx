@@ -319,6 +319,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       let timeoutId: number | null = null;
 
       const handleWheel = (e: WheelEvent) => {
+        // Vérifier si la modale CV est ouverte
+        if (document.body.getAttribute("data-modal-open") === "true") {
+          return;
+        }
+        
         if (scrollLocked || timeoutId) {
           e.preventDefault();
           return;
@@ -397,6 +402,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       if (
         touchStartY.current === null ||
         touchStartX.current === null ||

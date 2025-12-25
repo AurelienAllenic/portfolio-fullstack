@@ -487,6 +487,11 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       // ✅ Vérifier si Contact est déjà affiché et visible
       const contactElement = document.querySelector('#contact') as HTMLElement;
       const isContactVisible = contactElement && 
@@ -639,6 +644,11 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
   };
 
   const handleTouchMove = (e: TouchEvent) => {
+    // Vérifier si la modale CV est ouverte
+    if (document.body.getAttribute("data-modal-open") === "true") {
+      return;
+    }
+    
     const contactElement = document.querySelector('#contact') as HTMLElement;
     const isContactVisible = contactElement && 
       contactElement.offsetParent !== null && 

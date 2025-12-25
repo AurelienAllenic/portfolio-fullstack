@@ -42,6 +42,11 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       if (scrollBlocked || timeoutId) {
         e.preventDefault();
         return;
@@ -75,6 +80,11 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Vérifier si la modale CV est ouverte
+      if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
       if (scrollBlocked || touchStartY.current === null) return;
 
       const isAtTop = window.scrollY === 0;
