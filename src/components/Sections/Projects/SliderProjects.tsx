@@ -12,9 +12,11 @@ import {
 
 interface SliderProjectsProps {
   onTransitionToContact?: () => void;
+  forceIndex?: number;
+  onForceIndexComplete?: () => void;
 }
 
-const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
+const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scrollLocked, setScrollLocked] = useState(true);
   const touchStartY = useRef<number | null>(null);
@@ -36,6 +38,20 @@ const SliderProjects = ({ onTransitionToContact }: SliderProjectsProps) => {
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
+
+  // Forcer l'index si forceIndex est défini
+  useEffect(() => {
+    if (forceIndex !== undefined && forceIndex !== currentIndex) {
+      setCurrentIndex(forceIndex);
+      currentIndexRef.current = forceIndex;
+      // Notifier que l'index a été forcé
+      if (onForceIndexComplete) {
+        setTimeout(() => {
+          onForceIndexComplete();
+        }, 100);
+      }
+    }
+  }, [forceIndex, currentIndex, onForceIndexComplete]);
 
   useEffect(() => {
     scrollLockedRef.current = scrollLocked;

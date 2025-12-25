@@ -9,12 +9,14 @@ interface HeroProps {
   onTransitionToProjects?: () => void;
   returnFromProjects?: boolean;
   onResetReturnFromProjects?: () => void;
+  forceHeroState?: "hero1" | "hero2";
 }
 
 const Hero: React.FC<HeroProps> = ({
   onTransitionToProjects,
   returnFromProjects,
   onResetReturnFromProjects,
+  forceHeroState,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,7 +27,148 @@ const Hero: React.FC<HeroProps> = ({
 
   const [gradientState, setGradientState] = useState<
     "hero1" | "hero2" | "transition"
-  >(returnFromProjects ? "hero2" : "hero1");
+  >(forceHeroState || (returnFromProjects ? "hero2" : "hero1"));
+  
+  const isForcedNavigationRef = useRef(false);
+  const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(forceHeroState);
+  const currentGradientStateRef = useRef<"hero1" | "hero2" | "transition">(gradientState);
+
+  // Mettre à jour le ref quand gradientState change
+  useEffect(() => {
+    currentGradientStateRef.current = gradientState;
+  }, [gradientState]);
+
+  // Mettre à jour l'état si forceHeroState change
+  useEffect(() => {
+    if (forceHeroState === undefined) {
+      isForcedNavigationRef.current = false;
+      return;
+    }
+    
+    const overlay = overlayRef.current;
+    const container = containerRef.current;
+    
+    if (!overlay || !container) return;
+    
+    // Toujours forcer le changement si forceHeroState est défini et différent de la dernière valeur
+    // OU si gradientState ne correspond pas à forceHeroState (arrivé via scroll)
+    // Cela garantit que même si on est arrivé via scroll, le clic sur la nav force le changement
+    const currentGradient = currentGradientStateRef.current;
+    const forceChanged = lastForceHeroStateRef.current !== forceHeroState;
+    
+    // Vérifier si l'état actuel ne correspond pas à forceHeroState
+    // Si on est dans hero2 (via scroll) et qu'on clique sur "Aurélien Allenic" (hero1), on doit forcer
+    const stateMismatch = (forceHeroState === "hero1" && (currentGradient === "hero2" || currentGradient === "transition")) ||
+                          (forceHeroState === "hero2" && currentGradient !== "hero2");
+    
+    // Toujours forcer le changement si forceHeroState a changé OU si l'état actuel ne correspond pas
+    if (forceChanged || stateMismatch) {
+      isForcedNavigationRef.current = true;
+      lastForceHeroStateRef.current = forceHeroState;
+      
+      if (forceHeroState === "hero1") {
+        // Forcer le changement immédiatement
+        setGradientState("hero1");
+        gsap.set(overlay, { "--gradient-size": "0%" });
+        
+        if (tlRef.current) {
+          tlRef.current.progress(0);
+          tlRef.current.pause();
+        }
+        
+        if (hero2Ref.current) {
+          gsap.set(hero2Ref.current, { opacity: 0 });
+        }
+        
+        document.body.style.overflow = "hidden";
+        
+        setTimeout(() => {
+          isForcedNavigationRef.current = false;
+        }, 100);
+      } else if (forceHeroState === "hero2") {
+        // Forcer le changement immédiatement
+        setGradientState("hero2");
+        gsap.set(overlay, { "--gradient-size": "100%" });
+        
+        if (tlRef.current) {
+          // Jouer la timeline jusqu'à la fin pour déclencher toutes les animations
+          tlRef.current.progress(1, false);
+          // Déclencher manuellement le onComplete pour simuler le scroll
+          if (tlRef.current.progress() === 1) {
+            const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+            
+            const titles = container.querySelectorAll<HTMLElement>(
+              ".titleLeft, .titleLeft span, .titleRight, .subtitle"
+            );
+            const scrollIndicators = container.querySelectorAll<HTMLElement>(
+              ".scrollIndicatorContainer"
+            );
+
+            titles.forEach((el) => {
+              el.style.animation = "none";
+            });
+            scrollIndicators.forEach((el) => {
+              el.style.animation = "none";
+            });
+
+            const icons = container.querySelectorAll<HTMLImageElement>(
+              ".scrollIndicatorContainer img"
+            );
+            gsap.set(icons, { opacity: 0, x: -45 });
+            gsap.to(icons, {
+              opacity: 1,
+              x: 0,
+              stagger: 0.2,
+              delay: 1.5,
+              duration: 1,
+              ease: "power2.out",
+            });
+
+            if (isDesktop) {
+              gsap.set(titles, { opacity: 0, y: -45 });
+              gsap.to(titles, {
+                opacity: 1,
+                y: 0,
+                stagger: 0.2,
+                delay: 0.5,
+                duration: 1,
+                ease: "power2.out",
+              });
+            } else {
+              gsap.set(titles, { opacity: 0, x: -45 });
+              gsap.to(titles, {
+                opacity: 1,
+                x: 0,
+                stagger: 0.2,
+                delay: 0.5,
+                duration: 1,
+                ease: "power2.out",
+              });
+            }
+          }
+        }
+        
+        if (hero2Ref.current) {
+          // Rendre hero2 visible IMMÉDIATEMENT
+          gsap.set(hero2Ref.current, { opacity: 1 });
+          
+          // S'assurer que le contentContainer est visible
+          const contentContainer = hero2Ref.current.querySelector('[class*="contentContainer"]') as HTMLElement;
+          if (contentContainer) {
+            gsap.set(contentContainer, { opacity: 1 });
+          }
+        }
+        
+        setTimeout(() => {
+          isForcedNavigationRef.current = false;
+        }, 100);
+      }
+    } else {
+      // Même si on ne force pas le changement, mettre à jour lastForceHeroStateRef
+      // pour éviter les problèmes de synchronisation
+      lastForceHeroStateRef.current = forceHeroState;
+    }
+  }, [forceHeroState]);
 
   const handleReturnToHeroBefore = () => {
     const overlay = overlayRef.current;
@@ -90,12 +233,15 @@ const Hero: React.FC<HeroProps> = ({
 
         const progress = tl.progress();
 
-        if (val > 0 && val < 50) {
-          setGradientState("transition");
-        } else if (val >= 50) {
-          setGradientState("hero2");
-        } else if (val === 0) {
-          setGradientState("hero1");
+        // Ne pas mettre à jour gradientState si c'est une navigation forcée
+        if (!isForcedNavigationRef.current) {
+          if (val > 0 && val < 50) {
+            setGradientState("transition");
+          } else if (val >= 50) {
+            setGradientState("hero2");
+          } else if (val === 0) {
+            setGradientState("hero1");
+          }
         }
 
         if (hero2Ref.current) {
@@ -358,13 +504,15 @@ const Hero: React.FC<HeroProps> = ({
     <div ref={containerRef} className={styles.containerHero} id="about">
       <div ref={overlayRef} className={styles.overlay}></div>
 
-      {gradientState === "hero1" && <HeroBeforeScroll />}
+      {gradientState === "hero1" && <HeroBeforeScroll key="hero1" />}
       {gradientState === "hero2" && (
         <HeroAfterScroll
+          key="hero2"
           ref={hero2Ref}
           onReturnToHeroBefore={handleReturnToHeroBefore}
           onTransitionToProjects={onTransitionToProjects}
           returnFromProjects={returnFromProjects}
+          isForced={forceHeroState === "hero2"}
         />
       )}
     </div>

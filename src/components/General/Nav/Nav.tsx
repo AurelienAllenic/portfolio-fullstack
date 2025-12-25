@@ -3,10 +3,12 @@ import styles from "./nav.module.scss";
 import { gsap } from "gsap";
 import { useEffect, useRef } from "react";
 import { useModalCV } from "./ModalCVContext";
+import { useNavigation } from "./NavigationContext";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
+  const { navigateToHero, navigateToProjects, navigateToContact } = useNavigation();
 
   useEffect(() => {
     const navEl = navRef.current;
@@ -48,40 +50,37 @@ const Nav = () => {
   return (
     <div className={styles.containerNav}>
       <nav className={styles.nav} ref={navRef}>
-        <div className={styles.logo}>AURELIEN ALLENIC</div>
+        <div 
+          className={styles.logo}
+          onClick={() => navigateToHero("hero1")}
+          style={{ cursor: "pointer" }}
+        >
+          AURELIEN ALLENIC
+        </div>
         <ul className={styles.navLinks}>
           <li>
-            <Link
-              to="about"
-              smooth={true}
-              duration={500}
-              offset={-70}
-              activeClass="active"
+            <div
+              onClick={() => navigateToHero("hero2")}
+              style={{ cursor: "pointer" }}
             >
               About
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              to="projects"
-              smooth={true}
-              duration={500}
-              offset={0}
-              activeClass="active"
+            <div
+              onClick={() => navigateToProjects()}
+              style={{ cursor: "pointer" }}
             >
               Projects
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              to="contact"
-              smooth={true}
-              duration={500}
-              offset={-70}
-              activeClass="active"
+            <div
+              onClick={() => navigateToContact()}
+              style={{ cursor: "pointer" }}
             >
               Contact
-            </Link>
+            </div>
           </li>
         </ul>
         <div className={styles.socialIcons}>

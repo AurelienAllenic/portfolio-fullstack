@@ -6,6 +6,7 @@ interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
   onTransitionToProjects?: () => void;
   returnFromProjects?: boolean;
+  isForced?: boolean;
 }
 
 type LinkText = {
@@ -19,7 +20,7 @@ type TextContent = string | LinkText;
 
 const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
   (
-    { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects },
+    { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects, isForced },
     ref
   ) => {
     const texts: TextContent[] = [
@@ -57,12 +58,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const overlayRef = useRef<HTMLDivElement | null>(null);
     const contentContainerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(
-      returnFromProjects ? texts.length - 1 : 0
+      returnFromProjects ? texts.length - 1 : (isForced ? 0 : 0)
     );
 
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
-      useState(returnFromProjects);
+      useState(returnFromProjects || isForced);
     const [direction, setDirection] = useState<"up" | "down">("down");
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
@@ -493,6 +494,51 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       allAnimationsComplete,
       onTransitionToProjects,
     ]);
+
+    // Réinitialiser textIndex à 0 si isForced et rendre tout visible immédiatement
+    useEffect(() => {
+      if (isForced) {
+        // Réinitialiser à 0 si nécessaire
+        if (textIndex !== 0) {
+          setTextIndex(0);
+        }
+        
+        firstRender.current = true;
+        setAllAnimationsComplete(true);
+        
+        // Rendre le conteneur principal visible IMMÉDIATEMENT
+        const containerElement = ref && typeof ref === 'object' && ref.current ? ref.current : null;
+        if (containerElement) {
+          gsap.set(containerElement, { opacity: 1 });
+        }
+        
+        // Rendre le contentContainer visible IMMÉDIATEMENT
+        if (contentContainerRef.current) {
+          gsap.set(contentContainerRef.current, { opacity: 1 });
+        }
+        
+        // Déclencher l'animation du texte avec le délai normal
+        setTimeout(() => {
+          if (textRef.current) {
+            gsap.set(textRef.current, { opacity: 0, y: 20 });
+            gsap.fromTo(
+              textRef.current,
+              { opacity: 0, y: 20 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                delay: 1.2, // Délai comme dans le premier render
+                onComplete: () => {
+                  firstRender.current = false;
+                },
+              }
+            );
+          }
+        }, 50);
+      }
+    }, [isForced, ref]);
 
     useEffect(() => {
       if (returnFromProjects && textIndex === texts.length - 1) {
