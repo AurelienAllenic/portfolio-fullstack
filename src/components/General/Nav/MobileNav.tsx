@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./mobileNav.module.scss";
-import ModalCV from "./ModalCV";
+import { useModalCV } from "./ModalCVContext";
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal } = useModalCV();
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
@@ -48,7 +48,7 @@ const MobileNav = () => {
       <div className={styles.left}>AURELIEN ALLENIC</div>
       <div className={styles.right}>
         <div className={styles.socialIcons}>
-          <div onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
+          <div onClick={openModal} style={{ cursor: "pointer" }}>
             <img
               src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
               alt="CV"
@@ -84,7 +84,6 @@ const MobileNav = () => {
           <div className={styles.bar}></div>
         </div>
       </div>
-      <ModalCV isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

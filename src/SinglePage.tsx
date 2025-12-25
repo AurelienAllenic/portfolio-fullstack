@@ -5,6 +5,7 @@ import Hero from "./components/Sections/Hero/Hero";
 import Projects from "./components/Sections/Projects/Projects";
 import MobileNav from "./components/General/Nav/MobileNav";
 import SliderProjects from "./components/Sections/Projects/SliderProjects";
+import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
 
 const SinglePage = () => {
   const [showProjects, setShowProjects] = useState(false);
@@ -31,7 +32,7 @@ const SinglePage = () => {
   };
 
   return (
-    <>
+    <ModalCVProvider>
       <Nav />
       <MobileNav />
       {!showProjects && (
@@ -48,7 +49,7 @@ const SinglePage = () => {
         </>
       )}
       {showContact && <Contact />}
-    </>
+    </ModalCVProvider>
   );
 };
 

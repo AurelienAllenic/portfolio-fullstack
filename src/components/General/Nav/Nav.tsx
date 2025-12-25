@@ -1,12 +1,12 @@
 import { Link } from "react-scroll";
 import styles from "./nav.module.scss";
 import { gsap } from "gsap";
-import { useEffect, useRef, useState } from "react";
-import ModalCV from "./ModalCV";
+import { useEffect, useRef } from "react";
+import { useModalCV } from "./ModalCVContext";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal } = useModalCV();
 
   useEffect(() => {
     const navEl = navRef.current;
@@ -85,7 +85,7 @@ const Nav = () => {
           </li>
         </ul>
         <div className={styles.socialIcons}>
-          <div onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
+          <div onClick={openModal} style={{ cursor: "pointer" }}>
             <img
               src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
               alt="CV"
@@ -113,7 +113,6 @@ const Nav = () => {
           </a>
         </div>
       </nav>
-      <ModalCV isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
