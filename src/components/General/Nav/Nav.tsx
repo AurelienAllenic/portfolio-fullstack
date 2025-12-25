@@ -1,4 +1,3 @@
-import { Link } from "react-scroll";
 import styles from "./nav.module.scss";
 import { gsap } from "gsap";
 import { useEffect, useRef } from "react";

@@ -1,8 +1,9 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useContext, useState, useRef } from "react";
 import type { ReactNode } from "react";
 
 type HeroState = "hero1" | "hero2";
-type NavigationDestination = HeroState | "projects" | "contact";
 
 interface NavigationContextType {
   heroState: HeroState;
