@@ -16,6 +16,11 @@ interface NavigationContextType {
   setReturnToHero: (callback: () => void) => void;
   setNavigateToProjects: (callback: () => void) => void;
   setNavigateToContact: (callback: () => void) => void;
+  shouldResetHeroStates: boolean; // Flag pour réinitialiser les états Hero
+  shouldResetHeroStatesRef: React.RefObject<boolean>; // Ref pour lecture synchrone
+  shouldResetProjectsStates: boolean; // Flag pour réinitialiser les états Projects
+  resetNavigationFlags: () => void; // Fonction pour réinitialiser les flags
+  updateCurrentSection?: (section: "hero" | "projects" | "contact") => void; // Synchronisation manuelle
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
@@ -24,6 +29,10 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const [heroState, setHeroState] = useState<HeroState>("hero1"); // Par défaut hero1 (HeroBeforeScroll)
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<"close" | "open">("close");
+  const [shouldResetHeroStates, setShouldResetHeroStates] = useState(false);
+  const [shouldResetProjectsStates, setShouldResetProjectsStates] = useState(false);
+  const currentSectionRef = useRef<"hero" | "projects" | "contact">("hero"); // Suivre la section actuelle
+  const shouldResetHeroStatesRef = useRef(false); // Ref pour lecture synchrone
   const returnToHeroCallbackRef = useRef<(() => void) | null>(null);
   const navigateToProjectsCallbackRef = useRef<(() => void) | null>(null);
   const navigateToContactCallbackRef = useRef<(() => void) | null>(null);
@@ -40,7 +49,18 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     navigateToContactCallbackRef.current = callback;
   };
 
+  const resetNavigationFlags = () => {
+    setShouldResetHeroStates(false);
+    shouldResetHeroStatesRef.current = false;
+    setShouldResetProjectsStates(false);
+  };
+
+  const updateCurrentSection = (section: "hero" | "projects" | "contact") => {
+    currentSectionRef.current = section;
+  };
+
   const navigateToHero = (destination: HeroState) => {
+    console.log('🔵 [NAV CONTEXT] navigateToHero called with destination:', destination, 'isTransitioning:', isTransitioning);
     if (isTransitioning) return;
     
     setIsTransitioning(true);
@@ -48,13 +68,19 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     
     // Fermer le gradient (écran noir)
     setTimeout(() => {
-      // Si on n'est pas déjà dans Hero, revenir à Hero d'abord
+      // Changer l'état hero et activer le flag de réinitialisation AVANT d'appeler le callback
+      console.log('🔵 [NAV CONTEXT] Setting heroState to:', destination, 'and shouldResetHeroStates to true');
+      setHeroState(destination);
+      setShouldResetHeroStates(true);
+      shouldResetHeroStatesRef.current = true; // Mise à jour synchrone du ref
+      currentSectionRef.current = "hero";
+      
+      // Ensuite, revenir à Hero pour fermer Projects/Contact (le flag shouldResetHeroStates est maintenant true)
       if (returnToHeroCallbackRef.current) {
+        console.log('🔵 [NAV CONTEXT] Calling returnToHeroCallback (shouldResetHeroStatesRef.current is now:', shouldResetHeroStatesRef.current, ')');
         returnToHeroCallbackRef.current();
       }
       
-      // Changer l'état hero
-      setHeroState(destination);
       setTransitionDirection("open");
       
       // Ouvrir le gradient pour révéler
@@ -71,15 +97,17 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setTransitionDirection("close");
     
     setTimeout(() => {
-      // Revenir à Hero d'abord si nécessaire
-      if (returnToHeroCallbackRef.current) {
+      // Revenir à Hero d'abord SEULEMENT si on n'est pas déjà sur Hero/Projects
+      if (currentSectionRef.current === "contact" && returnToHeroCallbackRef.current) {
         returnToHeroCallbackRef.current();
       }
       
-      // Naviguer vers Projects
+      // Naviguer vers Projects et activer le flag de réinitialisation
       if (navigateToProjectsCallbackRef.current) {
         navigateToProjectsCallbackRef.current();
       }
+      setShouldResetProjectsStates(true);
+      currentSectionRef.current = "projects";
       
       setTransitionDirection("open");
       
@@ -96,15 +124,14 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setTransitionDirection("close");
     
     setTimeout(() => {
-      // Revenir à Hero d'abord si nécessaire
-      if (returnToHeroCallbackRef.current) {
-        returnToHeroCallbackRef.current();
-      }
+      // NE PAS retourner à Hero - aller directement à Contact
+      // La transition Projects → Contact est gérée par le scroll naturel
       
       // Naviguer vers Contact
       if (navigateToContactCallbackRef.current) {
         navigateToContactCallbackRef.current();
       }
+      currentSectionRef.current = "contact";
       
       setTransitionDirection("open");
       
@@ -125,7 +152,12 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       transitionDirection, 
       setReturnToHero,
       setNavigateToProjects,
-      setNavigateToContact
+      setNavigateToContact,
+      shouldResetHeroStates,
+      shouldResetHeroStatesRef,
+      shouldResetProjectsStates,
+      resetNavigationFlags,
+      updateCurrentSection
     }}>
       {children}
     </NavigationContext.Provider>

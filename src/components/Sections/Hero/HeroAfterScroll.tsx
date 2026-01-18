@@ -7,6 +7,8 @@ interface HeroAfterScrollProps {
   onTransitionToProjects?: () => void;
   returnFromProjects?: boolean;
   isForced?: boolean;
+  forceTextIndex?: number; // Pour forcer un textIndex spécifique lors de la navigation
+  onNavigationReset?: boolean; // Signal pour réinitialiser les refs après navigation
 }
 
 type LinkText = {
@@ -20,7 +22,7 @@ type TextContent = string | LinkText;
 
 const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
   (
-    { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects, isForced },
+    { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects, isForced, forceTextIndex, onNavigationReset },
     ref
   ) => {
     const texts: TextContent[] = [
@@ -58,15 +60,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const overlayRef = useRef<HTMLDivElement | null>(null);
     const contentContainerRef = useRef<HTMLDivElement | null>(null);
     const [textIndex, setTextIndex] = useState(
-      returnFromProjects ? texts.length - 1 : (isForced ? 0 : 0)
+      forceTextIndex !== undefined ? forceTextIndex : (returnFromProjects ? texts.length - 1 : (isForced ? 0 : 0))
     );
 
     const [scrollLocked, setScrollLocked] = useState(false);
     const [allAnimationsComplete, setAllAnimationsComplete] =
-      useState(returnFromProjects || isForced);
+      useState(returnFromProjects || isForced || forceTextIndex !== undefined);
     const [direction, setDirection] = useState<"up" | "down">("down");
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
+    const wasNavigationReset = useRef(false);
     const contentRightRef = useRef<HTMLDivElement | null>(null);
     const iconsWrapperRef = useRef<HTMLDivElement | null>(null);
     const scrollAnimationRef = useRef<gsap.core.Timeline | null>(null);
@@ -81,6 +84,32 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       window.addEventListener('resize', checkMobile);
       return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // Gérer la réinitialisation lors de la navigation par liens
+    useEffect(() => {
+      if (onNavigationReset && !wasNavigationReset.current) {
+        wasNavigationReset.current = true;
+        
+        // Réinitialiser les refs critiques
+        firstRender.current = false; // Important : ne pas rejouer l'animation d'entrée
+        hasTriggeredSwipe.current = false;
+        setScrollLocked(false);
+        
+        // Forcer le textIndex si spécifié
+        if (forceTextIndex !== undefined) {
+          setTextIndex(forceTextIndex);
+          setDirection(forceTextIndex === 0 ? "down" : "up");
+        }
+        
+        // S'assurer que les animations sont considérées comme complètes
+        setAllAnimationsComplete(true);
+        
+        // Réinitialiser le flag après un court délai
+        setTimeout(() => {
+          wasNavigationReset.current = false;
+        }, 100);
+      }
+    }, [onNavigationReset, forceTextIndex]);
 
     useLayoutEffect(() => {
       if (textRef.current) {
@@ -541,17 +570,30 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [isForced, ref]);
 
     useEffect(() => {
+      // Si on revient de Projects, animer le texte IMMÉDIATEMENT
       if (returnFromProjects && textIndex === texts.length - 1) {
         if (textRef.current) {
-          // Désactiver l'animation CSS et forcer opacity: 0 avec !important
+          console.log('🎬 [HEROAFTERSCROLL] returnFromProjects - animating text');
+          // Désactiver l'animation CSS
           textRef.current.style.setProperty('animation', 'none', 'important');
-          textRef.current.style.setProperty('opacity', '0', 'important');
-          gsap.set(textRef.current, { opacity: 0, y: 0 });
+          // Animer le texte avec GSAP
+          gsap.fromTo(
+            textRef.current,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              delay: 0.5, // Petit délai pour que le gradient soit visible
+            }
+          );
         }
         return;
       }
 
       if (textRef.current) {
+        console.log('🎬 [HEROAFTERSCROLL] Normal text animation - textIndex:', textIndex);
         gsap.set(textRef.current, { opacity: 0 });
         
         const yFrom = firstRender.current
@@ -576,8 +618,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         );
       }
 
-      if (overlayRef.current && !returnFromProjects) {
+      // TOUJOURS animer le gradient lors du changement de texte
+      if (overlayRef.current) {
         const progress = textIndex / (texts.length - 1);
+        console.log('🎨 [HEROAFTERSCROLL] Animating gradient - textIndex:', textIndex, 'progress:', progress, 'target:', `${100 - progress * 75}%`);
         gsap.to(overlayRef.current, {
           "--gradient-size": `${100 - progress * 75}%`,
           duration: 0.5,

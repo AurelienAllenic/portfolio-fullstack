@@ -10,6 +10,8 @@ interface HeroProps {
   returnFromProjects?: boolean;
   onResetReturnFromProjects?: () => void;
   forceHeroState?: "hero1" | "hero2";
+  forceTextIndex?: number; // Pour forcer un textIndex dans HeroAfterScroll
+  onNavigationReset?: boolean; // Signal de réinitialisation après navigation
 }
 
 const Hero: React.FC<HeroProps> = ({
@@ -17,6 +19,8 @@ const Hero: React.FC<HeroProps> = ({
   returnFromProjects,
   onResetReturnFromProjects,
   forceHeroState,
+  forceTextIndex,
+  onNavigationReset,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,6 +33,8 @@ const Hero: React.FC<HeroProps> = ({
     "hero1" | "hero2" | "transition"
   >(forceHeroState || (returnFromProjects ? "hero2" : "hero1"));
   
+  console.log('🎬 [HERO] Component render - gradientState:', gradientState, 'forceHeroState:', forceHeroState, 'returnFromProjects:', returnFromProjects);
+  
   const isForcedNavigationRef = useRef(false);
   const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(undefined);
   const currentGradientStateRef = useRef<"hero1" | "hero2" | "transition">(gradientState);
@@ -40,7 +46,10 @@ const Hero: React.FC<HeroProps> = ({
 
   // Mettre à jour l'état si forceHeroState change
   useEffect(() => {
+    console.log('🔄 [HERO] forceHeroState changed to:', forceHeroState, 'current gradientState:', currentGradientStateRef.current);
+    
     if (forceHeroState === undefined) {
+      console.log('🔄 [HERO] forceHeroState is undefined, clearing forced navigation flag');
       isForcedNavigationRef.current = false;
       // Réinitialiser lastForceHeroStateRef quand forceHeroState devient undefined
       lastForceHeroStateRef.current = undefined;
@@ -63,13 +72,17 @@ const Hero: React.FC<HeroProps> = ({
     const stateMismatch = (forceHeroState === "hero1" && (currentGradient === "hero2" || currentGradient === "transition")) ||
                           (forceHeroState === "hero2" && currentGradient !== "hero2");
     
+    console.log('🔄 [HERO] forceChanged:', forceChanged, 'stateMismatch:', stateMismatch, 'currentGradient:', currentGradient);
+    
     // Toujours forcer le changement si forceHeroState a changé OU si l'état actuel ne correspond pas
     // IMPORTANT: On force toujours si stateMismatch est true, même si forceChanged est false
     if (forceChanged || stateMismatch) {
+      console.log('🟢 [HERO] Forcing state change to:', forceHeroState);
       isForcedNavigationRef.current = true;
       lastForceHeroStateRef.current = forceHeroState;
       
       if (forceHeroState === "hero1") {
+        console.log('🟢 [HERO] Forcing to hero1 (HeroBeforeScroll)');
         // Forcer le changement immédiatement
         setGradientState("hero1");
         gsap.set(overlay, { "--gradient-size": "0%" });
@@ -177,6 +190,9 @@ const Hero: React.FC<HeroProps> = ({
     const overlay = overlayRef.current;
     const hero2 = hero2Ref.current;
 
+    // Bloquer temporairement le onReverseComplete
+    isForcedNavigationRef.current = true;
+
     if (hero2) {
       gsap.to(hero2, {
         opacity: 0,
@@ -204,7 +220,17 @@ const Hero: React.FC<HeroProps> = ({
 
       if (hero2) gsap.set(hero2, { opacity: 1 });
 
+      // Forcer le gradient à rester à 0% (pas d'animation vers 30%)
+      if (overlay) {
+        gsap.set(overlay, { "--gradient-size": "0%" });
+      }
+
       document.body.style.overflow = "auto";
+      
+      // Débloquer après un délai
+      setTimeout(() => {
+        isForcedNavigationRef.current = false;
+      }, 100);
     }, 1000);
   };
 
@@ -318,6 +344,11 @@ const Hero: React.FC<HeroProps> = ({
         }
       },
       onReverseComplete: () => {
+        // Ne pas exécuter si c'est une navigation forcée
+        if (isForcedNavigationRef.current) {
+          return;
+        }
+        
         document.body.style.overflow = "hidden";
         setGradientState("hero1");
 
@@ -516,6 +547,8 @@ const Hero: React.FC<HeroProps> = ({
           onTransitionToProjects={onTransitionToProjects}
           returnFromProjects={returnFromProjects}
           isForced={forceHeroState === "hero2"}
+          forceTextIndex={forceTextIndex}
+          onNavigationReset={onNavigationReset}
         />
       )}
     </div>

@@ -12,11 +12,12 @@ import {
 
 interface SliderProjectsProps {
   onTransitionToContact?: () => void;
+  onTransitionFromContact?: () => void;
   forceIndex?: number;
   onForceIndexComplete?: () => void;
 }
 
-const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
+const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scrollLocked, setScrollLocked] = useState(true);
   const touchStartY = useRef<number | null>(null);
@@ -42,14 +43,40 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
   // Forcer l'index si forceIndex est défini
   useEffect(() => {
     if (forceIndex !== undefined && forceIndex !== currentIndex) {
+      console.log('🔵 [FORCE INDEX] Forcing index to:', forceIndex, 'from:', currentIndex);
       setCurrentIndex(forceIndex);
       currentIndexRef.current = forceIndex;
-      // Notifier que l'index a été forcé
-      if (onForceIndexComplete) {
-        setTimeout(() => {
-          onForceIndexComplete();
-        }, 100);
+      
+      // ⚠️ CRITIQUE : Réinitialiser toutes les refs de scroll
+      isAtBottomRef.current = false;
+      isAtTopRef.current = true; // On arrive en haut de la catégorie forcée
+      
+      // ⚠️ IMPORTANT : Marquer que ce n'est plus le montage initial
+      // Cela évite que le premier scroll rejoue l'animation d'entrée
+      isInitialMount.current = false;
+      
+      // Annuler tout timeout en cours
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current);
+        timeoutId.current = null;
       }
+      
+      console.log('🔵 [FORCE INDEX] Before unlock - scrollLocked:', scrollLockedRef.current);
+      
+      // Déverrouiller le scroll IMMÉDIATEMENT et de manière forcée
+      setTimeout(() => {
+        setScrollLocked(false);
+        scrollLockedRef.current = false;
+        document.body.style.overflow = "";
+        touchStartY.current = null;
+        console.log('🟢 [FORCE INDEX] Unlocked! scrollLocked:', scrollLockedRef.current);
+      }, 100);
+      
+      // Notifier IMMÉDIATEMENT que l'index a été forcé pour le réinitialiser
+      // MAIS NE PAS LE FAIRE ICI car ça redéclenche le useEffect parent
+      // if (onForceIndexComplete) {
+      //   onForceIndexComplete();
+      // }
     }
   }, [forceIndex, currentIndex, onForceIndexComplete]);
 
@@ -141,16 +168,22 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
   }, []);
 
   const changeCategory = useCallback((nextIndex: number) => {
+    console.log('🟡 [CHANGE CATEGORY] Called with nextIndex:', nextIndex, 'currentIndex:', currentIndexRef.current);
+    
     if (nextIndex < 0 || nextIndex >= covers.length) {
+      console.log('🔴 [CHANGE CATEGORY] Invalid index, aborting');
       return;
     }
 
     const currentIdx = currentIndexRef.current;
 
     if (scrollLockedRef.current) {
+      console.log('🔴 [CHANGE CATEGORY] Scroll is LOCKED, aborting');
       return;
     }
 
+    console.log('🟢 [CHANGE CATEGORY] Starting transition to index:', nextIndex);
+    
     setScrollLocked(true);
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
@@ -335,10 +368,9 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
 
         const tl = gsap.timeline({
           onComplete: () => {
-            const projectsContainer = document.querySelector('#projects') as HTMLElement;
-            if (projectsContainer) {
-              gsap.set(projectsContainer, { display: "none" });
-            }
+            // NE PAS cacher le container #projects - il doit rester visible
+            // pour que la détection de scroll up fonctionne
+            // Le z-index de Contact (20) le place déjà au-dessus
 
             gsap.set(contactElement, {
               position: "relative",
@@ -414,11 +446,7 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
 
-    // Réafficher le container Projects
-    const projectsContainer = document.querySelector('#projects') as HTMLElement;
-    if (projectsContainer) {
-      gsap.set(projectsContainer, { display: "block" });
-    }
+    // Le container Projects est déjà visible, pas besoin de le réafficher
 
     // Réafficher la dernière catégorie
     gsap.set(lastCategoryElement, { 
@@ -468,6 +496,11 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
           width: "100%",
         });
 
+        // IMPORTANT : Fermer Contact dans React
+        if (onTransitionFromContact) {
+          onTransitionFromContact();
+        }
+
         // S'assurer qu'on est bien en haut
         window.scrollTo({ top: 0, behavior: 'instant' });
 
@@ -503,6 +536,8 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      console.log('🎯 [WHEEL EVENT] deltaY:', e.deltaY, 'scrollLocked:', scrollLockedRef.current, 'currentIndex:', currentIndexRef.current);
+      
       // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
@@ -600,12 +635,16 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
       if (goingDown) {
+        console.log('⬇️ [WHEEL] Going DOWN - canScrollDown:', canScrollDown, 'isAtBottomRef:', isAtBottomRef.current, 'currentIdx:', currentIdx);
+        
         if (canScrollDown) {
+          console.log('⬇️ [WHEEL] Can scroll down inside section, allowing native scroll');
           isAtBottomRef.current = false;
           return;
         }
 
         if (currentIdx === covers.length - 1) {
+          console.log('⬇️ [WHEEL] Last category, transitioning to Contact');
           if (!isAtBottomRef.current) {
             isAtBottomRef.current = true;
           }
@@ -614,16 +653,18 @@ const SliderProjects = ({ onTransitionToContact, forceIndex, onForceIndexComplet
           transitionToContact();
           return;
         }
-        
+
         if (isAtBottomRef.current && currentIdx < covers.length - 1) {
+          console.log('🟢 [WHEEL] At bottom and not last category, changing to next category');
           e.preventDefault();
           e.stopPropagation();
           changeCategory(currentIdx + 1);
           isAtBottomRef.current = false;
         } else {
+          console.log('🟡 [WHEEL] Not at bottom yet, setting isAtBottomRef to true');
           isAtBottomRef.current = true;
         }
-      } 
+      }
       else if (goingUp) {
         if (canScrollUp) {
           isAtTopRef.current = false;

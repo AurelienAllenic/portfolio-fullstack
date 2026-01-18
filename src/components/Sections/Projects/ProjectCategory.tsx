@@ -387,7 +387,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   }, [categoryIndex]);
 
   return (
-    <section ref={containerRef} className={styles.cover} id="projects">
+    <section ref={containerRef} className={styles.cover}>
       <div className={styles.coverInner}>
         {/* Mobile: Ligne 1 - Titre + Image */}
         <div className={styles.mobileHeaderRow}>
