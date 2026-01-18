@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
 import type { ReactNode } from "react";
-import { gsap } from "gsap";
 
 /**
  * ARCHITECTURE CENTRALISÉE - Single Source of Truth
