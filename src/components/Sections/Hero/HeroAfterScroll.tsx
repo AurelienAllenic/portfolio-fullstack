@@ -573,7 +573,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       // Si on revient de Projects, animer le texte IMMÉDIATEMENT
       if (returnFromProjects && textIndex === texts.length - 1) {
         if (textRef.current) {
-          console.log('🎬 [HEROAFTERSCROLL] returnFromProjects - animating text');
           // Désactiver l'animation CSS
           textRef.current.style.setProperty('animation', 'none', 'important');
           // Animer le texte avec GSAP
@@ -593,7 +592,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
 
       if (textRef.current) {
-        console.log('🎬 [HEROAFTERSCROLL] Normal text animation - textIndex:', textIndex);
         gsap.set(textRef.current, { opacity: 0 });
         
         const yFrom = firstRender.current
@@ -621,7 +619,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       // TOUJOURS animer le gradient lors du changement de texte
       if (overlayRef.current) {
         const progress = textIndex / (texts.length - 1);
-        console.log('🎨 [HEROAFTERSCROLL] Animating gradient - textIndex:', textIndex, 'progress:', progress, 'target:', `${100 - progress * 75}%`);
         gsap.to(overlayRef.current, {
           "--gradient-size": `${100 - progress * 75}%`,
           duration: 0.5,

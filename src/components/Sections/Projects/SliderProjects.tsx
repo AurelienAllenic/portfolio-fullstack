@@ -43,7 +43,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   // Forcer l'index si forceIndex est défini
   useEffect(() => {
     if (forceIndex !== undefined && forceIndex !== currentIndex) {
-      console.log('🔵 [FORCE INDEX] Forcing index to:', forceIndex, 'from:', currentIndex);
       setCurrentIndex(forceIndex);
       currentIndexRef.current = forceIndex;
       
@@ -61,15 +60,12 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         timeoutId.current = null;
       }
       
-      console.log('🔵 [FORCE INDEX] Before unlock - scrollLocked:', scrollLockedRef.current);
-      
       // Déverrouiller le scroll IMMÉDIATEMENT et de manière forcée
       setTimeout(() => {
         setScrollLocked(false);
         scrollLockedRef.current = false;
         document.body.style.overflow = "";
         touchStartY.current = null;
-        console.log('🟢 [FORCE INDEX] Unlocked! scrollLocked:', scrollLockedRef.current);
       }, 100);
       
       // Notifier IMMÉDIATEMENT que l'index a été forcé pour le réinitialiser
@@ -168,22 +164,16 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   }, []);
 
   const changeCategory = useCallback((nextIndex: number) => {
-    console.log('🟡 [CHANGE CATEGORY] Called with nextIndex:', nextIndex, 'currentIndex:', currentIndexRef.current);
-    
     if (nextIndex < 0 || nextIndex >= covers.length) {
-      console.log('🔴 [CHANGE CATEGORY] Invalid index, aborting');
       return;
     }
 
     const currentIdx = currentIndexRef.current;
 
     if (scrollLockedRef.current) {
-      console.log('🔴 [CHANGE CATEGORY] Scroll is LOCKED, aborting');
       return;
     }
 
-    console.log('🟢 [CHANGE CATEGORY] Starting transition to index:', nextIndex);
-    
     setScrollLocked(true);
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
@@ -536,8 +526,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      console.log('🎯 [WHEEL EVENT] deltaY:', e.deltaY, 'scrollLocked:', scrollLockedRef.current, 'currentIndex:', currentIndexRef.current);
-      
       // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
@@ -635,16 +623,12 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
       if (goingDown) {
-        console.log('⬇️ [WHEEL] Going DOWN - canScrollDown:', canScrollDown, 'isAtBottomRef:', isAtBottomRef.current, 'currentIdx:', currentIdx);
-        
         if (canScrollDown) {
-          console.log('⬇️ [WHEEL] Can scroll down inside section, allowing native scroll');
           isAtBottomRef.current = false;
           return;
         }
 
         if (currentIdx === covers.length - 1) {
-          console.log('⬇️ [WHEEL] Last category, transitioning to Contact');
           if (!isAtBottomRef.current) {
             isAtBottomRef.current = true;
           }
@@ -655,13 +639,11 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         }
 
         if (isAtBottomRef.current && currentIdx < covers.length - 1) {
-          console.log('🟢 [WHEEL] At bottom and not last category, changing to next category');
           e.preventDefault();
           e.stopPropagation();
           changeCategory(currentIdx + 1);
           isAtBottomRef.current = false;
         } else {
-          console.log('🟡 [WHEEL] Not at bottom yet, setting isAtBottomRef to true');
           isAtBottomRef.current = true;
         }
       }

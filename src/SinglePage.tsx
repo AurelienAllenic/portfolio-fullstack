@@ -21,7 +21,6 @@ const SinglePage = () => {
   };
 
   const handleReturnToHero = () => {
-    console.log('🏠 [SINGLEPAGE] handleReturnToHero called');
     setShowProjects(false);
     setReturnFromProjects(true);
     setForceProjectsIndex(undefined);
@@ -35,11 +34,9 @@ const SinglePage = () => {
   };
 
   const handleCloseContact = () => {
-    console.log('🏠 [SINGLEPAGE] handleCloseContact called');
     setShowContact(false);
     // Réinitialiser forceProjectsIndex pour permettre le scroll libre
     setTimeout(() => {
-      console.log('📍 [SINGLEPAGE] Resetting forceProjectsIndex after closing Contact');
       setForceProjectsIndex(undefined);
     }, 600); // Après l'animation de transition
     // Garder Projects monté pour que SliderProjects puisse gérer le scroll
@@ -124,27 +121,22 @@ const SinglePageContent = ({
     setReturnToHero(() => {
       // Read the ref value for synchronous access
       const isNavigationClick = shouldResetHeroStatesRef.current;
-      console.log('🏠 [SINGLEPAGE] setReturnToHero - showProjects:', showProjects, 'showContact:', showContact, 'shouldResetHeroStates:', shouldResetHeroStates, 'shouldResetHeroStatesRef.current:', isNavigationClick);
       
       // If this is a navigation click (shouldResetHeroStatesRef is true), reset returnFromProjects
       if (isNavigationClick) {
-        console.log('🏠 [SINGLEPAGE] Navigation click - resetting returnFromProjects to false');
         setReturnFromProjects(false);
       }
       
       // Fermer Contact si ouvert
       if (showContact) {
-        console.log('🏠 [SINGLEPAGE] Closing Contact');
         handleCloseContact();
       }
       
       // Only call handleReturnToHero if we're on Projects AND it's NOT a navigation click (scroll return)
       if (showProjects && !isNavigationClick) {
-        console.log('🏠 [SINGLEPAGE] Closing Projects via scroll - calling handleReturnToHero');
         handleReturnToHero();
       } else if (showProjects && isNavigationClick) {
         // Navigation click from Projects - just close Projects without setting returnFromProjects
-        console.log('🏠 [SINGLEPAGE] Closing Projects via nav click - NOT calling handleReturnToHero');
         setShowProjects(false);
       }
     });
@@ -152,7 +144,6 @@ const SinglePageContent = ({
 
   useEffect(() => {
     setNavigateToProjects(() => {
-      console.log('📍 [NAV] Navigate to Projects called');
       // Fermer Contact si ouvert
       if (showContact) {
         handleCloseContact();
@@ -160,11 +151,9 @@ const SinglePageContent = ({
       handleTransitionToProjects();
       // Forcer la première catégorie SEULEMENT si on vient d'ailleurs (pas déjà sur Projects)
       if (!showProjects) {
-        console.log('📍 [NAV] Setting forceProjectsIndex to 0');
         setForceProjectsIndex(0);
         // Réinitialiser après un court délai pour éviter les re-applications
         setTimeout(() => {
-          console.log('📍 [NAV] Resetting forceProjectsIndex to undefined');
           setForceProjectsIndex(undefined);
         }, 500);
       }
@@ -173,17 +162,14 @@ const SinglePageContent = ({
 
   // Gérer la réinitialisation des états Hero lors de la navigation
   useEffect(() => {
-    console.log('🔄 [SINGLEPAGE] shouldResetHeroStates changed to:', shouldResetHeroStates);
     if (shouldResetHeroStates) {
       // Déterminer le textIndex en fonction de heroState
       const targetTextIndex = heroState === "hero2" ? 0 : undefined;
-      console.log('🔄 [SINGLEPAGE] Setting heroTextIndex to:', targetTextIndex, 'heroNavigationReset to true');
       setHeroTextIndex(targetTextIndex);
       setHeroNavigationReset(true);
       
       // Réinitialiser les flags après un court délai
       setTimeout(() => {
-        console.log('🔄 [SINGLEPAGE] Resetting heroNavigationReset and heroTextIndex');
         setHeroNavigationReset(false);
         setHeroTextIndex(undefined);
         resetNavigationFlags();
@@ -194,13 +180,11 @@ const SinglePageContent = ({
   // Gérer la réinitialisation des états Projects lors de la navigation
   useEffect(() => {
     if (shouldResetProjectsStates) {
-      console.log('📍 [RESET] shouldResetProjectsStates triggered, forcing index to 0');
       // Force l'index à 0 pour Projects
       setForceProjectsIndex(0);
       
       // Réinitialiser les flags ET le forceIndex après un court délai
       setTimeout(() => {
-        console.log('📍 [RESET] Resetting flags and forceIndex');
         setForceProjectsIndex(undefined);
         resetNavigationFlags();
       }, 500);
@@ -239,7 +223,6 @@ const SinglePageContent = ({
           onTransitionToProjects={handleTransitionToProjects}
           returnFromProjects={returnFromProjects}
           onResetReturnFromProjects={() => {
-            console.log('🏠 [SINGLEPAGE] Hero requested reset of returnFromProjects');
             setReturnFromProjects(false);
           }}
           forceHeroState={returnFromProjects ? undefined : (shouldResetHeroStates ? heroState : undefined)}
@@ -247,8 +230,6 @@ const SinglePageContent = ({
           onNavigationReset={heroNavigationReset}
         />
       )}
-      {console.log('🔧 [SINGLEPAGE] forceHeroState calculation - returnFromProjects:', returnFromProjects, 'shouldResetHeroStates:', shouldResetHeroStates, 'heroState:', heroState, 'RESULT:', returnFromProjects ? undefined : (shouldResetHeroStates ? heroState : undefined))}
-      {console.log('🎬 [SINGLEPAGE] Render - showProjects:', showProjects, 'showContact:', showContact, 'returnFromProjects:', returnFromProjects, 'heroState:', heroState)}
       {showProjects && (
         <div style={{ display: showContact ? 'none' : 'block', position: 'relative', zIndex: 1 }}>
           <Projects onTransitionToHero={handleReturnToHero} />
@@ -257,7 +238,6 @@ const SinglePageContent = ({
             onTransitionFromContact={handleCloseContact}
             forceIndex={forceProjectsIndex}
             onForceIndexComplete={() => {
-              console.log('📍 [SLIDER] onForceIndexComplete called');
               // Ne rien faire ici, la réinitialisation est gérée par le setTimeout dans SinglePage
             }}
           />

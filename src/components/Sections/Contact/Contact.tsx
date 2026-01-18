@@ -25,7 +25,6 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implémenter l'envoi du formulaire
-    console.log("Formulaire soumis:", formData);
   };
 
   // L'animation est entièrement gérée par SliderProjects, pas besoin de logique ici

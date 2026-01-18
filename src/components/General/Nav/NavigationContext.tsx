@@ -60,7 +60,6 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const navigateToHero = (destination: HeroState) => {
-    console.log('🔵 [NAV CONTEXT] navigateToHero called with destination:', destination, 'isTransitioning:', isTransitioning);
     if (isTransitioning) return;
     
     setIsTransitioning(true);
@@ -69,7 +68,6 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     // Fermer le gradient (écran noir)
     setTimeout(() => {
       // Changer l'état hero et activer le flag de réinitialisation AVANT d'appeler le callback
-      console.log('🔵 [NAV CONTEXT] Setting heroState to:', destination, 'and shouldResetHeroStates to true');
       setHeroState(destination);
       setShouldResetHeroStates(true);
       shouldResetHeroStatesRef.current = true; // Mise à jour synchrone du ref
@@ -77,7 +75,6 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       
       // Ensuite, revenir à Hero pour fermer Projects/Contact (le flag shouldResetHeroStates est maintenant true)
       if (returnToHeroCallbackRef.current) {
-        console.log('🔵 [NAV CONTEXT] Calling returnToHeroCallback (shouldResetHeroStatesRef.current is now:', shouldResetHeroStatesRef.current, ')');
         returnToHeroCallbackRef.current();
       }
       

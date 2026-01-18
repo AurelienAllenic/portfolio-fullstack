@@ -33,8 +33,6 @@ const Hero: React.FC<HeroProps> = ({
     "hero1" | "hero2" | "transition"
   >(forceHeroState || (returnFromProjects ? "hero2" : "hero1"));
   
-  console.log('🎬 [HERO] Component render - gradientState:', gradientState, 'forceHeroState:', forceHeroState, 'returnFromProjects:', returnFromProjects);
-  
   const isForcedNavigationRef = useRef(false);
   const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(undefined);
   const currentGradientStateRef = useRef<"hero1" | "hero2" | "transition">(gradientState);
@@ -46,10 +44,7 @@ const Hero: React.FC<HeroProps> = ({
 
   // Mettre à jour l'état si forceHeroState change
   useEffect(() => {
-    console.log('🔄 [HERO] forceHeroState changed to:', forceHeroState, 'current gradientState:', currentGradientStateRef.current);
-    
     if (forceHeroState === undefined) {
-      console.log('🔄 [HERO] forceHeroState is undefined, clearing forced navigation flag');
       isForcedNavigationRef.current = false;
       // Réinitialiser lastForceHeroStateRef quand forceHeroState devient undefined
       lastForceHeroStateRef.current = undefined;
@@ -72,17 +67,13 @@ const Hero: React.FC<HeroProps> = ({
     const stateMismatch = (forceHeroState === "hero1" && (currentGradient === "hero2" || currentGradient === "transition")) ||
                           (forceHeroState === "hero2" && currentGradient !== "hero2");
     
-    console.log('🔄 [HERO] forceChanged:', forceChanged, 'stateMismatch:', stateMismatch, 'currentGradient:', currentGradient);
-    
     // Toujours forcer le changement si forceHeroState a changé OU si l'état actuel ne correspond pas
     // IMPORTANT: On force toujours si stateMismatch est true, même si forceChanged est false
     if (forceChanged || stateMismatch) {
-      console.log('🟢 [HERO] Forcing state change to:', forceHeroState);
       isForcedNavigationRef.current = true;
       lastForceHeroStateRef.current = forceHeroState;
       
       if (forceHeroState === "hero1") {
-        console.log('🟢 [HERO] Forcing to hero1 (HeroBeforeScroll)');
         // Forcer le changement immédiatement
         setGradientState("hero1");
         gsap.set(overlay, { "--gradient-size": "0%" });
