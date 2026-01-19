@@ -215,7 +215,19 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           return;
         }
 
-        // Lancer l'animation même si toutes les animations d'apparition ne sont pas terminées
+        // Initialiser tous les tooltips à opacity: 0 AVANT de lancer l'animation
+        icons.forEach((icon) => {
+          const tooltip = icon.querySelector(`.${styles.tooltip}`) as HTMLElement;
+          if (tooltip) {
+            gsap.set(tooltip, {
+              opacity: 0,
+              y: 9,
+              force3D: true
+            });
+          }
+        });
+
+        // Lancer l'animation de scroll immédiatement
         startScrollAnimation();
       };
 
@@ -250,6 +262,37 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         // Position initiale
         gsap.set(wrapper, { x: 0 });
 
+        // Flag pour activer les tooltips après un délai avec transition progressive
+        let tooltipsEnabled = false;
+        let tooltipsOpacityMultiplier = 0; // Multiplicateur pour fade-in progressif
+        const lastIconDelay = 0.5 + (icons.length - 1) * 0.1 + 0.8;
+        
+        setTimeout(() => {
+          tooltipsEnabled = true;
+          // Faire monter progressivement le multiplicateur d'opacité de 0 à 1
+          gsap.to({ value: 0 }, {
+            value: 1,
+            duration: 1.5,
+            ease: "power2.out",
+            onUpdate: function() {
+              tooltipsOpacityMultiplier = this.targets()[0].value;
+            }
+          });
+        }, lastIconDelay * 1000);
+
+        // Créer des quickTo pour chaque tooltip pour des animations ultra fluides
+        const tooltipAnimators = new Map();
+        const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+        allIconsElements.forEach((iconEl) => {
+          const tooltip = iconEl.querySelector(`.${styles.tooltip}`) as HTMLElement;
+          if (tooltip) {
+            tooltipAnimators.set(tooltip, {
+              opacity: gsap.quickTo(tooltip, "opacity", {duration: 0.6, ease: "power2.out"}),
+              y: gsap.quickTo(tooltip, "y", {duration: 0.6, ease: "power2.out"})
+            });
+          }
+        });
+
         // Animation de défilement infini
         const scrollTimeline = gsap.timeline({ repeat: -1 });
         scrollTimeline.to(wrapper, {
@@ -265,38 +308,35 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               scrollTimeline.progress(0);
             }
 
-            // Animer les tooltips au fur et à mesure
-            const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-            allIconsElements.forEach((iconEl) => {
-              const iconRect = (iconEl as HTMLElement).getBoundingClientRect();
-              const containerRect = container.getBoundingClientRect();
-              const iconCenterX = iconRect.left + iconRect.width / 2;
-              const containerCenterX = containerRect.left + containerRect.width / 2;
-              const distanceFromCenter = Math.abs(iconCenterX - containerCenterX);
-              const maxDistance = containerRect.width / 2;
+            // Animer les tooltips au fur et à mesure SEULEMENT si les icônes sont visibles
+            if (tooltipsEnabled) {
+              const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
+              allIconsElements.forEach((iconEl) => {
+                const iconRect = (iconEl as HTMLElement).getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const iconCenterX = iconRect.left + iconRect.width / 2;
+                const containerCenterX = containerRect.left + containerRect.width / 2;
+                const distanceFromCenter = Math.abs(iconCenterX - containerCenterX);
+                const maxDistance = containerRect.width / 2;
 
-              // Afficher le tooltip si l'icône est proche du centre
-              const tooltip = iconEl.querySelector(`.${styles.tooltip}`) as HTMLElement;
-              if (tooltip) {
-                if (distanceFromCenter < maxDistance * 0.5) {
-                  const opacity = Math.max(0, 1 - (distanceFromCenter / (maxDistance * 0.5)));
-                  // Utiliser set pour éviter les conflits avec les transitions CSS
-                  gsap.set(tooltip, {
-                    opacity: opacity,
-                    y: 9 * (1 - opacity),
-                    force3D: true,
-                    immediateRender: true
-                  });
-                } else {
-                  gsap.set(tooltip, {
-                    opacity: 0,
-                    y: 9,
-                    force3D: true,
-                    immediateRender: true
-                  });
+                // Afficher le tooltip si l'icône est proche du centre
+                const tooltip = iconEl.querySelector(`.${styles.tooltip}`) as HTMLElement;
+                if (tooltip && tooltipAnimators.has(tooltip)) {
+                  const animator = tooltipAnimators.get(tooltip);
+                  if (distanceFromCenter < maxDistance * 0.5) {
+                    const baseOpacity = Math.max(0, 1 - (distanceFromCenter / (maxDistance * 0.5)));
+                    // Appliquer le multiplicateur pour le fade-in progressif initial
+                    const finalOpacity = baseOpacity * tooltipsOpacityMultiplier;
+                    // Utiliser quickTo pour des transitions ultra fluides
+                    animator.opacity(finalOpacity);
+                    animator.y(9 * (1 - finalOpacity));
+                  } else {
+                    animator.opacity(0);
+                    animator.y(9);
+                  }
                 }
-              }
-            });
+              });
+            }
           }
         });
 
