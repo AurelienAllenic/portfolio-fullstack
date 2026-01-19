@@ -177,8 +177,8 @@
   .menuContent {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-    padding: 1.5rem;
+    gap: 1.5rem;
+    padding: 1rem;
     position: relative;
     z-index: 3;
 
@@ -259,7 +259,7 @@
     }
     
     .menuContent {
-      gap: 1rem;
+      gap: 0.5rem;
 
       .separator {
         font-size: 2rem;
