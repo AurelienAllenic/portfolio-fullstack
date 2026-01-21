@@ -9,6 +9,9 @@ const Contact = () => {
     message: "",
     consent: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -22,9 +25,50 @@ const Contact = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implémenter l'envoi du formulaire
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      // Construire le message avec le nom
+      const fullMessage = `De: ${formData.name}\n\n${formData.message}`;
+      
+      // URL de l'API backend (à configurer dans .env)
+      let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      // Supprimer le slash final s'il existe
+      apiUrl = apiUrl.replace(/\/$/, '');
+      
+      const response = await fetch(`${apiUrl}/aurelien-contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          message: fullMessage,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de l\'envoi');
+      }
+
+      setSubmitStatus('success');
+      setFormData({ name: "", email: "", message: "", consent: false });
+      
+      // Réinitialiser le message après 5s
+      setTimeout(() => setSubmitStatus('idle'), 5000);
+    } catch (error) {
+      console.error('Erreur:', error);
+      setSubmitStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // L'animation est entièrement gérée par SliderProjects, pas besoin de logique ici
@@ -80,6 +124,17 @@ const Contact = () => {
               />
             </div>
 
+            {submitStatus === 'success' && (
+              <div className={styles.successMessage}>
+                ✓ Message envoyé avec succès ! Vous recevrez une confirmation par email.
+              </div>
+            )}
+            {submitStatus === 'error' && (
+              <div className={styles.errorMessage}>
+                ✗ {errorMessage}
+              </div>
+            )}
+
             <div className={styles.formFooter}>
               <div className={styles.checkboxGroup}>
                 <input
@@ -92,14 +147,18 @@ const Contact = () => {
                   required
                 />
                 <label htmlFor="consent" className={styles.checkboxLabel}>
-                En envoyant ce message, je consens à être recontacté via l’adresse email fouirnie
+                En envoyant ce message, je consens à être recontacté via l'adresse email fouirnie
                 </label>
               </div>
-              <button type="submit" className={styles.submitButton}>
+              <button 
+                type="submit" 
+                className={styles.submitButton}
+                disabled={isSubmitting}
+              >
                 <span className={styles.arrow} aria-hidden>
                   <BsArrowRight />
                 </span>
-                <span>ENVOYER</span>
+                <span>{isSubmitting ? 'ENVOI...' : 'ENVOYER'}</span>
               </button>
             </div>
           </form>
