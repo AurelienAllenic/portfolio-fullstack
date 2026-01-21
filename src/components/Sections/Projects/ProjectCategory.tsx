@@ -1,11 +1,13 @@
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef, useLayoutEffect, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
+import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 
 type CoverIcon = string | { src: string; alt?: string };
 
 export interface ProjectCover {
   title: string;
+  slug: string;
   content: string;
   sideImages: string[];
   mainImage: string;
@@ -23,7 +25,9 @@ export interface Project {
   id: number;
   image: string;
   title: string;
+  description: string;
   titleEn: string;
+  descriptionEn: string;
   github: string;
   demo: string;
   figma: string;
@@ -40,7 +44,7 @@ interface ProjectCategoryProps {
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
 const getTechName = (url: string): string => {
-  const match = url.match(/\/([^\/]+)_[^_]+\.webp$/);
+  const match = url.match(/\/([^/]+)_[^_]+\.webp$/);
   if (match) {
     const name = match[1];
     if (name === 'nodejs') return 'Node.js';
@@ -54,6 +58,38 @@ const getTechName = (url: string): string => {
 const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const pendingUrlRef = useRef<string | null>(null);
+
+  const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // Sauvegarder l'index de la catégorie et l'URL
+    if (categoryIndex !== undefined) {
+      sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
+      sessionStorage.setItem('shouldRestoreScroll', 'true');
+      sessionStorage.setItem('isNavigatingToProjects', 'true');
+      pendingUrlRef.current = e.currentTarget.href;
+      console.log('Catégorie sauvegardée:', categoryIndex);
+      
+      // Faire disparaître la nav
+      const navElements = document.querySelectorAll('nav');
+      navElements.forEach(nav => {
+        (nav as HTMLElement).style.transition = 'opacity 0.6s ease';
+        (nav as HTMLElement).style.opacity = '0';
+      });
+      
+      // Déclencher l'animation
+      setIsTransitioning(true);
+    }
+  };
+
+  const handleTransitionComplete = () => {
+    // Naviguer après l'animation
+    if (pendingUrlRef.current) {
+      window.location.href = pendingUrlRef.current;
+    }
+  };
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -387,7 +423,13 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   }, [categoryIndex]);
 
   return (
-    <section ref={containerRef} className={styles.cover}>
+    <>
+      <RadialTransitionOverlay
+        isActive={isTransitioning}
+        direction="in"
+        onComplete={handleTransitionComplete}
+      />
+      <section ref={containerRef} className={styles.cover}>
       <div className={styles.coverInner}>
         {/* Mobile: Ligne 1 - Titre + Image */}
         <div className={styles.mobileHeaderRow}>
@@ -420,10 +462,14 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           ))}
         </div>
 
-        <button className={styles.cta} type="button">
+        <a 
+          href={`/projects/${cover.slug}`} 
+          className={styles.cta}
+          onClick={handleViewProjectsClick}
+        >
           <span className={styles.arrow} aria-hidden>—→</span>
           <span>Voir les projets</span>
-        </button>
+        </a>
       </aside>
 
       <div className={styles.center}>
@@ -518,15 +564,20 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             alt="mobile-2"
             className={styles.mobileImageRight}
           />
-          <button className={styles.mobileCta} type="button">
+          <a 
+            href={`/projects/${cover.slug}`} 
+            className={styles.mobileCta}
+            onClick={handleViewProjectsClick}
+          >
             <span className={styles.arrow} aria-hidden>
               —→
             </span>
             <span>Voir les projets</span>
-          </button>
+          </a>
         </div>
       </div>
     </section>
+    </>
   );
 };
 

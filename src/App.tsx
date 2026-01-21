@@ -3,22 +3,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.scss";
 
 import SinglePage from "./SinglePage";
-import ProjectPage from "./components/Sections/Projects/SingleProject";
+import SingleProjectPage from "./components/Sections/Projects/SingleProjectPage";
 import NotFound from "./components/General/NotFound/NotFound";
-import ProjectCategory from "./components/Sections/Projects/ProjectCategory";
-import { openclassrooms1_cover } from "./components/Sections/Projects/Data";
-import Contact from "./components/Sections/Contact/Contact";
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SinglePage />} />
-        <Route path="/project" element={
-          <ProjectCategory cover={openclassrooms1_cover} />
-        } />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/projects/:name" element={<ProjectPage />} />
+        <Route path="/projects/:categorySlug" element={<SingleProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

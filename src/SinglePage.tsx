@@ -10,10 +10,31 @@ import { NavigationProvider, useNavigation } from "./components/General/Nav/Navi
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
 
 const SinglePage = () => {
-  const [showProjects, setShowProjects] = useState(false);
+  // Vérifier immédiatement si on doit restaurer
+  const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';
+  const savedCategoryIndex = sessionStorage.getItem('lastProjectCategoryIndex');
+  const initialShowProjects = shouldRestore && savedCategoryIndex;
+  const initialForceIndex = initialShowProjects ? parseInt(savedCategoryIndex!) : undefined;
+
+  const [showProjects, setShowProjects] = useState(!!initialShowProjects);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
   const [showContact, setShowContact] = useState(false);
-  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(undefined);
+  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(initialForceIndex);
+
+  // Nettoyer sessionStorage après la restauration
+  useEffect(() => {
+    if (shouldRestore && savedCategoryIndex) {
+      console.log('SinglePage monté - Restauration vers la catégorie:', savedCategoryIndex);
+      
+      // Nettoyer après un délai
+      setTimeout(() => {
+        sessionStorage.removeItem('shouldRestoreScroll');
+        sessionStorage.removeItem('lastProjectCategoryIndex');
+        setForceProjectsIndex(undefined);
+        console.log('Restauration terminée');
+      }, 1000);
+    }
+  }, []);
 
   const handleTransitionToProjects = () => {
     setShowProjects(true);
@@ -102,6 +123,34 @@ const SinglePageContent = ({
     updateCurrentSection
   } = useNavigation();
 
+  // Vérifier dès l'initialisation si on est en mode restauration
+  const isRestoringFromProjects = sessionStorage.getItem('shouldRestoreScroll') === 'true';
+
+  // États locaux pour la synchronisation
+  const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
+  const [heroNavigationReset, setHeroNavigationReset] = useState(false);
+  const [showContent, setShowContent] = useState(!isRestoringFromProjects);
+  const [navOpacity, setNavOpacity] = useState(isRestoringFromProjects ? 0 : 1);
+
+  // Gérer la visibilité du contenu lors de la restauration
+  useEffect(() => {
+    if (isRestoringFromProjects) {
+      // Commencer à afficher la nav plus tôt (après 100ms)
+      const navTimer = setTimeout(() => {
+        setNavOpacity(1);
+      }, 100);
+      
+      const contentTimer = setTimeout(() => {
+        setShowContent(true);
+      }, 300);
+
+      return () => {
+        clearTimeout(navTimer);
+        clearTimeout(contentTimer);
+      };
+    }
+  }, [isRestoringFromProjects]);
+
   // Synchroniser currentSectionRef avec l'état actuel
   useEffect(() => {
     if (showContact) {
@@ -112,10 +161,6 @@ const SinglePageContent = ({
       updateCurrentSection?.("hero");
     }
   }, [showContact, showProjects, updateCurrentSection]);
-
-  // États locaux pour la synchronisation
-  const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
-  const [heroNavigationReset, setHeroNavigationReset] = useState(false);
 
   useEffect(() => {
     setReturnToHero(() => {
@@ -211,14 +256,17 @@ const SinglePageContent = ({
 
   return (
     <>
-      <Nav />
-      <MobileNav />
-      <TransitionOverlay
-        isActive={isTransitioning}
-        onComplete={() => {}}
-        direction={transitionDirection}
-      />
-      {!showProjects && !showContact && (
+      <div style={{ opacity: navOpacity, transition: 'opacity 0.4s ease' }}>
+        <Nav />
+        <MobileNav />
+      </div>
+      <div style={{ opacity: showContent ? 1 : 0 }}>
+        <TransitionOverlay
+          isActive={isTransitioning}
+          onComplete={() => {}}
+          direction={transitionDirection}
+        />
+        {!showProjects && !showContact && (
         <Hero
           onTransitionToProjects={handleTransitionToProjects}
           returnFromProjects={returnFromProjects}
@@ -244,6 +292,7 @@ const SinglePageContent = ({
         </div>
       )}
       {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
+      </div>
     </>
   );
 };

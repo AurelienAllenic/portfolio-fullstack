@@ -829,6 +829,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     container.setAttribute('data-slider-locked', scrollLocked.toString());
   }, [currentIndex, scrollLocked]);
 
+
   return (
     <div 
       ref={containerRef} 
