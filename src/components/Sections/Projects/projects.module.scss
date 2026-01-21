@@ -134,6 +134,8 @@
   padding: 6px 0;
   width: fit-content;
   font-size: 14px;
+  text-decoration: none;
+  font-family: $font-family-primary;
 
   .arrow {
     opacity: .8;
@@ -404,6 +406,8 @@
     position: absolute;
     bottom: 45px;
     width: 158px;
+    text-decoration: none;
+    font-family: $font-family-primary;
     
     .arrow {
       opacity: .8;
@@ -534,7 +538,339 @@
   }
 }
 
-/* Single Project component - styles à venir */
+/* Single Project component */
+
+.containerSingleProject {
+  min-height: 100vh;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 80px 48px 48px;
+  position: relative;
+  overflow-x: hidden;
+
+  @media (max-width: 900px) {
+    padding: 70px 0 30px;
+    overflow-x: hidden;
+  }
+}
+
+.topSlider {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 20px 48px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  @media (max-width: 900px) {
+    gap: 15px;
+    margin-bottom: 40px;
+    padding: 20px;
+    justify-content: flex-start;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+  }
+}
+
+.sliderImage {
+  flex-shrink: 0;
+  width: 150px;
+  height: 200px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+  filter: brightness(0.6);
+  scroll-snap-align: start;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 900px) {
+    width: 140px;
+    height: 186px;
+    
+    &:hover {
+      opacity: 0.5;
+      transform: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    width: 120px;
+    height: 160px;
+  }
+}
+
+.sliderImageActive {
+  opacity: 1;
+  transform: translateY(-10px);
+  filter: brightness(1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+
+  &:hover {
+    opacity: 1;
+    transform: translateY(-10px) scale(1);
+  }
+
+  @media (max-width: 900px) {
+    transform: translateY(-5px);
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+}
+
+.projectContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+}
+
+.projectMainImage {
+  width: 100%;
+  height: auto;
+  
+  img {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85);
+  }
+
+  @media (max-width: 900px) {
+    img {
+      max-height: 400px;
+    }
+  }
+}
+
+.projectDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.projectTitle {
+  font-size: 32px;
+  font-weight: 400;
+  font-family: $font-family-primary;
+  margin: 0;
+  line-height: 1.3;
+
+  @media (max-width: 900px) {
+    font-size: 26px;
+  }
+}
+
+.projectDescription {
+  font-size: 18px;
+  line-height: 1.6;
+  font-family: $font-family-primary;
+  color: #cfcfcf;
+  margin: 0;
+
+  @media (max-width: 900px) {
+    font-size: 16px;
+  }
+}
+
+.techIcons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.techIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.techIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  will-change: transform;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 900px) {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+.techTooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(9px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(9px);
+  font-family: $font-family-primary;
+  z-index: 10;
+}
+
+.techIconContainer:hover .techTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.techBadge {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 20px;
+  font-family: $font-family-primary;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  @media (max-width: 900px) {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+.projectButtons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.projectButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-family: $font-family-primary;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 900px) {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}
+
+.categoryLabel {
+  position: absolute;
+  bottom: 48px;
+  right: 48px;
+  font-size: 24px;
+  font-family: $font-family-primary;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+
+  @media (max-width: 900px) {
+    position: static;
+    text-align: right;
+    margin-top: 40px;
+    font-size: 20px;
+    padding-right: 20px;
+  }
+}
+
+.backButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: $font-family-primary;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 100;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-4px);
+  }
+
+  @media (max-width: 900px) {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
 
 /* Slider Projects component */
 

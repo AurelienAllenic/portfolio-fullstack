@@ -6,6 +6,7 @@ type CoverIcon = string | { src: string; alt?: string };
 
 export interface ProjectCover {
   title: string;
+  slug: string;
   content: string;
   sideImages: string[];
   mainImage: string;
@@ -23,7 +24,9 @@ export interface Project {
   id: number;
   image: string;
   title: string;
+  description: string;
   titleEn: string;
+  descriptionEn: string;
   github: string;
   demo: string;
   figma: string;
@@ -35,6 +38,7 @@ interface ProjectCategoryProps {
   cover: ProjectCover;
   projects?: Project[];
   categoryIndex?: number;
+  onViewProjects?: () => void;
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
@@ -51,9 +55,15 @@ const getTechName = (url: string): string => {
   return 'Technologie';
 };
 
-const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCategoryProps) => {
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+
+  const handleViewProjectsClick = (e: React.MouseEvent) => {
+    // Sauvegarder la position de scroll actuelle
+    sessionStorage.setItem('portfolioScrollPosition', window.scrollY.toString());
+    // Ne pas empêcher la navigation par défaut pour que l'ouverture dans un nouvel onglet fonctionne
+  };
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -420,10 +430,16 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           ))}
         </div>
 
-        <button className={styles.cta} type="button">
+        <a 
+          href={`/projects/${cover.slug}`} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className={styles.cta}
+          onClick={handleViewProjectsClick}
+        >
           <span className={styles.arrow} aria-hidden>—→</span>
           <span>Voir les projets</span>
-        </button>
+        </a>
       </aside>
 
       <div className={styles.center}>
@@ -518,12 +534,18 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             alt="mobile-2"
             className={styles.mobileImageRight}
           />
-          <button className={styles.mobileCta} type="button">
+          <a 
+            href={`/projects/${cover.slug}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={styles.mobileCta}
+            onClick={handleViewProjectsClick}
+          >
             <span className={styles.arrow} aria-hidden>
               —→
             </span>
             <span>Voir les projets</span>
-          </button>
+          </a>
         </div>
       </div>
     </section>

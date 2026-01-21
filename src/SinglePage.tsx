@@ -15,6 +15,49 @@ const SinglePage = () => {
   const [showContact, setShowContact] = useState(false);
   const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(undefined);
 
+  // Restaurer la position de scroll si on revient de la page de projets
+  useEffect(() => {
+    const shouldRestore = sessionStorage.getItem('shouldRestoreScroll');
+    const savedPosition = sessionStorage.getItem('portfolioScrollPosition');
+    
+    if (shouldRestore === 'true' && savedPosition) {
+      // Ajouter un flag pour indiquer qu'on restore le scroll
+      window.isRestoringScroll = true;
+      
+      const targetPosition = parseInt(savedPosition);
+      
+      // Forcer immédiatement la position pour éviter tout flash
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'auto'
+      });
+      
+      // Fonction pour maintenir la position de scroll
+      let isRestoring = true;
+      const maintainPosition = () => {
+        if (isRestoring && Math.abs(window.scrollY - targetPosition) > 10) {
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'auto'
+          });
+        }
+      };
+      
+      // Surveiller et maintenir la position pendant 1 seconde
+      const intervalId = setInterval(maintainPosition, 50);
+      
+      // Arrêter après 1 seconde
+      setTimeout(() => {
+        isRestoring = false;
+        clearInterval(intervalId);
+        window.isRestoringScroll = false;
+        // Nettoyer le sessionStorage
+        sessionStorage.removeItem('shouldRestoreScroll');
+        sessionStorage.removeItem('portfolioScrollPosition');
+      }, 1000);
+    }
+  }, []);
+
   const handleTransitionToProjects = () => {
     setShowProjects(true);
     setForceProjectsIndex(undefined);
