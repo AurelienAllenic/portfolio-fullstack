@@ -15,7 +15,6 @@
 
 .cover {
   width: 100%;
-  min-height: 100vh;
   color: #fff;
   display: flex;
   justify-content: center;
@@ -405,6 +404,7 @@
     width: fit-content;
     font-size: 17px;
     position: absolute;
+    left: -20px;
     bottom: 45px;
     width: 158px;
     text-decoration: none;
@@ -421,19 +421,17 @@
   }
 
   @media(max-width: 425px){
-    right: 0px;
-    left: 80px;
+    left: 60px;
     font-size: 14px;
   }
   @media(max-width: 414px){
-    left: 90px;
     font-size: 13px;
   }
   @media(max-width: 360px){
-    left: 100px;
+    left: 75px;
   }
   @media(max-width: 350px){
-    left: 110px;
+    left: 85px;
   }
 }
 
@@ -552,23 +550,65 @@
   overflow-x: hidden;
 
   @media (max-width: 900px) {
-    padding: 70px 0 30px;
+    padding: 0;
+    padding-top: 80px; // Espace pour le bouton retour et le titre (20px top + 36px hauteur + 24px marge)
+    padding-bottom: 20px;
     overflow-x: hidden;
+    overflow-y: auto; // Permettre le scroll vertical si nécessaire
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    
+    // S'assurer que le contenu ne dépasse jamais en haut
+    > .topSlider,
+    > .projectContent {
+      margin-top: 0;
+    }
+  }
+}
+
+.sliderWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px; // Padding horizontal pour éviter que le contenu touche les bords
+
+  @media (max-width: 900px) {
+    margin-bottom: 30px;
+    padding: 0;
+    
+    // Cacher les flèches sur mobile
+    .sliderArrowLeft,
+    .sliderArrowRight {
+      display: none;
+    }
   }
 }
 
 .topSlider {
   display: flex;
   gap: 20px;
-  justify-content: center;
+  justify-content: flex-start; // Changer de center à flex-start pour éviter que la première carte soit coupée
   align-items: center;
-  margin-bottom: 60px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 20px 48px;
+  padding: 20px 0; // Pas de padding horizontal pour éviter les problèmes
+  padding-left: 20px; // Padding suffisant pour la première carte
+  padding-right: 20px; // Padding pour la dernière carte
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   scroll-behavior: smooth;
+  scroll-padding-left: 20px; // Pour que scroll-snap respecte le padding
+  scroll-padding-right: 20px;
+  position: relative;
+  z-index: 1;
+  flex: 1;
   
   &::-webkit-scrollbar {
     height: 6px;
@@ -585,13 +625,53 @@
 
   @media (max-width: 900px) {
     gap: 15px;
-    margin-bottom: 40px;
-    padding: 20px;
+    padding: 20px 20px 20px 20px;
     justify-content: flex-start;
+    scroll-padding-left: 20px;
+    scroll-padding-right: 20px;
+    width: 100%;
+    z-index: 1; // Inférieur aux éléments fixes (z-index: 100)
     
     &::-webkit-scrollbar {
       height: 4px;
     }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 20px 20px 20px 20px;
+    scroll-padding-left: 20px;
+    scroll-padding-right: 20px;
+  }
+}
+
+.sliderArrowLeft,
+.sliderArrowRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  z-index: 2;
+  font-size: 24px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 900px) {
+    display: none;
   }
 }
 
@@ -622,6 +702,11 @@
   @media (max-width: 900px) {
     width: 140px;
     height: 186px;
+    
+    // S'assurer que la première image a un espacement suffisant
+    &:first-child {
+      margin-left: 0;
+    }
     
     &:hover {
       opacity: 0.5;
@@ -662,11 +747,15 @@
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: start;
+  position: relative;
+  z-index: 1;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
     gap: 40px;
     padding: 0 20px;
+    width: 100%;
+    z-index: 1; // Inférieur aux éléments fixes (z-index: 100)
   }
 }
 
@@ -837,11 +926,16 @@
   letter-spacing: 0.1rem;
 
   @media (max-width: 900px) {
-    position: static;
-    text-align: right;
-    margin-top: 40px;
-    font-size: 20px;
-    padding-right: 20px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    height: 36px; // Même hauteur que le bouton retour
   }
 }
 
@@ -869,8 +963,12 @@
   }
 
   @media (max-width: 900px) {
+    top: 20px;
+    left: 20px;
+    right: auto;
     font-size: 14px;
     padding: 8px 16px;
+    margin: 0;
   }
 }
 
