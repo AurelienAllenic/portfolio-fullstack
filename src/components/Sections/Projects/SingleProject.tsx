@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import type { Project } from "./ProjectCategory";
+import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 
 interface SingleProjectProps {
   projects: Project[];
@@ -17,23 +18,26 @@ const SingleProject = ({
   onBack 
 }: SingleProjectProps) => {
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
+  const [showOverlay, setShowOverlay] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedProject = projects[selectedIndex];
 
-  // Animation d'entrée
+  // Animation d'entrée avec overlay
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    gsap.fromTo(
-      container,
-      { opacity: 0 },
-      {
+    // Masquer le contenu initialement
+    gsap.set(container, { opacity: 0 });
+
+    // Attendre un peu puis afficher
+    setTimeout(() => {
+      gsap.to(container, {
         opacity: 1,
-        duration: 0.5,
+        duration: 0.3,
         ease: "power2.out",
-      }
-    );
+      });
+    }, 200);
   }, []);
 
   // Animation lors du changement de projet
@@ -111,7 +115,13 @@ const SingleProject = ({
   };
 
   return (
-    <div ref={containerRef} className={styles.containerSingleProject}>
+    <>
+      <RadialTransitionOverlay
+        isActive={showOverlay}
+        direction="out"
+        onComplete={() => setShowOverlay(false)}
+      />
+      <div ref={containerRef} className={styles.containerSingleProject}>
       {/* Slider d'images en haut */}
       <div className={styles.topSlider}>
         {projects.map((project, index) => (
@@ -215,22 +225,13 @@ const SingleProject = ({
 
       {/* Bouton retour */}
       <button 
-        onClick={() => {
-          if (onBack) {
-            onBack();
-          } else {
-            // Essayer de fermer l'onglet, sinon retourner à l'accueil
-            window.close();
-            setTimeout(() => {
-              window.location.href = "/";
-            }, 100);
-          }
-        }} 
+        onClick={onBack} 
         className={styles.backButton}
       >
         ← Retour
       </button>
     </div>
+    </>
   );
 };
 

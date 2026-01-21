@@ -10,50 +10,28 @@ import { NavigationProvider, useNavigation } from "./components/General/Nav/Navi
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
 
 const SinglePage = () => {
-  const [showProjects, setShowProjects] = useState(false);
+  // Vérifier immédiatement si on doit restaurer
+  const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';
+  const savedCategoryIndex = sessionStorage.getItem('lastProjectCategoryIndex');
+  const initialShowProjects = shouldRestore && savedCategoryIndex;
+  const initialForceIndex = initialShowProjects ? parseInt(savedCategoryIndex!) : undefined;
+
+  const [showProjects, setShowProjects] = useState(!!initialShowProjects);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
   const [showContact, setShowContact] = useState(false);
-  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(undefined);
+  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(initialForceIndex);
 
-  // Restaurer la position de scroll si on revient de la page de projets
+  // Nettoyer sessionStorage après la restauration
   useEffect(() => {
-    const shouldRestore = sessionStorage.getItem('shouldRestoreScroll');
-    const savedPosition = sessionStorage.getItem('portfolioScrollPosition');
-    
-    if (shouldRestore === 'true' && savedPosition) {
-      // Ajouter un flag pour indiquer qu'on restore le scroll
-      window.isRestoringScroll = true;
+    if (shouldRestore && savedCategoryIndex) {
+      console.log('SinglePage monté - Restauration vers la catégorie:', savedCategoryIndex);
       
-      const targetPosition = parseInt(savedPosition);
-      
-      // Forcer immédiatement la position pour éviter tout flash
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'auto'
-      });
-      
-      // Fonction pour maintenir la position de scroll
-      let isRestoring = true;
-      const maintainPosition = () => {
-        if (isRestoring && Math.abs(window.scrollY - targetPosition) > 10) {
-          window.scrollTo({
-            top: targetPosition,
-            behavior: 'auto'
-          });
-        }
-      };
-      
-      // Surveiller et maintenir la position pendant 1 seconde
-      const intervalId = setInterval(maintainPosition, 50);
-      
-      // Arrêter après 1 seconde
+      // Nettoyer après un délai
       setTimeout(() => {
-        isRestoring = false;
-        clearInterval(intervalId);
-        window.isRestoringScroll = false;
-        // Nettoyer le sessionStorage
         sessionStorage.removeItem('shouldRestoreScroll');
-        sessionStorage.removeItem('portfolioScrollPosition');
+        sessionStorage.removeItem('lastProjectCategoryIndex');
+        setForceProjectsIndex(undefined);
+        console.log('Restauration terminée');
       }, 1000);
     }
   }, []);
@@ -145,6 +123,34 @@ const SinglePageContent = ({
     updateCurrentSection
   } = useNavigation();
 
+  // Vérifier dès l'initialisation si on est en mode restauration
+  const isRestoringFromProjects = sessionStorage.getItem('shouldRestoreScroll') === 'true';
+
+  // États locaux pour la synchronisation
+  const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
+  const [heroNavigationReset, setHeroNavigationReset] = useState(false);
+  const [showContent, setShowContent] = useState(!isRestoringFromProjects);
+  const [navOpacity, setNavOpacity] = useState(isRestoringFromProjects ? 0 : 1);
+
+  // Gérer la visibilité du contenu lors de la restauration
+  useEffect(() => {
+    if (isRestoringFromProjects) {
+      // Commencer à afficher la nav plus tôt (après 100ms)
+      const navTimer = setTimeout(() => {
+        setNavOpacity(1);
+      }, 100);
+      
+      const contentTimer = setTimeout(() => {
+        setShowContent(true);
+      }, 300);
+
+      return () => {
+        clearTimeout(navTimer);
+        clearTimeout(contentTimer);
+      };
+    }
+  }, [isRestoringFromProjects]);
+
   // Synchroniser currentSectionRef avec l'état actuel
   useEffect(() => {
     if (showContact) {
@@ -155,10 +161,6 @@ const SinglePageContent = ({
       updateCurrentSection?.("hero");
     }
   }, [showContact, showProjects, updateCurrentSection]);
-
-  // États locaux pour la synchronisation
-  const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
-  const [heroNavigationReset, setHeroNavigationReset] = useState(false);
 
   useEffect(() => {
     setReturnToHero(() => {
@@ -254,14 +256,17 @@ const SinglePageContent = ({
 
   return (
     <>
-      <Nav />
-      <MobileNav />
-      <TransitionOverlay
-        isActive={isTransitioning}
-        onComplete={() => {}}
-        direction={transitionDirection}
-      />
-      {!showProjects && !showContact && (
+      <div style={{ opacity: navOpacity, transition: 'opacity 0.4s ease' }}>
+        <Nav />
+        <MobileNav />
+      </div>
+      <div style={{ opacity: showContent ? 1 : 0 }}>
+        <TransitionOverlay
+          isActive={isTransitioning}
+          onComplete={() => {}}
+          direction={transitionDirection}
+        />
+        {!showProjects && !showContact && (
         <Hero
           onTransitionToProjects={handleTransitionToProjects}
           returnFromProjects={returnFromProjects}
@@ -287,6 +292,7 @@ const SinglePageContent = ({
         </div>
       )}
       {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
+      </div>
     </>
   );
 };

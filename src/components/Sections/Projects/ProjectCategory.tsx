@@ -1,6 +1,7 @@
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef, useLayoutEffect, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
+import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 
 type CoverIcon = string | { src: string; alt?: string };
 
@@ -38,13 +39,12 @@ interface ProjectCategoryProps {
   cover: ProjectCover;
   projects?: Project[];
   categoryIndex?: number;
-  onViewProjects?: () => void;
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
 
 const getTechName = (url: string): string => {
-  const match = url.match(/\/([^\/]+)_[^_]+\.webp$/);
+  const match = url.match(/\/([^/]+)_[^_]+\.webp$/);
   if (match) {
     const name = match[1];
     if (name === 'nodejs') return 'Node.js';
@@ -55,14 +55,40 @@ const getTechName = (url: string): string => {
   return 'Technologie';
 };
 
-const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const pendingUrlRef = useRef<string | null>(null);
 
-  const handleViewProjectsClick = (e: React.MouseEvent) => {
-    // Sauvegarder la position de scroll actuelle
-    sessionStorage.setItem('portfolioScrollPosition', window.scrollY.toString());
-    // Ne pas empêcher la navigation par défaut pour que l'ouverture dans un nouvel onglet fonctionne
+  const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // Sauvegarder l'index de la catégorie et l'URL
+    if (categoryIndex !== undefined) {
+      sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
+      sessionStorage.setItem('shouldRestoreScroll', 'true');
+      sessionStorage.setItem('isNavigatingToProjects', 'true');
+      pendingUrlRef.current = e.currentTarget.href;
+      console.log('Catégorie sauvegardée:', categoryIndex);
+      
+      // Faire disparaître la nav
+      const navElements = document.querySelectorAll('nav');
+      navElements.forEach(nav => {
+        (nav as HTMLElement).style.transition = 'opacity 0.6s ease';
+        (nav as HTMLElement).style.opacity = '0';
+      });
+      
+      // Déclencher l'animation
+      setIsTransitioning(true);
+    }
+  };
+
+  const handleTransitionComplete = () => {
+    // Naviguer après l'animation
+    if (pendingUrlRef.current) {
+      window.location.href = pendingUrlRef.current;
+    }
   };
 
   useLayoutEffect(() => {
@@ -397,7 +423,13 @@ const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCatego
   }, [categoryIndex]);
 
   return (
-    <section ref={containerRef} className={styles.cover}>
+    <>
+      <RadialTransitionOverlay
+        isActive={isTransitioning}
+        direction="in"
+        onComplete={handleTransitionComplete}
+      />
+      <section ref={containerRef} className={styles.cover}>
       <div className={styles.coverInner}>
         {/* Mobile: Ligne 1 - Titre + Image */}
         <div className={styles.mobileHeaderRow}>
@@ -432,8 +464,6 @@ const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCatego
 
         <a 
           href={`/projects/${cover.slug}`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
           className={styles.cta}
           onClick={handleViewProjectsClick}
         >
@@ -536,8 +566,6 @@ const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCatego
           />
           <a 
             href={`/projects/${cover.slug}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
             className={styles.mobileCta}
             onClick={handleViewProjectsClick}
           >
@@ -549,6 +577,7 @@ const ProjectCategory = ({ cover, categoryIndex, onViewProjects }: ProjectCatego
         </div>
       </div>
     </section>
+    </>
   );
 };
 

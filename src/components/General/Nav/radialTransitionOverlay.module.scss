@@ -1,0 +1,23 @@
+@use "../../abstract/variables.scss" as *;
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 9999;
+  pointer-events: none;
+  display: none;
+  
+  // Radial gradient qui se ferme/ouvre comme dans la nav
+  background: radial-gradient(
+    circle at center,
+    transparent var(--gradient-size, 100%),
+    #000000 var(--gradient-size, 100%)
+  );
+  
+  // Initialiser à 100% (transparent)
+  --gradient-size: 100%;
+}

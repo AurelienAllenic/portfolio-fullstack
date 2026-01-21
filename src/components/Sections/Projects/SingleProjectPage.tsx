@@ -1,5 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import SingleProject from "./SingleProject";
+import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import {
   openclassrooms1_cover,
   openclassrooms2_cover,
@@ -14,6 +16,9 @@ import type { ProjectCover, Project } from "./ProjectCategory";
 
 const SingleProjectPage = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
+  const navigate = useNavigate();
+  const [isTransitioningBack, setIsTransitioningBack] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   const covers: ProjectCover[] = [
     openclassrooms1_cover,
@@ -71,29 +76,43 @@ const SingleProjectPage = () => {
   }
 
   const handleBack = () => {
-    // Récupérer la position de scroll sauvegardée
-    const savedScrollPosition = sessionStorage.getItem('portfolioScrollPosition');
+    // S'assurer que le flag de restauration est bien présent
+    sessionStorage.setItem('shouldRestoreScroll', 'true');
+    console.log('Retour avec catégorie:', sessionStorage.getItem('lastProjectCategoryIndex'));
     
-    // Indiquer qu'on doit restaurer le scroll
-    if (savedScrollPosition) {
-      sessionStorage.setItem('shouldRestoreScroll', 'true');
-    }
-    
-    // Essayer de fermer l'onglet
-    window.close();
-    
-    // Si la fermeture échoue (onglet non ouvert par script), rediriger
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 100);
+    // Déclencher l'animation
+    setIsTransitioningBack(true);
   };
 
+  const handleTransitionBackComplete = () => {
+    // Naviguer après l'animation
+    navigate("/");
+  };
+
+  useEffect(() => {
+    // Afficher le contenu après 0.3s
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <SingleProject
-      projects={projectsData[categoryIndex]}
-      categoryTitle={covers[categoryIndex].title}
-      onBack={handleBack}
-    />
+    <>
+      <RadialTransitionOverlay
+        isActive={isTransitioningBack}
+        direction="in"
+        onComplete={handleTransitionBackComplete}
+      />
+      <div style={{ opacity: showContent ? 1 : 0 }}>
+        <SingleProject
+          projects={projectsData[categoryIndex]}
+          categoryTitle={covers[categoryIndex].title}
+          onBack={handleBack}
+        />
+      </div>
+    </>
   );
 };
 
