@@ -2,6 +2,7 @@ import { useEffect, useRef, useLayoutEffect, useState } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import { HiArrowRight } from "react-icons/hi2";
 
 type CoverIcon = string | { src: string; alt?: string };
 
@@ -68,16 +69,8 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
-      sessionStorage.setItem('isNavigatingToProjects', 'true');
       pendingUrlRef.current = e.currentTarget.href;
       console.log('Catégorie sauvegardée:', categoryIndex);
-      
-      // Faire disparaître la nav
-      const navElements = document.querySelectorAll('nav');
-      navElements.forEach(nav => {
-        (nav as HTMLElement).style.transition = 'opacity 0.6s ease';
-        (nav as HTMLElement).style.opacity = '0';
-      });
       
       // Déclencher l'animation
       setIsTransitioning(true);
@@ -467,7 +460,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           className={styles.cta}
           onClick={handleViewProjectsClick}
         >
-          <span className={styles.arrow} aria-hidden>—→</span>
+          <span className={styles.arrow} aria-hidden><HiArrowRight /></span>
           <span>Voir les projets</span>
         </a>
       </aside>
@@ -570,7 +563,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             onClick={handleViewProjectsClick}
           >
             <span className={styles.arrow} aria-hidden>
-              —→
+            <HiArrowRight />
             </span>
             <span>Voir les projets</span>
           </a>

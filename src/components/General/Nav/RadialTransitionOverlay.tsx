@@ -20,6 +20,30 @@ const RadialTransitionOverlay = ({
 
     const overlay = overlayRef.current;
 
+    // Sur mobile, calculer le centre par rapport au scroll + viewport visible
+    const isMobile = window.innerWidth < 900;
+    
+    if (isMobile) {
+      // L'overlay doit couvrir toute la page
+      const pageHeight = document.documentElement.scrollHeight;
+      overlay.style.height = `${pageHeight}px`;
+      
+      // Le centre du gradient = position de scroll + milieu du viewport visible
+      const centerX = window.innerWidth / 2;
+      const centerY = window.scrollY + (window.innerHeight / 2);
+      
+      overlay.style.setProperty('--center-x', `${centerX}px`);
+      overlay.style.setProperty('--center-y', `${centerY}px`);
+    } else {
+      // Desktop : comportement normal
+      overlay.style.height = `${window.innerHeight}px`;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      overlay.style.setProperty('--center-x', `${centerX}px`);
+      overlay.style.setProperty('--center-y', `${centerY}px`);
+    }
+
     if (direction === "in") {
       // Fermeture : le transparent rétrécit, le noir grandit depuis les bords (100% → 0%)
       gsap.set(overlay, {
