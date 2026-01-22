@@ -1,0 +1,142 @@
+# =========================================
+# CONFIGURATION CACHE POUR PORTFOLIO
+# =========================================
+
+<IfModule mod_headers.c>
+
+  # Désactiver complètement le cache pour les fichiers HTML
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+  </FilesMatch>
+
+  # Cache long (1 an) pour les assets avec hash générés par Vite (JS, CSS)
+  # Vite ajoute automatiquement un hash aux noms de fichiers, donc cache immutable
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Cache moyen (30 jours) pour les images et fonts
+  <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|woff|woff2|ttf|eot)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # Cache pour les fichiers PDF et autres assets
+  <FilesMatch "\.(pdf|json|webmanifest)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+
+</IfModule>
+
+# =========================================
+# COMPRESSION GZIP (Performance)
+# =========================================
+<IfModule mod_deflate.c>
+  # Compresser les fichiers texte
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# =========================================
+# REDIRECTION HTTPS ET WWW
+# =========================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Forcer HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  
+  # Rediriger www vers non-www (ajustez selon votre domaine)
+  RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+  RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+</IfModule>
+
+# =========================================
+# GESTION SPA (Single Page Application)
+# =========================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Ne pas rediriger les fichiers qui existent réellement
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  
+  # Ne pas rediriger les assets (images, fonts, etc.)
+  RewriteCond %{REQUEST_URI} !^/assets/
+  
+  # Rediriger toutes les autres requêtes vers index.html
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# =========================================
+# TYPES MIME (Pour compatibilité)
+# =========================================
+<IfModule mod_mime.c>
+  # JavaScript
+  AddType application/javascript js mjs
+  AddType text/javascript js mjs
+  
+  # CSS
+  AddType text/css css
+  
+  # Images
+  AddType image/webp webp
+  AddType image/svg+xml svg svgz
+  
+  # Fonts
+  AddType font/woff woff
+  AddType font/woff2 woff2
+  AddType font/ttf ttf
+  AddType font/eot eot
+  
+  # Manifest
+  AddType application/manifest+json webmanifest
+  AddType application/json json
+</IfModule>
+
+# =========================================
+# SÉCURITÉ
+# =========================================
+<IfModule mod_headers.c>
+  # Protection XSS (Cross-Site Scripting)
+  Header set X-XSS-Protection "1; mode=block"
+  
+  # Empêcher le MIME sniffing
+  Header set X-Content-Type-Options "nosniff"
+  
+  # Protection contre le Clickjacking
+  Header set X-Frame-Options "SAMEORIGIN"
+  
+  # Referrer Policy (contrôle des informations envoyées)
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  
+  # Permissions Policy (anciennement Feature-Policy)
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  
+  # Content Security Policy (ajustez selon vos besoins)
+  # Décommentez et modifiez si nécessaire
+  # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://res.cloudinary.com; font-src 'self' data:; connect-src 'self';"
+</IfModule>
+
+# =========================================
+# DÉSACTIVER LA LISTE DES RÉPERTOIRES
+# =========================================
+Options -Indexes
+
+# =========================================
+# PAGES D'ERREUR PERSONNALISÉES (Optionnel)
+# =========================================
+ErrorDocument 404 /index.html
+ErrorDocument 403 /index.html
+ErrorDocument 500 /index.html

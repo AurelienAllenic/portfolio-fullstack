@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import type { Project } from "./ProjectCategory";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
 interface SingleProjectProps {
   projects: Project[];
@@ -20,6 +21,7 @@ const SingleProject = ({
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const selectedProject = projects[selectedIndex];
 
   // Animation d'entrée avec overlay
@@ -38,6 +40,13 @@ const SingleProject = ({
         ease: "power2.out",
       });
     }, 200);
+  }, []);
+
+  // S'assurer que le slider commence au début (première carte visible)
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollTo({ left: 0, behavior: 'instant' });
+    }
   }, []);
 
   // Animation lors du changement de projet
@@ -67,6 +76,26 @@ const SingleProject = ({
   const handleImageClick = (index: number) => {
     if (index !== selectedIndex) {
       setSelectedIndex(index);
+    }
+  };
+
+  const handleScrollLeft = () => {
+    if (sliderRef.current) {
+      const scrollAmount = 200; // Ajustez selon la largeur des images + gap
+      sliderRef.current.scrollBy({
+        left: -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (sliderRef.current) {
+      const scrollAmount = 200; // Ajustez selon la largeur des images + gap
+      sliderRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -123,18 +152,34 @@ const SingleProject = ({
       />
       <div ref={containerRef} className={styles.containerSingleProject}>
       {/* Slider d'images en haut */}
-      <div className={styles.topSlider}>
-        {projects.map((project, index) => (
-          <div
-            key={project.id}
-            className={`${styles.sliderImage} ${
-              index === selectedIndex ? styles.sliderImageActive : ""
-            }`}
-            onClick={() => handleImageClick(index)}
-          >
-            <img src={project.image} alt={project.title} />
-          </div>
-        ))}
+      <div className={styles.sliderWrapper}>
+        <button 
+          className={styles.sliderArrowLeft}
+          onClick={handleScrollLeft}
+          aria-label="Défiler vers la gauche"
+        >
+          <HiChevronLeft />
+        </button>
+        <div ref={sliderRef} className={styles.topSlider}>
+          {projects.map((project, index) => (
+            <div
+              key={project.id}
+              className={`${styles.sliderImage} ${
+                index === selectedIndex ? styles.sliderImageActive : ""
+              }`}
+              onClick={() => handleImageClick(index)}
+            >
+              <img src={project.image} alt={project.title} />
+            </div>
+          ))}
+        </div>
+        <button 
+          className={styles.sliderArrowRight}
+          onClick={handleScrollRight}
+          aria-label="Défiler vers la droite"
+        >
+          <HiChevronRight />
+        </button>
       </div>
 
       {/* Contenu du projet sélectionné */}

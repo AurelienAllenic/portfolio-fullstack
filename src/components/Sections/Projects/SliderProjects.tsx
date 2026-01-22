@@ -61,11 +61,19 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       }
       
       // Déverrouiller le scroll IMMÉDIATEMENT et de manière forcée
+      // Réinitialiser le scroll position et l'overflow du body
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      
       setTimeout(() => {
         setScrollLocked(false);
         scrollLockedRef.current = false;
         document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
         touchStartY.current = null;
+        // S'assurer que le scroll est bien à 0
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }, 100);
       
       // Notifier IMMÉDIATEMENT que l'index a été forcé pour le réinitialiser
@@ -846,6 +854,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
             top: 0,
             left: 0,
             width: "100%",
+            minHeight: "100vh",
             opacity: index === currentIndex ? 1 : 0,
             pointerEvents: index === currentIndex ? "auto" : "none",
             zIndex: index === currentIndex ? 10 : 1,

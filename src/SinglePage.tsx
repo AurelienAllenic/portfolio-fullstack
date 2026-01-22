@@ -26,11 +26,20 @@ const SinglePage = () => {
     if (shouldRestore && savedCategoryIndex) {
       console.log('SinglePage monté - Restauration vers la catégorie:', savedCategoryIndex);
       
+      // Réinitialiser le scroll immédiatement
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      
       // Nettoyer après un délai
       setTimeout(() => {
         sessionStorage.removeItem('shouldRestoreScroll');
         sessionStorage.removeItem('lastProjectCategoryIndex');
         setForceProjectsIndex(undefined);
+        // S'assurer que le scroll est toujours à 0
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
         console.log('Restauration terminée');
       }, 1000);
     }
