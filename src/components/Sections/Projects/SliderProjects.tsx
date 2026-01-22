@@ -120,7 +120,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     if (!container) return;
 
     const allElements = container.querySelectorAll('[data-category-index]');
-    gsap.set(allElements, { opacity: 0, y: 100 });
+    gsap.set(allElements, { opacity: 0, y: 0 });
     
     gsap.set(container, { opacity: 1 });
   }, []);
