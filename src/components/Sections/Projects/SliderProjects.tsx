@@ -8,6 +8,7 @@ import {
   openclassrooms2_cover,
   openclassrooms3_cover,
   projects_cover,
+  iim_cover,
 } from "./Data";
 
 interface SliderProjectsProps {
@@ -30,10 +31,11 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const isAtTopRef = useRef(false);
 
   const covers: ProjectCover[] = [
-    openclassrooms1_cover,
-    openclassrooms2_cover,
-    openclassrooms3_cover,
     projects_cover,
+    iim_cover,
+    openclassrooms3_cover,
+    openclassrooms2_cover,
+    openclassrooms1_cover,
   ];
 
   useEffect(() => {

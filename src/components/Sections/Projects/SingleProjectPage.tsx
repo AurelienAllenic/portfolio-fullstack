@@ -11,6 +11,8 @@ import {
   openclassrooms2,
   openclassrooms3,
   projects,
+  iim,
+  iim_cover,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
 
@@ -21,17 +23,19 @@ const SingleProjectPage = () => {
   const [showContent, setShowContent] = useState(false);
 
   const covers: ProjectCover[] = [
-    openclassrooms1_cover,
-    openclassrooms2_cover,
-    openclassrooms3_cover,
+    iim_cover,
     projects_cover,
+    openclassrooms3_cover,
+    openclassrooms2_cover,
+    openclassrooms1_cover,
   ];
 
   const projectsData: Project[][] = [
-    openclassrooms1,
-    openclassrooms2,
-    openclassrooms3,
     projects,
+    iim,
+    openclassrooms3,
+    openclassrooms2,
+    openclassrooms1,
   ];
 
   // Trouver l'index de la catégorie par slug
