@@ -60,6 +60,31 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         timeoutId.current = null;
       }
       
+      // Nettoyer le transform translate(0px, 100px) qui reste dans le style inline
+      const container = containerRef.current;
+      if (container) {
+        const allElements = container.querySelectorAll('[data-category-index]');
+        const forcedElement = container.querySelector(`[data-category-index="${forceIndex}"]`) as HTMLElement;
+        
+        allElements.forEach((element) => {
+          const htmlElement = element as HTMLElement;
+          // Tuer toutes les animations GSAP en cours
+          gsap.killTweensOf(htmlElement);
+          
+          if (element === forcedElement) {
+            // Pour l'élément forcé, nettoyer le transform et le rendre visible
+            gsap.set(htmlElement, { y: 0, opacity: 1 });
+            // Forcer le transform à none dans le style inline
+            htmlElement.style.transform = 'none';
+          } else {
+            // Pour les autres éléments, nettoyer le transform et les cacher
+            gsap.set(htmlElement, { y: 0, opacity: 0 });
+            // Forcer le transform à none dans le style inline
+            htmlElement.style.transform = 'none';
+          }
+        });
+      }
+      
       // Déverrouiller le scroll IMMÉDIATEMENT et de manière forcée
       // Réinitialiser le scroll position et l'overflow du body
       window.scrollTo({ top: 0, behavior: 'instant' });
