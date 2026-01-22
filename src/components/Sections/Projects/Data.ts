@@ -43,6 +43,7 @@ const Paro = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pa
 const Claquettes = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_tcwcpf.webp'
 const Ascent = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent_pyerwc.webp'
 const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp'
+const PrreviousAurelien="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_xxjzsw.webp"
 
 const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
 const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
@@ -68,6 +69,7 @@ const ascentGif1='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_aut
 const ascentGif2='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent2_s7tkqu.gif'
 const ClaquettesGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_gx04ty.gif'
 const LinconnuGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnun_trwhck.gif'
+const AurelienAllenicGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_dkm4ur.gif'
 
 /* COVERS */
 
@@ -102,7 +104,7 @@ export const projects_cover = {
     title: 'Projets personnels',
     slug: 'projets-personnels',
     content: "Ces projets, personnels ou à destination de clients reflètent une diversité dans les thématiques abordées. Un site vitrine avec backoffice complet dans le milieu du rap, un site de claquettes pour un professeur parisien, un site de magie, et un projet placeholder dans le domaine de l'architecture.",
-    sideImages: [Claquettes, Ascent, Linconnu],
+    sideImages: [Claquettes, Ascent, Linconnu, PrreviousAurelien],
     mainImage: Paro,
     listIcons: [SCSS, ReactJs, nodeJs, NextJs]
 }
@@ -518,6 +520,20 @@ export const projects = [
         figma:'',
         folder:'',
         technologies: ['reactjs', 'styled-components']
+    },
+    {
+        id: 5,
+        image: PrreviousAurelien,
+        imageDiaporama: [PrreviousAurelien, AurelienAllenicGif],
+        title: 'Précédente version du site',
+        description: "Cette version précédente du site est réalisée en nextjs et inclut des modèles 3d intégrés via Three.js",
+        titleEn: 'Previous version of the website',
+        descriptionEn: 'This previous version of the website is made in nextjs and includes 3d models integrated via Three.js',
+        github: '',
+        demo: 'https://portfolio-next-aurelien.vercel.app/',
+        figma:'',
+        folder:'',
+        technologies: ['nextjs', 'scss', 'threejs']
     }
 ]
 
