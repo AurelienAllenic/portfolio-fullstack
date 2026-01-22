@@ -21,6 +21,7 @@
   align-items: center;
   padding: 70px 48px;
   overflow: hidden;
+  min-height: 100vh;
 
   @media (max-width: 900px) {
     padding: 50px 20px;
