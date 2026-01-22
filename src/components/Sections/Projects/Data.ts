@@ -72,7 +72,7 @@ const AurelienAllenicGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_we
 const AIMnistGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ai-mnist_ulxrp4.gif'
 const PurpleGoghGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/purplegogh_ydj3ot.gif'
 const MintGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/mint_rxsc1g.gif'
-const CarECommerceGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecomerce_bzazmp.gif'
+const CarECommerceGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecomerce_bpgi1w.gif'
 
 
 /* COVERS */
