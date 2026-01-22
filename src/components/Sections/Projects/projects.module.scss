@@ -549,6 +549,15 @@
   padding: 80px 48px 48px;
   position: relative;
   overflow-x: hidden;
+  
+  // Centrer verticalement le contenu sur desktop
+  @media (min-width: 901px) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 48px; // Padding équilibré en haut et en bas
+  }
 
   @media (max-width: 900px) {
     padding: 0;
@@ -756,6 +765,11 @@
   align-items: start;
   position: relative;
   z-index: 1;
+  
+  // Sur desktop, centrer verticalement dans l'espace disponible
+  @media (min-width: 901px) {
+    width: 100%;
+  }
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
