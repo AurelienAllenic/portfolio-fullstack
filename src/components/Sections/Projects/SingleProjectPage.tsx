@@ -23,8 +23,8 @@ const SingleProjectPage = () => {
   const [showContent, setShowContent] = useState(false);
 
   const covers: ProjectCover[] = [
-    iim_cover,
     projects_cover,
+    iim_cover,
     openclassrooms3_cover,
     openclassrooms2_cover,
     openclassrooms1_cover,
