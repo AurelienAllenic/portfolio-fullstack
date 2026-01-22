@@ -273,7 +273,6 @@ const MobileNav = () => {
               lockedImageRef.current = hoveredImage;
               const currentImage = lockedImageRef.current;
               
-              console.log('🔵 Logo click - currentImage:', currentImage, 'target:', IMAGES.hero1);
               
               setIsAnimating(true);
               
@@ -281,7 +280,6 @@ const MobileNav = () => {
               const overlay = menuOverlayRef.current;
               
               if (overlay && currentImage !== IMAGES.hero1) {
-                console.log('✅ Animation triggered for logo');
                 // NE PAS toucher à setHoveredImage - l'image React reste visible
                 
                 // Créer une nouvelle image par dessus l'ancienne

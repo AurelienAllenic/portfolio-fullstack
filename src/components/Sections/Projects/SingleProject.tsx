@@ -20,19 +20,37 @@ const SingleProject = ({
 }: SingleProjectProps) => {
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const slideIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTransitioningRef = useRef(false);
+  const gifDurationsRef = useRef<Map<string, number>>(new Map());
+  
   const selectedProject = projects[selectedIndex];
+  
+  // Obtenir les images du projet
+  const getProjectImages = (project: Project): string[] => {
+    if (project.imageDiaporama && project.imageDiaporama.length > 0) {
+      return project.imageDiaporama;
+    }
+    if (project.images && project.images.length > 0) {
+      return project.images;
+    }
+    if (project.image) {
+      return [project.image];
+    }
+    return [];
+  };
+  
+  const projectImages = getProjectImages(selectedProject);
 
   // Animation d'entrée avec overlay
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Masquer le contenu initialement
     gsap.set(container, { opacity: 0 });
-
-    // Attendre un peu puis afficher
     setTimeout(() => {
       gsap.to(container, {
         opacity: 1,
@@ -42,12 +60,18 @@ const SingleProject = ({
     }, 200);
   }, []);
 
-  // S'assurer que le slider commence au début (première carte visible)
+  // Slider au début
   useEffect(() => {
     if (sliderRef.current) {
       sliderRef.current.scrollTo({ left: 0, behavior: 'instant' });
     }
   }, []);
+
+  // Réinitialiser l'index de l'image quand on change de projet
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    isTransitioningRef.current = false;
+  }, [selectedIndex]);
 
   // Animation lors du changement de projet
   useEffect(() => {
@@ -73,6 +97,147 @@ const SingleProject = ({
     );
   }, [selectedIndex]);
 
+  // Fonction pour vérifier si une image est un GIF
+  const isGif = (url: string): boolean => {
+    return url.toLowerCase().endsWith('.gif') || url.toLowerCase().includes('.gif');
+  };
+
+  // Fonction pour obtenir la durée d'un GIF en analysant ses frames
+  const getGifDuration = async (url: string): Promise<number> => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      
+      let totalDuration = 0;
+      let index = 0;
+      
+      // Parcourir le fichier GIF pour trouver les blocs Graphics Control Extension (GCE)
+      while (index < bytes.length - 4) {
+        // Recherche du bloc GCE (0x21 0xF9)
+        if (bytes[index] === 0x21 && bytes[index + 1] === 0xF9) {
+          // Le délai est stocké aux octets +4 et +5 (little-endian, en centièmes de seconde)
+          const delayTime = (bytes[index + 4] | (bytes[index + 5] << 8));
+          // Convertir en millisecondes (centièmes de sec → ms)
+          const frameDelay = delayTime * 10 || 100; // Si 0, utiliser 100ms par défaut
+          totalDuration += frameDelay;
+        }
+        index++;
+      }
+      
+      // Si la durée totale est trop courte ou nulle, utiliser une valeur par défaut
+      return totalDuration > 500 ? totalDuration : 3000;
+    } catch (error) {
+      console.warn('Impossible de lire la durée du GIF:', error);
+      // Durée par défaut pour les GIFs si l'analyse échoue
+      return 3000;
+    }
+  };
+
+  // Précharger TOUTES les images et calculer les durées des GIFs
+  useEffect(() => {
+    const preloadImages = async () => {
+      const promises = projectImages.map(async (src) => {
+        // Précharger l'image
+        await new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = src;
+        });
+        
+        // Si c'est un GIF, calculer et stocker sa durée
+        if (isGif(src)) {
+          const duration = await getGifDuration(src);
+          gifDurationsRef.current.set(src, duration);
+        }
+      });
+      
+      await Promise.all(promises);
+    };
+
+    if (projectImages.length > 0) {
+      preloadImages();
+    }
+  }, [selectedIndex, projectImages]);
+
+  // Gestion du diaporama automatique avec respect de la durée des GIFs
+  useEffect(() => {
+    // Nettoyer l'intervalle précédent
+    if (slideIntervalRef.current) {
+      clearTimeout(slideIntervalRef.current);
+      slideIntervalRef.current = null;
+    }
+
+    // Pas de diaporama si une seule image
+    if (projectImages.length <= 1) {
+      return;
+    }
+
+    const currentImageUrl = projectImages[currentImageIndex];
+    const isCurrentImageGif = isGif(currentImageUrl);
+
+    // Déterminer la durée d'affichage AVANT de manipuler le GIF
+    let displayDuration: number;
+    
+    if (isCurrentImageGif) {
+      // Pour un GIF : afficher pendant 5 secondes
+      displayDuration = 6000;
+      console.log(`Affichage du GIF pendant ${displayDuration}ms`);
+    } else {
+      // Pour une image statique : 2.5 secondes
+      displayDuration = 2500;
+    }
+
+    // Si c'est un GIF, le forcer à redémarrer APRÈS avoir récupéré sa durée
+    if (isCurrentImageGif) {
+      // Utiliser requestAnimationFrame pour s'assurer que le DOM est à jour
+      requestAnimationFrame(() => {
+        const container = containerRef.current;
+        if (container) {
+          const activeImg = container.querySelector(
+            `.${styles.slideshowImage}.${styles.slideshowImageActive}`
+          ) as HTMLImageElement;
+          
+          if (activeImg) {
+            // Extraire l'URL de base sans le timestamp
+            const baseUrl = currentImageUrl.split('?')[0];
+            
+            // Forcer le rechargement du GIF
+            activeImg.src = '';
+            setTimeout(() => {
+              activeImg.src = baseUrl + '?t=' + Date.now();
+            }, 10);
+          }
+        }
+      });
+    }
+
+    // Programmer la transition vers l'image suivante
+    slideIntervalRef.current = setTimeout(() => {
+      if (!isTransitioningRef.current) {
+        isTransitioningRef.current = true;
+        
+        // Passer à l'image suivante
+        setCurrentImageIndex((prev) => (prev + 1) % projectImages.length);
+        
+        // Réinitialiser le flag de transition après l'animation CSS
+        setTimeout(() => {
+          isTransitioningRef.current = false;
+        }, 600);
+      }
+    }, displayDuration);
+
+    // Nettoyage
+    return () => {
+      if (slideIntervalRef.current) {
+        clearTimeout(slideIntervalRef.current);
+        slideIntervalRef.current = null;
+      }
+    };
+  }, [currentImageIndex, projectImages, selectedIndex]);
+
   const handleImageClick = (index: number) => {
     if (index !== selectedIndex) {
       setSelectedIndex(index);
@@ -81,9 +246,8 @@ const SingleProject = ({
 
   const handleScrollLeft = () => {
     if (sliderRef.current) {
-      const scrollAmount = 200; // Ajustez selon la largeur des images + gap
       sliderRef.current.scrollBy({
-        left: -scrollAmount,
+        left: -200,
         behavior: 'smooth'
       });
     }
@@ -91,9 +255,8 @@ const SingleProject = ({
 
   const handleScrollRight = () => {
     if (sliderRef.current) {
-      const scrollAmount = 200; // Ajustez selon la largeur des images + gap
       sliderRef.current.scrollBy({
-        left: scrollAmount,
+        left: 200,
         behavior: 'smooth'
       });
     }
@@ -151,131 +314,142 @@ const SingleProject = ({
         onComplete={() => setShowOverlay(false)}
       />
       <div ref={containerRef} className={styles.containerSingleProject}>
-      {/* Slider d'images en haut */}
-      <div className={styles.sliderWrapper}>
-        <button 
-          className={styles.sliderArrowLeft}
-          onClick={handleScrollLeft}
-          aria-label="Défiler vers la gauche"
-        >
-          <HiChevronLeft />
-        </button>
-        <div ref={sliderRef} className={styles.topSlider}>
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className={`${styles.sliderImage} ${
-                index === selectedIndex ? styles.sliderImageActive : ""
-              }`}
-              onClick={() => handleImageClick(index)}
-            >
-              <img src={project.image} alt={project.title} />
-            </div>
-          ))}
-        </div>
-        <button 
-          className={styles.sliderArrowRight}
-          onClick={handleScrollRight}
-          aria-label="Défiler vers la droite"
-        >
-          <HiChevronRight />
-        </button>
-      </div>
-
-      {/* Contenu du projet sélectionné */}
-      <div className={styles.projectContent}>
-        {/* Image principale */}
-        <div className={styles.projectMainImage}>
-          <img src={selectedProject.image} alt={selectedProject.title} />
-        </div>
-
-        {/* Détails du projet */}
-        <div className={styles.projectDetails}>
-          {/* Titre */}
-          <h2 className={styles.projectTitle}>{selectedProject.title}</h2>
-
-          {/* Description */}
-          <p className={styles.projectDescription}>{selectedProject.description}</p>
-
-          {/* Icônes des technologies */}
-          <div className={styles.techIcons}>
-            {selectedProject.technologies.map((tech, index) => {
-              const iconUrl = getTechIcon(tech);
-              return iconUrl ? (
-                <div key={index} className={styles.techIconContainer}>
-                  <img src={iconUrl} alt={tech} className={styles.techIcon} />
-                  <span className={styles.techTooltip}>{getTechName(tech)}</span>
-                </div>
-              ) : (
-                <div key={index} className={styles.techBadge}>
-                  {getTechName(tech)}
+        {/* Slider d'images en haut */}
+        <div className={styles.sliderWrapper}>
+          <button 
+            className={styles.sliderArrowLeft}
+            onClick={handleScrollLeft}
+            aria-label="Défiler vers la gauche"
+          >
+            <HiChevronLeft />
+          </button>
+          <div ref={sliderRef} className={styles.topSlider}>
+            {projects.map((project, index) => {
+              const projectImages = getProjectImages(project);
+              const firstImage = projectImages[0] || '';
+              return (
+                <div
+                  key={project.id}
+                  className={`${styles.sliderImage} ${
+                    index === selectedIndex ? styles.sliderImageActive : ""
+                  }`}
+                  onClick={() => handleImageClick(index)}
+                >
+                  <img src={firstImage} alt={project.title} />
                 </div>
               );
             })}
           </div>
-
-          {/* Boutons d'action */}
-          <div className={styles.projectButtons}>
-            {selectedProject.github && (
-              <a
-                href={selectedProject.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.projectButton}
-              >
-                GitHub
-              </a>
-            )}
-            {selectedProject.demo && (
-              <a
-                href={selectedProject.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.projectButton}
-              >
-                Live Demo
-              </a>
-            )}
-            {selectedProject.figma && (
-              <a
-                href={selectedProject.figma}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.projectButton}
-              >
-                Figma
-              </a>
-            )}
-            {selectedProject.folder && Array.isArray(selectedProject.folder) && (
-              <>
-                {selectedProject.folder.map((item) => (
-                  <a
-                    key={item.id}
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.projectButton}
-                  >
-                    {item.title}
-                  </a>
-                ))}
-              </>
-            )}
-          </div>
+          <button 
+            className={styles.sliderArrowRight}
+            onClick={handleScrollRight}
+            aria-label="Défiler vers la droite"
+          >
+            <HiChevronRight />
+          </button>
         </div>
 
-        {/* Nom de la catégorie en bas à droite */}
-        <div className={styles.categoryLabel}>{categoryTitle}</div>
-      </div>
+        {/* Contenu du projet sélectionné */}
+        <div className={styles.projectContent}>
+          {/* Image principale avec transition crossfade */}
+          <div className={styles.projectMainImage}>
+            {projectImages.map((imgSrc, index) => (
+              <img 
+                key={`${selectedProject.id}-${index}`}
+                src={imgSrc} 
+                alt={`${selectedProject.title} - Image ${index + 1}`}
+                className={`${styles.slideshowImage} ${
+                  index === currentImageIndex ? styles.slideshowImageActive : ''
+                }`}
+                style={{
+                  position: index === 0 ? 'relative' : 'absolute',
+                  top: index === 0 ? 'auto' : 0,
+                  left: index === 0 ? 'auto' : 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+            ))}
+          </div>
 
-      {/* Bouton retour */}
-      <button 
-        onClick={onBack} 
-        className={styles.backButton}
-      >
-        ← Retour
-      </button>
-    </div>
+          {/* Détails du projet */}
+          <div className={styles.projectDetails}>
+            <h2 className={styles.projectTitle}>{selectedProject.title}</h2>
+            <p className={styles.projectDescription}>{selectedProject.description}</p>
+
+            <div className={styles.techIcons}>
+              {selectedProject.technologies.map((tech, index) => {
+                const iconUrl = getTechIcon(tech);
+                return iconUrl ? (
+                  <div key={index} className={styles.techIconContainer}>
+                    <img src={iconUrl} alt={tech} className={styles.techIcon} />
+                    <span className={styles.techTooltip}>{getTechName(tech)}</span>
+                  </div>
+                ) : (
+                  <div key={index} className={styles.techBadge}>
+                    {getTechName(tech)}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className={styles.projectButtons}>
+              {selectedProject.github && (
+                <a
+                  href={selectedProject.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.projectButton}
+                >
+                  GitHub
+                </a>
+              )}
+              {selectedProject.demo && (
+                <a
+                  href={selectedProject.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.projectButton}
+                >
+                  Live Demo
+                </a>
+              )}
+              {selectedProject.figma && (
+                <a
+                  href={selectedProject.figma}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.projectButton}
+                >
+                  Figma
+                </a>
+              )}
+              {selectedProject.folder && Array.isArray(selectedProject.folder) && (
+                <>
+                  {selectedProject.folder.map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.projectButton}
+                    >
+                      {item.title}
+                    </a>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.categoryLabel}>{categoryTitle}</div>
+        </div>
+
+        <button onClick={onBack} className={styles.backButton}>
+          ← Retour
+        </button>
+      </div>
     </>
   );
 };

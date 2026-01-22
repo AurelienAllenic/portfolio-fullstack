@@ -44,6 +44,20 @@ const Claquettes = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_a
 const Ascent = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent_pyerwc.webp'
 const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp'
 
+/* GIFS */
+
+const BookiGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/booki_tta9qg.gif'
+const OhMyFoodGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ohmyfood_jmbz97.gif'
+const LaPanthereGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lapanthere_ogz9bj.gif'
+const KanapGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/kanap_ou0eht.gif'
+const PetitsPlatsGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/petits-plats_qevcmt.gif'
+const KasaGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/kasa_r1rsws.gif'
+const WealthealthGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/wealthealth_xgzmdu.gif'
+const paroGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro_uhxlmm.gif'
+const ascentGif1='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent1_ld9d5y.gif'
+const ascentGif2='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent2_s7tkqu.gif'
+const ClaquettesGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_gx04ty.gif'
+const LinconnuGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnun_trwhck.gif'
 
 /* COVERS */
 
@@ -89,6 +103,7 @@ export const openclassrooms1 = [
     {
         id: 1,
         image: Booki,
+        imageDiaporama: [Booki, BookiGif],
         title: 'Booki',
         description: 'Projet de site de réservation hôtelier réalisé en HTML/CSS',
         titleEn: 'Booki',
@@ -102,6 +117,7 @@ export const openclassrooms1 = [
     {
         id: 2,
         image: Ohmyfood,
+        imageDiaporama: [Ohmyfood, OhMyFoodGif],
         title: 'Ohmyfood',
         description: 'Site gastronomique réalisé en HTML, CSS et SCSS',
         titleEn: 'Ohmyfood',
@@ -114,6 +130,7 @@ export const openclassrooms1 = [
     {
         id: 3,
         image: Lapanthere,
+        imageDiaporama: [Lapanthere, LaPanthereGif],
         title: 'Lapanthere',
         description: "Site de web design basé à Lyon, projet d'amélioration SEO d'un site existant",
         titleEn: 'Lapanthere',
@@ -127,12 +144,13 @@ export const openclassrooms1 = [
     {
         id: 4,
         image: Kanap,
+        imageDiaporama: [Kanap, KanapGif],
         title: 'Kanap',
         description: 'Site e-commerce réalisé en JavaScript, HTML et CSS',
         titleEn: 'Kanap',
         descriptionEn: 'E-commerce website with JavaScript, HTML and CSS',
         github: 'https://github.com/AurelienAllenic/kanap-p5-openclassrooms',
-        demo: '',
+        demo: 'https://kanap-p5-openclassrooms-ma54z1ntl-aurelien-allenics-projects.vercel.app/',
         figma:'',
         folder:'',
         technologies: ['html', 'css', 'javascript']
@@ -197,6 +215,7 @@ export const openclassrooms2 = [
     {
         id: 3,
         image: Plats,
+        imageDiaporama: [Plats, PetitsPlatsGif],
         title: 'Les petits plats',
         description: "Projet de développement d'algorithmes de recherche en JavaScript",
         titleEn: 'Les petits plats',
@@ -210,6 +229,7 @@ export const openclassrooms2 = [
     {
         id: 4,
         image: Kasa,
+        imageDiaporama: [Kasa, KasaGif],
         title: 'Kasa',
         description: "Projet de site de location d'appartement en React.js",
         titleEn: 'Kasa',
@@ -236,6 +256,7 @@ export const openclassrooms2 = [
     {
         id: 6,
         image: Wealthealth,
+        imageDiaporama: [Wealthealth, WealthealthGif],
         title: 'WealthHealth',
         description: "Refonte en React.js à partir d'un code jQuery d'un site d'ajout d'employés utilisant React Redux",
         titleEn: 'WealthHealth',
@@ -426,12 +447,13 @@ export const projects = [
     {
         id: 1,
         image: Paro,
-        title: 'paroxx.com',
+        title: 'Paro',
+        imageDiaporama: [Paro, paroGif],
         description: "Projet de site vitrine pour l'artiste ParoXX réalisé avec React.js / Vite",
         titleEn: 'paroxx.com',
         descriptionEn: 'Project of a website for the artist ParoXX created with React.js / Vite',
         github: '',
-        demo: 'https://paroxx.com',
+        demo: 'https://paro-musique.com',
         figma:'',
         folder:'',
         technologies: ['reactjs', 'scss']
@@ -439,19 +461,21 @@ export const projects = [
     {
         id: 2,
         image: Ascent,
+        imageDiaporama: [Ascent, ascentGif1, ascentGif2],
         title: 'Ascent',
         description: "Site vitrine à destination des milieux de l'architecture et du design réalisé en Next.js, totalement administrable par l'utilisateur",
         titleEn: 'Ascent',
         descriptionEn: 'Showcase project for architects and designers in Next.js, fully manageable by the user',
         github: '',
-        demo: 'https://ascent-4hyfe2l98-aurelien-allenics-projects.vercel.app/',
+        demo: 'https://ascent-six.vercel.app/',
         figma:'',
         folder:'',
-        technologies: ['nextjs']
+        technologies: ['nextjs', 'scss']
     },
     {
         id: 3,
         image: Claquettes,
+        imageDiaporama: [Claquettes, ClaquettesGif],
         title: 'claquettes-swing.fr',
         description: 'Participation à la création du front en React.js et au déploiement',
         titleEn: 'claquettes-swing.fr',
@@ -465,6 +489,7 @@ export const projects = [
     {
         id: 4,
         image: Linconnu,
+        imageDiaporama: [Linconnu, LinconnuGif],
         title: 'linconnu-magic.com',
         description: "Création d'un site web de magie à destination du public en React.js",
         titleEn: 'linconnu-magic.com',

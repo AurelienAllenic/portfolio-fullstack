@@ -24,7 +24,9 @@ export interface ProjectFolderItem {
 
 export interface Project {
   id: number;
-  image: string;
+  image?: string; // Image unique (optionnel si imageDiaporama ou images est fourni)
+  imageDiaporama?: string[]; // Tableau d'images pour le diaporama (prioritaire)
+  images?: string[]; // Tableau d'images pour le diaporama (alternative)
   title: string;
   description: string;
   titleEn: string;
@@ -70,7 +72,6 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       pendingUrlRef.current = e.currentTarget.href;
-      console.log('Catégorie sauvegardée:', categoryIndex);
       
       // Déclencher l'animation
       setIsTransitioning(true);

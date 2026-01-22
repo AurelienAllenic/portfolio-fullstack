@@ -78,7 +78,6 @@ const SingleProjectPage = () => {
   const handleBack = () => {
     // S'assurer que le flag de restauration est bien présent
     sessionStorage.setItem('shouldRestoreScroll', 'true');
-    console.log('Retour avec catégorie:', sessionStorage.getItem('lastProjectCategoryIndex'));
     
     // Déclencher l'animation
     setIsTransitioningBack(true);
