@@ -44,6 +44,16 @@ const Claquettes = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_a
 const Ascent = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent_pyerwc.webp'
 const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp'
 
+const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
+const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
+const GenerativeArt = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/art_sbdrvx.webp'
+const Pie = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pie_f0qohu.webp'
+const FlutterEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/flutter-ecommerce_kcmtev.webp'
+const AIMnist = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ia-mnist_pver85.webp'
+const SymfonyECommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/symfony-ecommerce_dfzxyy.webp'
+const Learnify = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/learnify_nir4ie.webp'
+const SwiftApps = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/swift_ya09ni.webp'
+
 /* GIFS */
 
 const BookiGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/booki_tta9qg.gif'
@@ -95,6 +105,15 @@ export const projects_cover = {
     sideImages: [Claquettes, Ascent, Linconnu],
     mainImage: Paro,
     listIcons: [SCSS, ReactJs, nodeJs, NextJs]
+}
+
+export const iim_cover = {
+    title: 'Mastère IIM',
+    slug: 'mastere-iim',
+    content: "Suivie de 2024 à 2026, cette formation aborde un grand nombre de projets et de langages de programmation. IA,  devOps, projet fullsatcks et projets mobiles.",
+    sideImages: [Pie, AIMnist, SymfonyECommerce, SwiftApps],
+    mainImage: CarEcommerce,
+    listIcons: [ReactJs, Django, nodeJs, Python, NextJs ]
 }
 
 /* PROJECTS */
@@ -499,5 +518,125 @@ export const projects = [
         figma:'',
         folder:'',
         technologies: ['reactjs', 'styled-components']
+    }
+]
+
+export const iim = [
+    {
+        id: 1,
+        image: CarEcommerce,
+        title: 'Car E-Commerce',
+        description: 'Scraper pour suivre les prix des livres chez un revendeur en Python',
+        titleEn: 'E-Commerce Car',
+        descriptionEn: 'Scraper to follow the price of books at a bookstore in Python',
+        github: 'https://github.com/enzocosson/concept-car-ecom',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['React', 'nodejs', 'scss']
+    },
+    {
+        id: 2,
+        image: ELTPiepline,
+        title: 'ELT Pipeline',
+        description: "Création d'un cahier des charges et d'un backlog product pour une association de soutien scolaire",
+        titleEn: 'ELT Pipeline',
+        descriptionEn: 'Creation of a project plan and backlog product for a school support association',
+        github: 'https://github.com/AurelienAllenic/pipeline-elt-iim',
+        demo: '',
+        figma:'',
+        folder: [],
+        technologies: ['python']
+    },
+    {
+        id: 3,
+        image: GenerativeArt,
+        title: 'Art génératif',
+        description: "Algorithme de gestion de tournois d'échecs en Python",
+        titleEn: 'Generative Art',
+        descriptionEn: 'Algorithmic chess tournament project in Python',
+        github: 'https://github.com/enzocosson/cover-generative',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['react', 'scss']
+    },
+    {
+        id: 4,
+        image: Pie,
+        title: 'PIE front',
+        description: 'Site de streaming réalisé avec Django et JavaScript',
+        titleEn: 'PIE front',
+        descriptionEn: 'Online streaming site with Django and JavaScript',
+        github: 'https://github.com/AurelienAllenic/mint',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['react-native']
+    },
+    {
+        id: 5,
+        image: FlutterEcommerce,
+        title: 'flutter E-commerce',
+        description: 'Projet Django qui permet aux utilisateurs de poster des critiques ou des demandes de critiques ainsi que suivre des utilisateurs',
+        titleEn: 'E-commerce Flutter',
+        descriptionEn: 'Django project that allows users to post reviews or request reviews and track users',
+        github: 'https://github.com/AurelienAllenic/flutter-ecommerce',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['flutter']
+    },
+    {
+        id: 6,
+        image: AIMnist,
+        title: 'IA Mnist',
+        description: "Développement d'une API RESTful avec Django Rest Framework pour remonter et suivre des problèmes techniques en B2B",
+        titleEn: 'AI Mnist',
+        descriptionEn: 'Development of a RESTful API with Django Rest Framework to track technical issues in B2B',
+        github: 'https://github.com/AurelienAllenic/ai-mnist',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['python', 'HTML', 'CSS', 'JS']
+    },
+    {
+        id: 7,
+        image: SymfonyECommerce,
+        title: 'E-commerce Symfony',
+        description: "Projet de testing d'une API Flask pour des réservations de places en compétitions sportives",
+        titleEn: 'Symfony E-commerce',
+        descriptionEn: 'Project of testing a Flask API for sport performance reservations',
+        github: 'https://github.com/AurelienAllenic/iim-symfony',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['django', 'flask', 'pytest']
+    },
+    {
+        id: 8,
+        image: Learnify,
+        title: 'Learnify',
+        description: "Développement d'un backend sécurisé avec Python et SQL dans le domaine de l'événementiel",
+        titleEn: 'Learnify',
+        descriptionEn: 'Development of a secure backend with Python and SQL in the event management field',
+        github: 'https://github.com/AurelienAllenic/learnify',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['react-native']
+    },
+    {
+        id: 9,
+        image: SwiftApps,
+        title: 'Applications swift',
+        description: "Développement d'un backend sécurisé avec Python et SQL dans le domaine de l'événementiel",
+        titleEn: 'Swift applications',
+        descriptionEn: 'Development of a secure backend with Python and SQL in the event management field',
+        github: 'https://github.com/AurelienAllenic/swift-project',
+        demo: '',
+        figma:'',
+        folder:'',
+        technologies: ['swift']
     }
 ]
