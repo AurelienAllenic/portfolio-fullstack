@@ -694,6 +694,12 @@
     display: block;
     pointer-events: none;
   }
+  
+  // Pour les GIFs, utiliser contain au lieu de cover
+  &.sliderImageGif img {
+    object-fit: contain;
+    background: #1a1a1a; // Fond sombre pour les espaces vides
+  }
 
   &:hover {
     opacity: 0.8;
@@ -754,32 +760,15 @@
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
     gap: 40px;
-    padding: 0 20px;
+    padding: 0;
     width: 100%;
     z-index: 1; // Inférieur aux éléments fixes (z-index: 100)
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Centrer tous les enfants
   }
 }
 
-.projectMainImage {
-  width: 100%;
-  height: auto;
-  position: relative;
-  
-  img {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.85);
-  }
-
-  @media (max-width: 900px) {
-    img {
-      max-height: 400px;
-    }
-  }
-}
 
 .mainImageCurrent {
   position: relative;
@@ -824,6 +813,11 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+  
+  @media (max-width: 900px) {
+    width: 90%;
+    margin: 0 auto; // Centrer horizontalement comme l'image
+  }
 }
 
 .projectTitle {
@@ -958,8 +952,8 @@
 
 .categoryLabel {
   position: absolute;
-  bottom: 48px;
-  right: 48px;
+  bottom: 0;
+  right: 0;
   font-size: 24px;
   font-family: $font-family-primary;
   color: rgba(255, 255, 255, 0.4);
@@ -1029,6 +1023,10 @@
   height: 400px; // Ajustez selon vos besoins
   overflow: hidden;
   border-radius: 8px;
+  background: #1a1a1a; // Fond sombre pour les GIFs avec contain
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   .slideshowImage {
     opacity: 0;
@@ -1039,5 +1037,30 @@
       opacity: 1;
       z-index: 1;
     }
+  }
+  
+  @media (max-width: 900px) {
+    height: 300px; // Réduire la hauteur sur mobile
+    width: 90%;
+    margin: 0 auto; // Centrer horizontalement
+    padding: 0;
+    justify-content: stretch; // Étirer pour éviter l'espace à droite
+    align-items: stretch;
+    
+    .slideshowImage {
+      width: 100% !important; // Forcer la largeur à 100% sur mobile
+      max-width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+    }
+  }
+  @media (max-width: 500px) {
+    height: 200px;
+    width: 90%;
+    margin: 0 auto; // Centrer horizontalement
   }
 }

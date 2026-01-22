@@ -332,7 +332,7 @@ const SingleProject = ({
                   key={project.id}
                   className={`${styles.sliderImage} ${
                     index === selectedIndex ? styles.sliderImageActive : ""
-                  }`}
+                  } ${isGif(firstImage) ? styles.sliderImageGif : ""}`}
                   onClick={() => handleImageClick(index)}
                 >
                   <img src={firstImage} alt={project.title} />
@@ -365,8 +365,9 @@ const SingleProject = ({
                   position: index === 0 ? 'relative' : 'absolute',
                   top: index === 0 ? 'auto' : 0,
                   left: index === 0 ? 'auto' : 0,
-                  width: '100%',
+                  width: '100%', // Toujours 100% pour éviter l'espace à droite
                   height: '100%',
+                  maxWidth: '100%',
                   objectFit: 'cover'
                 }}
               />
