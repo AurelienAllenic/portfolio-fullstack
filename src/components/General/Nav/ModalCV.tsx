@@ -70,7 +70,7 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
   const handleCVClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    const pdfUrl = "https://res.cloudinary.com/dwpbyyhoq/image/upload/cv_n9xk2y.pdf";
+    const pdfUrl = "https://res.cloudinary.com/dwpbyyhoq/image/upload/CV_mwcaqj.pdf";
     window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     
   };
@@ -93,7 +93,7 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
           onClick={handleCVClick}
         >
           <img
-            src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv-png_ulqfbk.webp"
+            src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/CV_ko43f7.webp"
             alt="CV"
             className={styles.cvImage}
           />
