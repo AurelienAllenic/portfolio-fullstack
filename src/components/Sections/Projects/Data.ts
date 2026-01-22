@@ -53,7 +53,6 @@ const FlutterEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_we
 const AIMnist = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ia-mnist_pver85.webp'
 const SymfonyECommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/symfony-ecommerce_dfzxyy.webp'
 const Learnify = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/learnify_nir4ie.webp'
-const SwiftApps = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/swift_ya09ni.webp'
 
 /* GIFS */
 
@@ -70,6 +69,11 @@ const ascentGif2='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_aut
 const ClaquettesGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_gx04ty.gif'
 const LinconnuGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnun_trwhck.gif'
 const AurelienAllenicGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_dkm4ur.gif'
+const AIMnistGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ai-mnist_ulxrp4.gif'
+const PurpleGoghGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/purplegogh_ydj3ot.gif'
+const MintGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/mint_rxsc1g.gif'
+const CarECommerceGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecomerce_bzazmp.gif'
+
 
 /* COVERS */
 
@@ -113,7 +117,7 @@ export const iim_cover = {
     title: 'Mastère IIM',
     slug: 'mastere-iim',
     content: "Suivie de 2024 à 2026, cette formation aborde un grand nombre de projets et de langages de programmation. IA,  devOps, projet fullsatcks et projets mobiles.",
-    sideImages: [Pie, AIMnist, SymfonyECommerce, SwiftApps],
+    sideImages: [Pie, AIMnist, SymfonyECommerce, Learnify],
     mainImage: CarEcommerce,
     listIcons: [ReactJs, Django, nodeJs, Python, NextJs ]
 }
@@ -541,118 +545,109 @@ export const iim = [
     {
         id: 1,
         image: CarEcommerce,
+        imageDiaporama: [CarEcommerce, CarECommerceGif],
         title: 'Car E-Commerce',
-        description: 'Scraper pour suivre les prix des livres chez un revendeur en Python',
+        description: 'Projet de site Ecomerce de voitures en React.js qui permet le paiement via stripe',
         titleEn: 'E-Commerce Car',
-        descriptionEn: 'Scraper to follow the price of books at a bookstore in Python',
-        github: 'https://github.com/enzocosson/concept-car-ecom',
+        descriptionEn: 'Project of a car e-commerce website in React.js that allows payment via stripe',
+        github: 'https://github.com/AurelienAllenic/concept-car-ecom',
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['React', 'nodejs', 'scss']
+        technologies: ['reactjs', 'nodejs', 'scss', 'stripe']
     },
     {
         id: 2,
         image: ELTPiepline,
         title: 'ELT Pipeline',
-        description: "Création d'un cahier des charges et d'un backlog product pour une association de soutien scolaire",
+        description: "Création d'une pipeline ELT en python avec une base en mongoDB et un dashboard via metabase",
         titleEn: 'ELT Pipeline',
-        descriptionEn: 'Creation of a project plan and backlog product for a school support association',
+        descriptionEn: 'Pipeline ELT in python with a mongoDB base and a dashboard via metabase',
         github: 'https://github.com/AurelienAllenic/pipeline-elt-iim',
         demo: '',
         figma:'',
         folder: [],
-        technologies: ['python']
+        technologies: ['python', 'mongoDB', 'metabase']
     },
     {
         id: 3,
         image: GenerativeArt,
-        title: 'Art génératif',
-        description: "Algorithme de gestion de tournois d'échecs en Python",
-        titleEn: 'Generative Art',
-        descriptionEn: 'Algorithmic chess tournament project in Python',
-        github: 'https://github.com/enzocosson/cover-generative',
-        demo: '',
+        imageDiaporama: [GenerativeArt, PurpleGoghGif],
+        title: 'Purple Gogh',
+        description: "Projet de présentation d'une cover générative autour du rappeur Jul mélangé à des oeuvres de Vincent van Gogh",
+        titleEn: 'Purple Gogh',
+        descriptionEn: 'Project of a generative cover presentation around the rapper Jul mixed with works of Vincent van Gogh',
+        github: 'https://github.com/AurelienAllenic/cover-generative',
+        demo: 'https://cover-generative-nu.vercel.app/',
         figma:'',
         folder:'',
-        technologies: ['react', 'scss']
+        technologies: ['reactjs', 'scss', 'tensorflow', 'keras']
     },
     {
         id: 4,
         image: Pie,
-        title: 'PIE front',
-        description: 'Site de streaming réalisé avec Django et JavaScript',
-        titleEn: 'PIE front',
-        descriptionEn: 'Online streaming site with Django and JavaScript',
+        imageDiaporama: [Pie, MintGif],
+        title: 'Mint',
+        description: "Projet entreprenarial à visée Innovante. Application d'organisation de courses à pieds, utilisables par les organismes et les coureurs, réalisé en équipe",
+        titleEn: 'Mint',
+        descriptionEn: 'Entrepreneurial and innovative project. Application for organizing foot races, usable by organizations and runners',
         github: 'https://github.com/AurelienAllenic/mint',
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['react-native']
+        technologies: ['react-native', 'typeScript', 'expo']
     },
     {
         id: 5,
         image: FlutterEcommerce,
         title: 'flutter E-commerce',
-        description: 'Projet Django qui permet aux utilisateurs de poster des critiques ou des demandes de critiques ainsi que suivre des utilisateurs',
+        description: 'Projet de site Ecomerce basique avec Flutter, stockage des produits en base mongoDB et paiements via stripe',
         titleEn: 'E-commerce Flutter',
-        descriptionEn: 'Django project that allows users to post reviews or request reviews and track users',
+        descriptionEn: 'Basic e-commerce project with Flutter, storage of products in mongoDB and payments via stripe',
         github: 'https://github.com/AurelienAllenic/flutter-ecommerce',
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['flutter']
+        technologies: ['flutter', 'mongoDB', 'stripe']
     },
     {
         id: 6,
         image: AIMnist,
+        imageDiaporama: [AIMnist, AIMnistGif],
         title: 'IA Mnist',
-        description: "Développement d'une API RESTful avec Django Rest Framework pour remonter et suivre des problèmes techniques en B2B",
+        description: "Projet de reconnaissance de chiffres manuscrits en utilisant une IA avec TensorFlow et Keras",
         titleEn: 'AI Mnist',
-        descriptionEn: 'Development of a RESTful API with Django Rest Framework to track technical issues in B2B',
+        descriptionEn: 'Project of handwritten digit recognition using an AI with TensorFlow and Keras',
         github: 'https://github.com/AurelienAllenic/ai-mnist',
-        demo: '',
+        demo: 'https://ai-mnist.vercel.app/',
         figma:'',
         folder:'',
-        technologies: ['python', 'HTML', 'CSS', 'JS']
+        technologies: ['python', 'HTML', 'CSS', 'JavaScript']
     },
     {
         id: 7,
         image: SymfonyECommerce,
         title: 'E-commerce Symfony',
-        description: "Projet de testing d'une API Flask pour des réservations de places en compétitions sportives",
+        description: "Projet de site Ecomerce basique avec Symfony, stockage des produits en base mongoDB et paiements via stripe",
         titleEn: 'Symfony E-commerce',
-        descriptionEn: 'Project of testing a Flask API for sport performance reservations',
+        descriptionEn: 'Project of basic e-commerce website with Symfony, storage of products in mongoDB and payments via stripe',
         github: 'https://github.com/AurelienAllenic/iim-symfony',
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['django', 'flask', 'pytest']
+        technologies: ['symfony', 'mongoDB', 'stripe']
     },
     {
         id: 8,
         image: Learnify,
         title: 'Learnify',
-        description: "Développement d'un backend sécurisé avec Python et SQL dans le domaine de l'événementiel",
+        description: "Learnify est une application mobile construite avec React Native, TypeScript et Expo pour aider les utilisateurs à mémoriser et à apprendre grâce à des flashcards interactifs.",
         titleEn: 'Learnify',
-        descriptionEn: 'Development of a secure backend with Python and SQL in the event management field',
+        descriptionEn: 'Learnify is a mobile application built with React Native, TypeScript, and Expo to help users memorize and learn through interactive flashcards. ',
         github: 'https://github.com/AurelienAllenic/learnify',
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['react-native']
+        technologies: ['react-native', 'typescript', 'expo']
     },
-    {
-        id: 9,
-        image: SwiftApps,
-        title: 'Applications swift',
-        description: "Développement d'un backend sécurisé avec Python et SQL dans le domaine de l'événementiel",
-        titleEn: 'Swift applications',
-        descriptionEn: 'Development of a secure backend with Python and SQL in the event management field',
-        github: 'https://github.com/AurelienAllenic/swift-project',
-        demo: '',
-        figma:'',
-        folder:'',
-        technologies: ['swift']
-    }
 ]
