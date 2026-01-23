@@ -184,7 +184,6 @@ const SingleProject = ({
     if (isCurrentImageGif) {
       // Pour un GIF : afficher pendant 5 secondes
       displayDuration = 6000;
-      console.log(`Affichage du GIF pendant ${displayDuration}ms`);
     } else {
       // Pour une image statique : 2.5 secondes
       displayDuration = 2500;

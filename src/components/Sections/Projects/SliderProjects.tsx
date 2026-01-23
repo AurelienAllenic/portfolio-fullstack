@@ -21,10 +21,6 @@ interface SliderProjectsProps {
 const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // Log quand currentIndex change
-  useEffect(() => {
-    console.log('[SliderProjects] currentIndex a changé:', currentIndex, 'forceIndex:', forceIndex);
-  }, [currentIndex, forceIndex]);
   const [scrollLocked, setScrollLocked] = useState(true);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,9 +47,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   // Forcer l'index si forceIndex est défini
   // Mais IGNORER si on est en train de faire une transition depuis Contact
   useEffect(() => {
-    console.log('[useEffect forceIndex] forceIndex:', forceIndex, 'currentIndex:', currentIndex, 'isTransitioningFromContact:', isTransitioningFromContactRef.current);
     if (forceIndex !== undefined && forceIndex !== currentIndex && !isTransitioningFromContactRef.current) {
-      console.log('[useEffect forceIndex] FORCAGE de l\'index à:', forceIndex);
       setCurrentIndex(forceIndex);
       currentIndexRef.current = forceIndex;
       
@@ -350,10 +344,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     onTransitionToContact?.();
 
     const checkAndAnimate = (attempts = 0) => {
-      console.log('[transitionToContact] checkAndAnimate, attempt:', attempts);
       const contactElement = document.querySelector('#contact') as HTMLElement;
-      
-      console.log('[transitionToContact] contactElement trouvé:', !!contactElement);
       
       if (!contactElement && attempts < 20) {
         setTimeout(() => checkAndAnimate(attempts + 1), 50);
@@ -361,7 +352,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       }
       
       if (!contactElement) {
-        console.log('[transitionToContact] Contact element non trouvé après', attempts, 'tentatives');
         setScrollLocked(false);
         scrollLockedRef.current = false;
         document.body.style.overflow = "";
@@ -409,7 +399,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         // Chercher le footer et l'initialiser complètement invisible
         const footerElement = document.querySelector('#footer') as HTMLElement;
         if (footerElement) {
-          console.log('[transitionToContact] Footer trouvé, initialisation invisible');
           // Utiliser visibility: visible pour garder le layout, mais opacity: 0 pour cacher
           gsap.set(footerElement, { 
             opacity: 0,
@@ -466,13 +455,11 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           duration: 0.4,
           ease: "power2.out",
           onStart: () => {
-            console.log('[transitionToContact] Animation Contact opacity 1 démarrée');
             window.scrollTo({ top: 0, behavior: 'instant' });
             
             // Animer le footer EXACTEMENT en même temps que Contact
             const footerToAnimate = footerElement || document.querySelector('#footer') as HTMLElement;
             if (footerToAnimate) {
-              console.log('[transitionToContact] Footer trouvé, animation synchrone avec Contact');
               // D'abord rendre visible, puis animer l'opacity
               gsap.set(footerToAnimate, { 
                 display: "block",
@@ -483,8 +470,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
                 duration: 0.4,
                 ease: "power2.out",
               });
-            } else {
-              console.log('[transitionToContact] Footer non trouvé dans onStart');
             }
           }
         });
@@ -502,29 +487,23 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   }, [covers.length, onTransitionToContact]);
 
   const transitionFromContact = useCallback(() => {
-    console.log('[transitionFromContact] Début');
-    console.log('[transitionFromContact] scrollLockedRef.current:', scrollLockedRef.current);
-    console.log('[transitionFromContact] currentIndexRef.current:', currentIndexRef.current);
     
     // Marquer qu'on est en transition depuis Contact pour ignorer forceIndex
     isTransitioningFromContactRef.current = true;
     
     if (scrollLockedRef.current) {
-      console.log('[transitionFromContact] Scroll locked, retour');
       isTransitioningFromContactRef.current = false;
       return;
     }
 
     const contactElement = document.querySelector('#contact') as HTMLElement;
     if (!contactElement) {
-      console.log('[transitionFromContact] Contact element non trouvé');
       return;
     }
 
     // Faire disparaître le footer IMMÉDIATEMENT AVANT que Contact ne commence à disparaître
     const footerElement = document.querySelector('#footer') as HTMLElement;
     if (footerElement) {
-      console.log('[transitionFromContact] Footer trouvé, disparition immédiate');
       // Masquer complètement et immédiatement
       gsap.set(footerElement, { 
         opacity: 0,
@@ -532,43 +511,28 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         display: "none",
         pointerEvents: "none"
       });
-    } else {
-      console.log('[transitionFromContact] Footer non trouvé pour disparition');
     }
-
     const lastCategoryIndex = covers.length - 1;
-    console.log('[transitionFromContact] Nombre de covers:', covers.length);
-    console.log('[transitionFromContact] lastCategoryIndex calculé:', lastCategoryIndex);
     
     const lastCategoryElement = containerRef.current?.querySelector(
       `[data-category-index="${lastCategoryIndex}"]`
     );
 
     if (!lastCategoryElement) {
-      console.log('[transitionFromContact] lastCategoryElement non trouvé pour index:', lastCategoryIndex);
       return;
     }
-    
-    console.log('[transitionFromContact] lastCategoryElement trouvé:', lastCategoryElement);
 
     setScrollLocked(true);
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
 
-    console.log('[transitionFromContact] Mise à jour currentIndex AVANT animation');
-    console.log('[transitionFromContact] currentIndex avant:', currentIndexRef.current);
-    console.log('[transitionFromContact] lastCategoryIndex à définir:', lastCategoryIndex);
-    
     // IMPORTANT : Mettre à jour l'index AVANT l'animation pour que React mette à jour le DOM
     setCurrentIndex(lastCategoryIndex);
     currentIndexRef.current = lastCategoryIndex;
-    
-    console.log('[transitionFromContact] currentIndex après setCurrentIndex:', currentIndexRef.current);
 
     // Attendre que React mette à jour le DOM
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        console.log('[transitionFromContact] Après requestAnimationFrame, re-sélection de l\'élément');
         
         // Re-sélectionner la dernière catégorie après la mise à jour React
         const updatedLastCategoryElement = containerRef.current?.querySelector(
@@ -576,13 +540,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         );
 
         if (!updatedLastCategoryElement) {
-          console.log('[transitionFromContact] updatedLastCategoryElement non trouvé');
           return;
         }
-        
-        console.log('[transitionFromContact] updatedLastCategoryElement trouvé:', updatedLastCategoryElement);
-        const computedStyle = window.getComputedStyle(updatedLastCategoryElement);
-        console.log('[transitionFromContact] Style actuel - display:', computedStyle.display, 'opacity:', computedStyle.opacity);
 
         // Forcer la visibilité en utilisant directement le style inline pour override React
         const htmlElement = updatedLastCategoryElement as HTMLElement;
@@ -600,7 +559,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         
         // Vérifier après le set
         const afterSetStyle = window.getComputedStyle(updatedLastCategoryElement);
-        console.log('[transitionFromContact] Style après set - display:', afterSetStyle.display, 'opacity:', afterSetStyle.opacity);
 
         // Scroller immédiatement vers le haut
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -617,7 +575,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         // Animation inverse : Contact disparaît, dernière catégorie apparaît
         const tl = gsap.timeline({
           onComplete: () => {
-            console.log('[transitionFromContact] onComplete');
+
 
             // S'assurer que le footer reste caché après la transition
             const footerAfterTransition = document.querySelector('#footer') as HTMLElement;
@@ -640,7 +598,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
               zIndex: ""
             });
             
-            console.log('[transitionFromContact] Styles GSAP réinitialisés');
 
             // Réinitialiser les refs pour permettre la détection du scroll
             isAtBottomRef.current = false;
@@ -655,13 +612,10 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
               width: "100%",
             });
 
-            // IMPORTANT : Fermer Contact dans React
-            console.log('[transitionFromContact] Avant onTransitionFromContact, currentIndex:', currentIndexRef.current);
+
             if (onTransitionFromContact) {
-              console.log('[transitionFromContact] Appel de onTransitionFromContact');
               onTransitionFromContact();
             }
-            console.log('[transitionFromContact] Après onTransitionFromContact, currentIndex:', currentIndexRef.current);
 
             // S'assurer qu'on est bien en haut
             window.scrollTo({ top: 0, behavior: 'instant' });
@@ -676,9 +630,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
               const checkAndResetFlag = () => {
                 if (forceIndex === undefined || forceIndex === lastCategoryIndex) {
                   isTransitioningFromContactRef.current = false;
-                  console.log('[transitionFromContact] Flag isTransitioningFromContact réinitialisé, forceIndex:', forceIndex);
                 } else {
-                  console.log('[transitionFromContact] Flag maintenu car forceIndex:', forceIndex, '!= lastCategoryIndex:', lastCategoryIndex);
                   // Réessayer après un court délai
                   setTimeout(checkAndResetFlag, 100);
                 }
@@ -693,7 +645,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         // Disparition du footer AVANT Contact
         const footerForDisappear = document.querySelector('#footer') as HTMLElement;
         if (footerForDisappear) {
-          console.log('[transitionFromContact] Footer trouvé, disparition avant Contact');
           tl.to(footerForDisappear, {
             opacity: 0,
             duration: 0.3,
@@ -707,9 +658,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           opacity: 0,
           duration: 0.6,
           ease: "power2.in",
-        }, footerForDisappear ? "-=0.2" : undefined); // Commencer un peu avant si footer existe
+        }, footerForDisappear ? "-=0.2" : undefined);
 
-        // Apparition de la dernière catégorie
         tl.to(updatedLastCategoryElement, {
           y: 0,
           duration: 0.6,
@@ -1040,9 +990,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     >
       {covers.map((cover, index) => {
         const isCurrent = index === currentIndex;
-        if (isCurrent) {
-          console.log('[SliderProjects Render] Catégorie affichée:', index, 'currentIndex:', currentIndex);
-        }
         return (
         <div
           key={index}

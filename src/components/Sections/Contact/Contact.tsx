@@ -31,7 +31,6 @@ const Contact = () => {
         const footerOpacity = gsap.getProperty(footerElement, "opacity");
         // Seulement animer si toujours à 0 (GSAP n'a pas animé)
         if (footerOpacity === 0 || footerOpacity === null) {
-          console.log('[Contact useLayoutEffect] Footer toujours à opacity 0, animation fallback');
           gsap.to(footerElement, {
             opacity: 1,
             duration: 0.4,
