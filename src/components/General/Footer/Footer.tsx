@@ -7,7 +7,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
   const [isTransitioningToCredits, setIsTransitioningToCredits] = useState(false);
+  const [isTransitioningToMentions, setIsTransitioningToMentions] = useState(false);
+  const [isTransitioningToPolitiqueConfidentialite, setIsTransitioningToPolitiqueConfidentialite] = useState(false);
   const creditsLinkRef = useRef<HTMLAnchorElement>(null);
+  const mentionsLinkRef = useRef<HTMLAnchorElement>(null);
+  const politiqueConfidentialiteLinkRef = useRef<HTMLAnchorElement>(null);
 
   const handleCreditsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -27,9 +31,55 @@ const Footer = () => {
     setIsTransitioningToCredits(true);
   };
 
-  const handleTransitionComplete = () => {
+  const handleMentionsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // Calculer la position du bouton pour centrer le gradient
+    const buttonRect = mentionsLinkRef.current?.getBoundingClientRect();
+    if (buttonRect) {
+      const centerX = buttonRect.left + buttonRect.width / 2;
+      const centerY = buttonRect.top + buttonRect.height / 2;
+      
+      // Stocker la position pour RadialTransitionOverlay
+      sessionStorage.setItem('gradientCenterX', centerX.toString());
+      sessionStorage.setItem('gradientCenterY', centerY.toString());
+    }
+    
+    // Déclencher l'animation
+    setIsTransitioningToMentions(true);
+  };
+
+  const handleCreditsTransitionComplete = () => {
     // Naviguer après l'animation
     navigate('/credits');
+  };
+
+  const handleMentionsTransitionComplete = () => {
+    // Naviguer après l'animation
+    navigate('/mentions-legales');
+  };
+
+  const handlePolitiqueConfidentialiteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // Calculer la position du bouton pour centrer le gradient
+    const buttonRect = politiqueConfidentialiteLinkRef.current?.getBoundingClientRect();
+    if (buttonRect) {
+      const centerX = buttonRect.left + buttonRect.width / 2;
+      const centerY = buttonRect.top + buttonRect.height / 2;
+      
+      // Stocker la position pour RadialTransitionOverlay
+      sessionStorage.setItem('gradientCenterX', centerX.toString());
+      sessionStorage.setItem('gradientCenterY', centerY.toString());
+    }
+    
+    // Déclencher l'animation
+    setIsTransitioningToPolitiqueConfidentialite(true);
+  };
+
+  const handlePolitiqueConfidentialiteTransitionComplete = () => {
+    // Naviguer après l'animation
+    navigate('/politique-confidentialite');
   };
 
   return (
@@ -45,10 +95,20 @@ const Footer = () => {
             >
               Crédits images
             </a>
-            <a href="/mentions-legales" className={styles.footerLink}>
+            <a 
+              ref={mentionsLinkRef}
+              href="/mentions-legales" 
+              className={styles.footerLink}
+              onClick={handleMentionsClick}
+            >
               Mentions légales
             </a>
-            <a href="/politique-confidentialite" className={styles.footerLink}>
+            <a 
+              ref={politiqueConfidentialiteLinkRef}
+              href="/politique-confidentialite" 
+              className={styles.footerLink}
+              onClick={handlePolitiqueConfidentialiteClick}
+            >
               Politique de confidentialité
             </a>
           </div>
@@ -60,7 +120,17 @@ const Footer = () => {
       <RadialTransitionOverlay
         isActive={isTransitioningToCredits}
         direction="in"
-        onComplete={handleTransitionComplete}
+        onComplete={handleCreditsTransitionComplete}
+      />
+      <RadialTransitionOverlay
+        isActive={isTransitioningToMentions}
+        direction="in"
+        onComplete={handleMentionsTransitionComplete}
+      />
+      <RadialTransitionOverlay
+        isActive={isTransitioningToPolitiqueConfidentialite}
+        direction="in"
+        onComplete={handlePolitiqueConfidentialiteTransitionComplete}
       />
     </>
   );

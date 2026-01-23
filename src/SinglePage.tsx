@@ -16,10 +16,13 @@ const SinglePage = () => {
   const initialShowProjects = shouldRestore && savedCategoryIndex;
   const initialForceIndex = initialShowProjects ? parseInt(savedCategoryIndex!) : undefined;
   
-  // Vérifier si on revient de Credits vers Contact
+  // Vérifier si on revient de Credits, Mentions ou PolitiqueConfidentialite vers Contact
   const returningFromCreditsToContact = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
-  const initialShowContact = returningFromCreditsToContact;
-  const initialShowProjectsForContact = returningFromCreditsToContact; // Projects doit être monté pour Contact
+  const returningFromMentionsToContact = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
+  const returningFromPolitiqueConfidentialiteToContact = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
+  const returningToContact = returningFromCreditsToContact || returningFromMentionsToContact || returningFromPolitiqueConfidentialiteToContact;
+  const initialShowContact = returningToContact;
+  const initialShowProjectsForContact = returningToContact; // Projects doit être monté pour Contact
 
   const [showProjects, setShowProjects] = useState(!!initialShowProjects || initialShowProjectsForContact);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
@@ -141,21 +144,24 @@ const SinglePageContent = ({
   // Vérifier dès l'initialisation si on est en mode restauration
   const isRestoringFromProjects = sessionStorage.getItem('shouldRestoreScroll') === 'true';
   const isReturningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
+  const isReturningFromMentions = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
+  const isReturningFromPolitiqueConfidentialite = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
+  const isReturningToContact = isReturningFromCredits || isReturningFromMentions || isReturningFromPolitiqueConfidentialite;
 
   // États locaux pour la synchronisation
   const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
   const [heroNavigationReset, setHeroNavigationReset] = useState(false);
-  // Si on revient de Credits, Contact est monté mais doit être invisible jusqu'à l'animation
+  // Si on revient de Credits ou Mentions, Contact est monté mais doit être invisible jusqu'à l'animation
   // Si on restaure depuis Projects, on cache d'abord puis on affiche après un délai
-  const [showContent, setShowContent] = useState(!isRestoringFromProjects || isReturningFromCredits);
-  const [navOpacity, setNavOpacity] = useState((isRestoringFromProjects && !isReturningFromCredits) ? 0 : 1);
-  // État pour contrôler la visibilité de Contact lors du retour depuis Credits
-  const [isContactVisible, setIsContactVisible] = useState(!isReturningFromCredits);
+  const [showContent, setShowContent] = useState(!isRestoringFromProjects || isReturningToContact);
+  const [navOpacity, setNavOpacity] = useState((isRestoringFromProjects && !isReturningToContact) ? 0 : 1);
+  // État pour contrôler la visibilité de Contact lors du retour depuis Credits ou Mentions
+  const [isContactVisible, setIsContactVisible] = useState(!isReturningToContact);
 
   // Gérer la visibilité du contenu lors de la restauration
-  // Note: Si on revient de Credits, showContent est déjà true, donc pas besoin de délai
+  // Note: Si on revient de Credits ou Mentions, showContent est déjà true, donc pas besoin de délai
   useEffect(() => {
-    if (isRestoringFromProjects && !isReturningFromCredits) {
+    if (isRestoringFromProjects && !isReturningToContact) {
       // Commencer à afficher la nav plus tôt (après 100ms)
       const navTimer = setTimeout(() => {
         setNavOpacity(1);
@@ -170,7 +176,7 @@ const SinglePageContent = ({
         clearTimeout(contentTimer);
       };
     }
-  }, [isRestoringFromProjects, isReturningFromCredits]);
+  }, [isRestoringFromProjects, isReturningToContact]);
 
   // Synchroniser currentSectionRef avec l'état actuel
   useEffect(() => {
@@ -275,12 +281,22 @@ const SinglePageContent = ({
     });
   }, [setNavigateToContact, handleTransitionToContact, showProjects, setForceProjectsIndex, setShowProjects]);
 
-  // Gérer le retour depuis Credits vers Contact
+  // Gérer le retour depuis Credits, Mentions ou PolitiqueConfidentialite vers Contact
   useEffect(() => {
     const returningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
-    if (returningFromCredits) {
-      // Nettoyer le flag immédiatement
-      sessionStorage.removeItem('returningFromCreditsToContact');
+    const returningFromMentions = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
+    const returningFromPolitiqueConfidentialite = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
+    if (returningFromCredits || returningFromMentions || returningFromPolitiqueConfidentialite) {
+      // Nettoyer les flags immédiatement
+      if (returningFromCredits) {
+        sessionStorage.removeItem('returningFromCreditsToContact');
+      }
+      if (returningFromMentions) {
+        sessionStorage.removeItem('returningFromMentionsToContact');
+      }
+      if (returningFromPolitiqueConfidentialite) {
+        sessionStorage.removeItem('returningFromPolitiqueConfidentialiteToContact');
+      }
       
       // Contact est monté mais invisible, on déclenche immédiatement l'animation de navigation
       // qui va d'abord fermer (écran noir) puis ouvrir (révélation)
