@@ -273,6 +273,16 @@ const SingleProject = ({
       python: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
       django: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
       nextjs: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+      mongodb : "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
+      reactnative : "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
+      typescript : "https://res.cloudinary.com/dwpbyyhoq/image/upload/ts_hodabq.webp",
+      expo : "https://res.cloudinary.com/dwpbyyhoq/image/upload/expo_scubds.webp",
+      stripe : "https://res.cloudinary.com/dwpbyyhoq/image/upload/stripe_ij9sgu.webp",
+      metabase : "https://res.cloudinary.com/dwpbyyhoq/image/upload/metabase_yqies2.webp",
+      tensorflow : "https://res.cloudinary.com/dwpbyyhoq/image/upload/tensorflow_t6u5t9.webp",
+      keras : "https://res.cloudinary.com/dwpbyyhoq/image/upload/keras_cjv2id.webp",
+      flutter : "https://res.cloudinary.com/dwpbyyhoq/image/upload/flutter_zfmqyx.webp",
+      symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp"
     };
     return techMap[tech.toLowerCase()] || "";
   };
@@ -302,6 +312,16 @@ const SingleProject = ({
       "styled-components": "Styled Components",
       userstories: "User Stories",
       figma: "Figma",
+      mongodb : "MongoDB",
+      reactnative: "React native",
+      typescript: "Typescript",
+      expo: "Expo",
+      stripe: "Stripe",
+      metabase: "Metabase",
+      tensorflow: "Tensorflow",
+      keras: "Keras",
+      flutter: "Flutter",
+      symfony: "Symfony"
     };
     return techNames[tech.toLowerCase()] || tech.charAt(0).toUpperCase() + tech.slice(1);
   };

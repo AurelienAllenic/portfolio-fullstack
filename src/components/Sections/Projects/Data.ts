@@ -567,7 +567,7 @@ export const iim = [
         demo: '',
         figma:'',
         folder: [],
-        technologies: ['python', 'mongoDB', 'metabase']
+        technologies: ['python', 'mongoDb', 'metabase']
     },
     {
         id: 3,
@@ -595,7 +595,7 @@ export const iim = [
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['react-native', 'typeScript', 'expo']
+        technologies: ['reactnative', 'typeScript', 'expo']
     },
     {
         id: 5,
@@ -608,7 +608,7 @@ export const iim = [
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['flutter', 'mongoDB', 'stripe']
+        technologies: ['flutter', 'mongoDb', 'stripe']
     },
     {
         id: 6,
@@ -635,7 +635,7 @@ export const iim = [
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['symfony', 'mongoDB', 'stripe']
+        technologies: ['symfony', 'mongoDb', 'stripe']
     },
     {
         id: 8,
@@ -648,6 +648,6 @@ export const iim = [
         demo: '',
         figma:'',
         folder:'',
-        technologies: ['react-native', 'typescript', 'expo']
+        technologies: ['reactnative', 'typescript', 'expo']
     },
 ]
