@@ -26,29 +26,44 @@ const RadialTransitionOverlay = ({
 
     const overlay = overlayRef.current;
 
+    // Vérifier si une position personnalisée est stockée (pour le clic sur un bouton)
+    const customCenterX = sessionStorage.getItem('gradientCenterX');
+    const customCenterY = sessionStorage.getItem('gradientCenterY');
+    
     // Sur mobile, calculer le centre par rapport au scroll + viewport visible
     const isMobile = window.innerWidth < 900;
+    
+    let centerX: number;
+    let centerY: number;
+    
+    if (customCenterX && customCenterY) {
+      // Utiliser la position personnalisée du bouton cliqué
+      centerX = parseFloat(customCenterX);
+      centerY = parseFloat(customCenterY);
+      
+      // Nettoyer sessionStorage après utilisation
+      sessionStorage.removeItem('gradientCenterX');
+      sessionStorage.removeItem('gradientCenterY');
+    } else if (isMobile) {
+      // Le centre du gradient = position de scroll + milieu du viewport visible
+      centerX = window.innerWidth / 2;
+      centerY = window.scrollY + (window.innerHeight / 2);
+    } else {
+      // Desktop : comportement normal (centre de l'écran)
+      centerX = window.innerWidth / 2;
+      centerY = window.innerHeight / 2;
+    }
     
     if (isMobile) {
       // L'overlay doit couvrir toute la page
       const pageHeight = document.documentElement.scrollHeight;
       overlay.style.height = `${pageHeight}px`;
-      
-      // Le centre du gradient = position de scroll + milieu du viewport visible
-      const centerX = window.innerWidth / 2;
-      const centerY = window.scrollY + (window.innerHeight / 2);
-      
-      overlay.style.setProperty('--center-x', `${centerX}px`);
-      overlay.style.setProperty('--center-y', `${centerY}px`);
     } else {
-      // Desktop : comportement normal
       overlay.style.height = `${window.innerHeight}px`;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      
-      overlay.style.setProperty('--center-x', `${centerX}px`);
-      overlay.style.setProperty('--center-y', `${centerY}px`);
     }
+    
+    overlay.style.setProperty('--center-x', `${centerX}px`);
+    overlay.style.setProperty('--center-y', `${centerY}px`);
 
     if (direction === "in") {
       // Fermeture : le transparent rétrécit, le noir grandit depuis les bords (100% → 0%)

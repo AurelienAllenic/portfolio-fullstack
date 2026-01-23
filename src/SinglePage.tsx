@@ -15,11 +15,18 @@ const SinglePage = () => {
   const savedCategoryIndex = sessionStorage.getItem('lastProjectCategoryIndex');
   const initialShowProjects = shouldRestore && savedCategoryIndex;
   const initialForceIndex = initialShowProjects ? parseInt(savedCategoryIndex!) : undefined;
+  
+  // Vérifier si on revient de Credits vers Contact
+  const returningFromCreditsToContact = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
+  const initialShowContact = returningFromCreditsToContact;
+  const initialShowProjectsForContact = returningFromCreditsToContact; // Projects doit être monté pour Contact
 
-  const [showProjects, setShowProjects] = useState(!!initialShowProjects);
+  const [showProjects, setShowProjects] = useState(!!initialShowProjects || initialShowProjectsForContact);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
-  const [showContact, setShowContact] = useState(false);
-  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(initialForceIndex);
+  const [showContact, setShowContact] = useState(initialShowContact);
+  const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(
+    initialShowContact ? 3 : initialForceIndex // Forcer la dernière catégorie si on va à Contact
+  );
 
   // Nettoyer sessionStorage après la restauration
   useEffect(() => {
@@ -123,6 +130,7 @@ const SinglePageContent = ({
     setReturnToHero,
     setNavigateToProjects,
     setNavigateToContact,
+    navigateToContact,
     shouldResetHeroStates,
     shouldResetHeroStatesRef,
     shouldResetProjectsStates,
@@ -132,16 +140,22 @@ const SinglePageContent = ({
 
   // Vérifier dès l'initialisation si on est en mode restauration
   const isRestoringFromProjects = sessionStorage.getItem('shouldRestoreScroll') === 'true';
+  const isReturningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
 
   // États locaux pour la synchronisation
   const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
   const [heroNavigationReset, setHeroNavigationReset] = useState(false);
-  const [showContent, setShowContent] = useState(!isRestoringFromProjects);
-  const [navOpacity, setNavOpacity] = useState(isRestoringFromProjects ? 0 : 1);
+  // Si on revient de Credits, Contact est monté mais doit être invisible jusqu'à l'animation
+  // Si on restaure depuis Projects, on cache d'abord puis on affiche après un délai
+  const [showContent, setShowContent] = useState(!isRestoringFromProjects || isReturningFromCredits);
+  const [navOpacity, setNavOpacity] = useState((isRestoringFromProjects && !isReturningFromCredits) ? 0 : 1);
+  // État pour contrôler la visibilité de Contact lors du retour depuis Credits
+  const [isContactVisible, setIsContactVisible] = useState(!isReturningFromCredits);
 
   // Gérer la visibilité du contenu lors de la restauration
+  // Note: Si on revient de Credits, showContent est déjà true, donc pas besoin de délai
   useEffect(() => {
-    if (isRestoringFromProjects) {
+    if (isRestoringFromProjects && !isReturningFromCredits) {
       // Commencer à afficher la nav plus tôt (après 100ms)
       const navTimer = setTimeout(() => {
         setNavOpacity(1);
@@ -156,7 +170,7 @@ const SinglePageContent = ({
         clearTimeout(contentTimer);
       };
     }
-  }, [isRestoringFromProjects]);
+  }, [isRestoringFromProjects, isReturningFromCredits]);
 
   // Synchroniser currentSectionRef avec l'état actuel
   useEffect(() => {
@@ -261,6 +275,24 @@ const SinglePageContent = ({
     });
   }, [setNavigateToContact, handleTransitionToContact, showProjects, setForceProjectsIndex, setShowProjects]);
 
+  // Gérer le retour depuis Credits vers Contact
+  useEffect(() => {
+    const returningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
+    if (returningFromCredits) {
+      // Nettoyer le flag immédiatement
+      sessionStorage.removeItem('returningFromCreditsToContact');
+      
+      // Contact est monté mais invisible, on déclenche immédiatement l'animation de navigation
+      // qui va d'abord fermer (écran noir) puis ouvrir (révélation)
+      // L'animation "close" dure 800ms, puis "open" commence et dure 800ms
+      navigateToContact();
+      // Rendre Contact visible après le début de l'animation d'ouverture (800ms close + petit délai)
+      setTimeout(() => {
+        setIsContactVisible(true);
+      }, 900);
+    }
+  }, [navigateToContact]);
+
   return (
     <>
       <div style={{ opacity: navOpacity, transition: 'opacity 0.4s ease' }}>
@@ -302,7 +334,18 @@ const SinglePageContent = ({
             />
           </div>
         )}
-        {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
+        {showContact && (
+          <div 
+            style={{ 
+              position: 'relative', 
+              zIndex: 2,
+              opacity: isContactVisible ? 1 : 0,
+              transition: isContactVisible ? 'opacity 0.3s ease' : 'none'
+            }}
+          >
+            <Contact />
+          </div>
+        )}
         </div>
       )}
     </>
