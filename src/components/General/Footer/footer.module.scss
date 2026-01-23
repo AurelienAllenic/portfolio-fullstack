@@ -8,6 +8,8 @@
   font-family: $font-family-primary;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 
   @media (max-width: 768px) {
     padding: 30px 20px;

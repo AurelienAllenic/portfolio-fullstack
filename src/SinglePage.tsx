@@ -5,7 +5,6 @@ import Hero from "./components/Sections/Hero/Hero";
 import Projects from "./components/Sections/Projects/Projects";
 import MobileNav from "./components/General/Nav/MobileNav";
 import SliderProjects from "./components/Sections/Projects/SliderProjects";
-import Footer from "./components/General/Footer/Footer";
 import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
 import { NavigationProvider, useNavigation } from "./components/General/Nav/NavigationContext";
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
@@ -306,7 +305,6 @@ const SinglePageContent = ({
         {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
         </div>
       )}
-      <Footer />
     </>
   );
 };
