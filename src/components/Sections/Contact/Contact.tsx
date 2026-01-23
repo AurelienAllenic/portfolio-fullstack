@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 import styles from "./contact.module.scss";
 import { BsArrowRight } from "react-icons/bs";
 import Footer from "../../General/Footer/Footer";
@@ -15,30 +15,33 @@ const Contact = () => {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // S'assurer que le footer est visible quand Contact est monté (seulement si GSAP ne l'a pas déjà animé)
-  // Ce useEffect sert uniquement de fallback pour la navigation depuis la nav, pas pour le scroll
-  useEffect(() => {
+  // Cacher le footer immédiatement quand Contact est monté pour éviter qu'il apparaisse visible
+  // Utiliser useLayoutEffect pour que cela se produise de manière synchrone avant le rendu
+  useLayoutEffect(() => {
     const footerElement = document.querySelector('#footer') as HTMLElement;
-    
-    if (!footerElement) return;
-
-    // Attendre plus longtemps pour laisser GSAP faire son travail lors du scroll
-    // Ce fallback ne s'active que si GSAP n'a pas animé le footer après un délai raisonnable
-    const timeoutId = setTimeout(() => {
-      const footerOpacity = gsap.getProperty(footerElement, "opacity");
-      // Seulement animer si le footer est toujours à opacity 0 (pas animé par GSAP)
-      if (footerOpacity === 0) {
-        gsap.to(footerElement, {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.out",
-        });
-      }
-    }, 2000); // Délai plus long pour laisser GSAP gérer les transitions de scroll
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    if (footerElement) {
+      // Cacher immédiatement le footer pour éviter qu'il apparaisse visible
+      gsap.set(footerElement, { 
+        opacity: 0,
+        visibility: "visible" // Garder visible pour le layout
+      });
+      
+      // Fallback : s'assurer que le footer devient visible si GSAP ne l'a pas animé
+      const timeoutId = setTimeout(() => {
+        const footerOpacity = gsap.getProperty(footerElement, "opacity");
+        // Seulement animer si toujours à 0 (GSAP n'a pas animé)
+        if (footerOpacity === 0 || footerOpacity === null) {
+          console.log('[Contact useLayoutEffect] Footer toujours à opacity 0, animation fallback');
+          gsap.to(footerElement, {
+            opacity: 1,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+        }
+      }, 800); // Délai pour laisser GSAP faire son travail
+      
+      return () => clearTimeout(timeoutId);
+    }
   }, []);
 
   const handleChange = (
@@ -176,7 +179,7 @@ const Contact = () => {
                   required
                 />
                 <label htmlFor="consent" className={styles.checkboxLabel}>
-                En envoyant ce message, je consens à être recontacté via l'adresse email fouirnie
+                En envoyant ce message, je consens à être recontacté via l'adresse email fournie
                 </label>
               </div>
               <button 

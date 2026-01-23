@@ -352,10 +352,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     const checkAndAnimate = (attempts = 0) => {
       console.log('[transitionToContact] checkAndAnimate, attempt:', attempts);
       const contactElement = document.querySelector('#contact') as HTMLElement;
-      const footerElement = document.querySelector('#footer') as HTMLElement;
       
       console.log('[transitionToContact] contactElement trouvé:', !!contactElement);
-      console.log('[transitionToContact] footerElement trouvé:', !!footerElement);
       
       if (!contactElement && attempts < 20) {
         setTimeout(() => checkAndAnimate(attempts + 1), 50);
@@ -369,6 +367,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         document.body.style.overflow = "";
         return;
       }
+      
+      // Ne pas chercher le footer ici, on le cherchera plus tard dans l'animation
 
       const computedStyle = window.getComputedStyle(contactElement);
 
@@ -405,6 +405,17 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         });
 
         gsap.set(contactElement, { opacity: 0, y: 100 });
+        
+        // Chercher le footer et l'initialiser complètement invisible
+        const footerElement = document.querySelector('#footer') as HTMLElement;
+        if (footerElement) {
+          console.log('[transitionToContact] Footer trouvé, initialisation invisible');
+          // Utiliser visibility: visible pour garder le layout, mais opacity: 0 pour cacher
+          gsap.set(footerElement, { 
+            opacity: 0,
+            visibility: "visible" // Garder visible pour le layout
+          });
+        }
 
         const tl = gsap.timeline({
           onComplete: () => {
@@ -449,6 +460,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           ease: "power2.out",
         }, "-=0.3");
         
+        // Animer Contact et Footer EXACTEMENT en même temps
         tl.to(contactElement, {
           opacity: 1,
           duration: 0.4,
@@ -456,20 +468,29 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           onStart: () => {
             console.log('[transitionToContact] Animation Contact opacity 1 démarrée');
             window.scrollTo({ top: 0, behavior: 'instant' });
+            
+            // Animer le footer EXACTEMENT en même temps que Contact
+            const footerToAnimate = footerElement || document.querySelector('#footer') as HTMLElement;
+            if (footerToAnimate) {
+              console.log('[transitionToContact] Footer trouvé, animation synchrone avec Contact');
+              // D'abord rendre visible, puis animer l'opacity
+              gsap.set(footerToAnimate, { 
+                display: "block",
+                visibility: "visible"
+              });
+              gsap.to(footerToAnimate, {
+                opacity: 1,
+                duration: 0.4,
+                ease: "power2.out",
+              });
+            } else {
+              console.log('[transitionToContact] Footer non trouvé dans onStart');
+            }
           }
         });
         
-        // Animer le footer en même temps que Contact
-        if (footerElement) {
-          console.log('[transitionToContact] Animation du footer démarrée');
-          tl.to(footerElement, {
-            opacity: 1,
-            duration: 0.4,
-            ease: "power2.out",
-          }, "-=0.4");
-        } else {
-          console.log('[transitionToContact] Footer element non trouvé, pas d\'animation');
-        }
+        // Ne pas animer le footer dans la timeline si on l'anime déjà dans onStart
+        // Cela évite les animations multiples
     };
 
 
@@ -498,6 +519,21 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     if (!contactElement) {
       console.log('[transitionFromContact] Contact element non trouvé');
       return;
+    }
+
+    // Faire disparaître le footer IMMÉDIATEMENT AVANT que Contact ne commence à disparaître
+    const footerElement = document.querySelector('#footer') as HTMLElement;
+    if (footerElement) {
+      console.log('[transitionFromContact] Footer trouvé, disparition immédiate');
+      // Masquer complètement et immédiatement
+      gsap.set(footerElement, { 
+        opacity: 0,
+        visibility: "hidden",
+        display: "none",
+        pointerEvents: "none"
+      });
+    } else {
+      console.log('[transitionFromContact] Footer non trouvé pour disparition');
     }
 
     const lastCategoryIndex = covers.length - 1;
@@ -583,6 +619,17 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           onComplete: () => {
             console.log('[transitionFromContact] onComplete');
 
+            // S'assurer que le footer reste caché après la transition
+            const footerAfterTransition = document.querySelector('#footer') as HTMLElement;
+            if (footerAfterTransition) {
+              gsap.set(footerAfterTransition, {
+                opacity: 0,
+                visibility: "hidden",
+                display: "none",
+                pointerEvents: "none"
+              });
+            }
+
             // Réinitialiser les styles GSAP pour que le style inline React prenne le dessus
             gsap.set(updatedLastCategoryElement, {
               y: 0,
@@ -643,13 +690,24 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           },
         });
 
+        // Disparition du footer AVANT Contact
+        const footerForDisappear = document.querySelector('#footer') as HTMLElement;
+        if (footerForDisappear) {
+          console.log('[transitionFromContact] Footer trouvé, disparition avant Contact');
+          tl.to(footerForDisappear, {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power2.in",
+          });
+        }
+        
         // Disparition de Contact
         tl.to(contactElement, {
           y: -100,
           opacity: 0,
           duration: 0.6,
           ease: "power2.in",
-        });
+        }, footerForDisappear ? "-=0.2" : undefined); // Commencer un peu avant si footer existe
 
         // Apparition de la dernière catégorie
         tl.to(updatedLastCategoryElement, {

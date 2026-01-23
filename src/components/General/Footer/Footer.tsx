@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './footer.module.scss';
 
@@ -6,7 +5,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={styles.footer}>
+    <footer id="footer" className={styles.footer}>
       <div className={styles.footerContent}>
         <div className={styles.footerLinks}>
           <Link to="/credits" className={styles.footerLink}>

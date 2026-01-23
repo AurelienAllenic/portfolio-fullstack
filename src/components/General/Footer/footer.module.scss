@@ -1,5 +1,7 @@
 @use "../../abstract/_variables.scss" as *;
 
+
+
 .footer {
   width: 100%;
   background-color: transparent;
@@ -8,9 +10,9 @@
   font-family: $font-family-primary;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
+  // Initialement caché, sera animé par GSAP
   opacity: 0;
   transition: opacity 0.4s ease;
-
   @media (max-width: 768px) {
     padding: 30px 20px;
   }
