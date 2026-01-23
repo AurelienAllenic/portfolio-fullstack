@@ -103,7 +103,6 @@ const SinglePageContent = ({
   setReturnFromProjects,
   setForceProjectsIndex,
   setShowProjects,
-  isReturningFromNotFound,
 }: {
   showProjects: boolean;
   returnFromProjects: boolean;

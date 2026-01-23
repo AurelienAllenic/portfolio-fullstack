@@ -8,7 +8,6 @@ import RadialTransitionOverlay from "../Nav/RadialTransitionOverlay";
 const NotFound = () => {
   const navigate = useNavigate();
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [showOverlay, setShowOverlay] = useState(true);
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
