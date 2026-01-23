@@ -556,9 +556,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           y: 100,
           opacity: 0
         });
-        
-        // Vérifier après le set
-        const afterSetStyle = window.getComputedStyle(updatedLastCategoryElement);
 
         // Scroller immédiatement vers le haut
         window.scrollTo({ top: 0, behavior: 'instant' });
