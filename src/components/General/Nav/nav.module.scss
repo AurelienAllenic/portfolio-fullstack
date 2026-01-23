@@ -44,12 +44,10 @@
   gap: 50px;
   font-size: 1.5rem;
   position: relative;
-  transform: translateX(-12%);
   @media (max-width: 1350px) {
     gap: 25px;
   }
   @media (max-width: 900px) {
-    transform: translateX(-11%);
     gap: 20px;
   }
 }

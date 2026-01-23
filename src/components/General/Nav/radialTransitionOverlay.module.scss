@@ -1,12 +1,12 @@
 @use "../../abstract/variables.scss" as *;
 
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100%;
-  z-index: 9999;
+  height: 100vh;
+  z-index: 99999;
   pointer-events: none;
   display: none;
   
@@ -21,9 +21,4 @@
   --gradient-size: 100%;
   --center-x: 50vw;
   --center-y: 50vh;
-
-  @media (min-width: 900px) {
-    position: fixed;
-    height: 100vh;
-  }
 }

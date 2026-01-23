@@ -225,6 +225,7 @@ const Hero: React.FC<HeroProps> = ({
     }, 1000);
   };
 
+
   useEffect(() => {
     const overlay = overlayRef.current;
     const container = containerRef.current;

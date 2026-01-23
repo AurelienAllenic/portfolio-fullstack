@@ -16,7 +16,13 @@ const RadialTransitionOverlay = ({
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isActive || !overlayRef.current) return;
+    if (!isActive || !overlayRef.current) {
+      // Si inactif, s'assurer que l'overlay est caché
+      if (overlayRef.current) {
+        gsap.set(overlayRef.current, { display: "none" });
+      }
+      return;
+    }
 
     const overlay = overlayRef.current;
 
@@ -46,41 +52,41 @@ const RadialTransitionOverlay = ({
 
     if (direction === "in") {
       // Fermeture : le transparent rétrécit, le noir grandit depuis les bords (100% → 0%)
+      // Commencer avec le gradient à 100% (transparent au centre, visible sur les bords)
       gsap.set(overlay, {
         display: "block",
+        "--gradient-size": "100%",
       });
 
-      gsap.fromTo(
-        overlay,
-        { "--gradient-size": "100%" },
-        {
+      // Attendre un frame pour s'assurer que l'overlay est visible avant d'animer
+      requestAnimationFrame(() => {
+        gsap.to(overlay, {
           "--gradient-size": "0%",
           duration: 1.2,
           ease: "power2.inOut",
           onComplete: () => {
             if (onComplete) onComplete();
           },
-        }
-      );
+        });
+      });
     } else {
       // Ouverture : le transparent grandit, le noir rétrécit vers les bords (0% → 100%)
+      // Commencer avec tout noir (0%) pour couvrir le contenu IMMÉDIATEMENT
       gsap.set(overlay, {
         display: "block",
+        "--gradient-size": "0%",
       });
 
-      gsap.fromTo(
-        overlay,
-        { "--gradient-size": "0%" },
-        {
-          "--gradient-size": "100%",
-          duration: 1.2,
-          ease: "power2.inOut",
-          onComplete: () => {
-            gsap.set(overlay, { display: "none" });
-            if (onComplete) onComplete();
-          },
-        }
-      );
+      // Commencer l'animation immédiatement
+      gsap.to(overlay, {
+        "--gradient-size": "100%",
+        duration: 1.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(overlay, { display: "none" });
+          if (onComplete) onComplete();
+        },
+      });
     }
   }, [isActive, direction, onComplete]);
 

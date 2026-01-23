@@ -103,6 +103,7 @@ const SinglePageContent = ({
   setReturnFromProjects,
   setForceProjectsIndex,
   setShowProjects,
+  isReturningFromNotFound,
 }: {
   showProjects: boolean;
   returnFromProjects: boolean;
@@ -267,39 +268,44 @@ const SinglePageContent = ({
         <Nav />
         <MobileNav />
       </div>
-      <div style={{ opacity: showContent ? 1 : 0 }}>
-        <TransitionOverlay
-          isActive={isTransitioning}
-          onComplete={() => {}}
-          direction={transitionDirection}
-        />
-        {!showProjects && !showContact && (
-        <Hero
-          onTransitionToProjects={handleTransitionToProjects}
-          returnFromProjects={returnFromProjects}
-          onResetReturnFromProjects={() => {
-            setReturnFromProjects(false);
-          }}
-          forceHeroState={returnFromProjects ? undefined : (shouldResetHeroStates ? heroState : undefined)}
-          forceTextIndex={heroTextIndex}
-          onNavigationReset={heroNavigationReset}
-        />
-      )}
-      {showProjects && (
-        <div style={{ display: showContact ? 'none' : 'block', position: 'relative', zIndex: 1 }}>
-          <Projects onTransitionToHero={handleReturnToHero} />
-          <SliderProjects 
-            onTransitionToContact={handleTransitionToContact}
-            onTransitionFromContact={handleCloseContact}
-            forceIndex={forceProjectsIndex}
-            onForceIndexComplete={() => {
-              // Ne rien faire ici, la réinitialisation est gérée par le setTimeout dans SinglePage
-            }}
+      {showContent && (
+        <div style={{ 
+          opacity: 1,
+          transition: 'opacity 0.4s ease'
+        }}>
+          <TransitionOverlay
+            isActive={isTransitioning}
+            onComplete={() => {}}
+            direction={transitionDirection}
           />
+          {!showProjects && !showContact && (
+          <Hero
+            onTransitionToProjects={handleTransitionToProjects}
+            returnFromProjects={returnFromProjects}
+            onResetReturnFromProjects={() => {
+              setReturnFromProjects(false);
+            }}
+            forceHeroState={returnFromProjects ? undefined : (shouldResetHeroStates ? heroState : undefined)}
+            forceTextIndex={heroTextIndex}
+            onNavigationReset={heroNavigationReset}
+          />
+        )}
+        {showProjects && (
+          <div style={{ display: showContact ? 'none' : 'block', position: 'relative', zIndex: 1 }}>
+            <Projects onTransitionToHero={handleReturnToHero} />
+            <SliderProjects 
+              onTransitionToContact={handleTransitionToContact}
+              onTransitionFromContact={handleCloseContact}
+              forceIndex={forceProjectsIndex}
+              onForceIndexComplete={() => {
+                // Ne rien faire ici, la réinitialisation est gérée par le setTimeout dans SinglePage
+              }}
+            />
+          </div>
+        )}
+        {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
         </div>
       )}
-      {showContact && <div style={{ position: 'relative', zIndex: 2 }}><Contact /></div>}
-      </div>
     </>
   );
 };
