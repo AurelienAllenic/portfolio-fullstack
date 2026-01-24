@@ -4,6 +4,33 @@ import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { HiArrowRight } from "react-icons/hi2";
 
+// Optimiser les URLs Cloudinary
+const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
+  if (!url.includes("cloudinary.com")) return url;
+  
+  const parts = url.split("/image/upload/");
+  if (parts.length !== 2) return url;
+  
+  const [base, rest] = parts;
+  let params = `f_webp,q_${quality}`;
+  
+  if (width) {
+    params += `,w_${width}`;
+  }
+  
+  return `${base}/image/upload/${params}/${rest}`;
+};
+
+// Précharger une image
+const preloadImage = (src: string): Promise<void> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = src;
+  });
+};
+
 type CoverIcon = string | { src: string; alt?: string };
 
 export interface ProjectCover {
@@ -63,6 +90,28 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  // Précharger les images au montage
+  useEffect(() => {
+    const preloadImages = async () => {
+      try {
+        // Précharger l'image principale
+        await preloadImage(optimizeCloudinaryUrl(cover.mainImage, 800, "85"));
+        
+        // Précharger les images du mosaic
+        const promises = cover.sideImages.slice(0, 4).map(src => 
+          preloadImage(optimizeCloudinaryUrl(src, 600, "80"))
+        );
+        
+        await Promise.all(promises);
+      } catch (err) {
+        console.warn("Erreur au préchargement des images:", err);
+        // Même en cas d'erreur, on continue
+      }
+    };
+    
+    preloadImages();
+  }, [cover]);
 
   const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -435,7 +484,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
               {cover.title.split(" ").slice(1).join(" ") || "WEB"}
             </h3>
           </div>
-          <img src={cover.mainImage} alt="main" className={styles.mobileImage} />
+          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, 800, "85")} alt="main" className={styles.mobileImage} />
         </div>
 
         <div className={styles.mobileDescription}>
@@ -451,7 +500,11 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => (
             <div key={i} className={styles.mosaicItem}>
-              <img src={src} alt={`side-${i + 1}`} />
+              <img 
+                loading="eager" 
+                src={optimizeCloudinaryUrl(src, 600, "80")} 
+                alt={`side-${i + 1}`}
+              />
             </div>
           ))}
         </div>
@@ -515,12 +568,13 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       </div>
 
         <aside className={styles.right}>
-          <img src={cover.mainImage} alt="main" />
+          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, 800, "85")} alt="main" />
         </aside>
 
         <div className={styles.mobileBottomSection}>
           <img
-            src={cover.sideImages[1]}
+            loading="eager"
+            src={optimizeCloudinaryUrl(cover.sideImages[1], 500, "80")}
             alt="mobile-1"
             className={styles.mobileImageLeft}
           />
@@ -554,7 +608,8 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             })}
           </div>
           <img
-            src={cover.sideImages[2]}
+            loading="eager"
+            src={optimizeCloudinaryUrl(cover.sideImages[2], 500, "80")}
             alt="mobile-2"
             className={styles.mobileImageRight}
           />

@@ -112,13 +112,15 @@
   backdrop-filter: blur(10px);
   color: white;
   text-align: center;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   
   // Image ronde au centre avec radial gradient
   .centerImage {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
     width: 100vw;
     height: 100vw; // Même hauteur que la largeur pour garder un aspect carré
     max-width: 100vh; // Limiter par la hauteur de l'écran si nécessaire
@@ -131,10 +133,16 @@
     pointer-events: none;
     z-index: 1;
     filter: brightness(0.75);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
     
     &.active {
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
+    }
+    
+    &:not(.active) {
+      transform: translate(-50%, -50%) scale(0) translateZ(0);
     }
     
     &::before {
@@ -181,7 +189,12 @@
     padding: 1rem;
     position: relative;
     z-index: 3;
-
+    @media(max-height: 870px){
+      gap: 0.5rem;
+    }
+    @media(max-height: 250px){
+      gap: 0rem;
+    }
     .separator {
       font-family: $font-family-secondary;
       font-size: 2.5rem;
@@ -189,6 +202,12 @@
       text-align: center;
       user-select: none;
       -webkit-user-select: none;
+      @media(max-height: 870px){
+        font-size: 20px;
+      }
+      @media(max-height: 500px){
+        font-size: 10px;
+      }
     }
 
     .menuItem {
@@ -203,6 +222,9 @@
       -webkit-touch-callout: none;
       user-select: none;
       -webkit-user-select: none;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      backface-visibility: hidden;
 
       &::after {
         content: '';
@@ -219,7 +241,15 @@
         );
         transition: transform 0.3s ease;
       }
-
+      @media(max-height: 870px){
+        font-size: 2rem;
+      }
+      @media(max-height: 620px){
+        font-size: 1.5rem;
+      }
+      @media(max-height: 500px){
+        font-size: 1rem;
+      }
       &:hover {
         color: rgba(255, 255, 255, 0.8);
 
@@ -268,6 +298,10 @@
       .menuItem {
         font-size: 2rem;
       }
+    }
+
+    .closeButton {
+      font-size: 1.5rem;
     }
   }
 }

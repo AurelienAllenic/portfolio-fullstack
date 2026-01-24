@@ -9,16 +9,17 @@ interface NavigationContextType {
   heroState: HeroState;
   setHeroState: (state: HeroState) => void;
   navigateToHero: (destination: HeroState) => void;
-  navigateToProjects: () => void;
+  navigateToProjects: (categoryIndex?: number) => void;
   navigateToContact: () => void;
   isTransitioning: boolean;
   transitionDirection: "close" | "open";
   setReturnToHero: (callback: () => void) => void;
-  setNavigateToProjects: (callback: () => void) => void;
+  setNavigateToProjects: (callback: (categoryIndex?: number) => void) => void;
   setNavigateToContact: (callback: () => void) => void;
   shouldResetHeroStates: boolean; // Flag pour réinitialiser les états Hero
   shouldResetHeroStatesRef: React.RefObject<boolean>; // Ref pour lecture synchrone
   shouldResetProjectsStates: boolean; // Flag pour réinitialiser les états Projects
+  lastProjectsCategoryIndexRef: React.RefObject<number | undefined>; // Ref pour le dernier categoryIndex
   resetNavigationFlags: () => void; // Fonction pour réinitialiser les flags
   updateCurrentSection?: (section: "hero" | "projects" | "contact") => void; // Synchronisation manuelle
 }
@@ -33,15 +34,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const [shouldResetProjectsStates, setShouldResetProjectsStates] = useState(false);
   const currentSectionRef = useRef<"hero" | "projects" | "contact">("hero"); // Suivre la section actuelle
   const shouldResetHeroStatesRef = useRef(false); // Ref pour lecture synchrone
+  const lastProjectsCategoryIndexRef = useRef<number | undefined>(undefined); // Ref pour le dernier categoryIndex
   const returnToHeroCallbackRef = useRef<(() => void) | null>(null);
-  const navigateToProjectsCallbackRef = useRef<(() => void) | null>(null);
+  const navigateToProjectsCallbackRef = useRef<((categoryIndex?: number) => void) | null>(null);
   const navigateToContactCallbackRef = useRef<(() => void) | null>(null);
 
   const setReturnToHero = (callback: () => void) => {
     returnToHeroCallbackRef.current = callback;
   };
 
-  const setNavigateToProjects = (callback: () => void) => {
+  const setNavigateToProjects = (callback: (categoryIndex?: number) => void) => {
     navigateToProjectsCallbackRef.current = callback;
   };
 
@@ -65,7 +67,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     setTransitionDirection("close");
     
-    // Fermer le gradient (écran noir)
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // Changer l'état hero et activer le flag de réinitialisation AVANT d'appeler le callback
       setHeroState(destination);
@@ -78,40 +80,48 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         returnToHeroCallbackRef.current();
       }
       
-      setTransitionDirection("open");
-      
-      // Ouvrir le gradient pour révéler
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
-  const navigateToProjects = () => {
+  const navigateToProjects = (categoryIndex?: number) => {
+    lastProjectsCategoryIndexRef.current = categoryIndex;
     if (isTransitioning) return;
     
     setIsTransitioning(true);
     setTransitionDirection("close");
     
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // Revenir à Hero d'abord SEULEMENT si on n'est pas déjà sur Hero/Projects
       if (currentSectionRef.current === "contact" && returnToHeroCallbackRef.current) {
         returnToHeroCallbackRef.current();
       }
       
-      // Naviguer vers Projects et activer le flag de réinitialisation
       if (navigateToProjectsCallbackRef.current) {
-        navigateToProjectsCallbackRef.current();
+        navigateToProjectsCallbackRef.current(categoryIndex);
       }
       setShouldResetProjectsStates(true);
       currentSectionRef.current = "projects";
       
-      setTransitionDirection("open");
-      
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
   const navigateToContact = () => {
@@ -120,6 +130,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     setTransitionDirection("close");
     
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // NE PAS retourner à Hero - aller directement à Contact
       // La transition Projects → Contact est gérée par le scroll naturel
@@ -130,12 +141,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       }
       currentSectionRef.current = "contact";
       
-      setTransitionDirection("open");
-      
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
   return (
@@ -153,6 +168,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       shouldResetHeroStates,
       shouldResetHeroStatesRef,
       shouldResetProjectsStates,
+      lastProjectsCategoryIndexRef,
       resetNavigationFlags,
       updateCurrentSection
     }}>

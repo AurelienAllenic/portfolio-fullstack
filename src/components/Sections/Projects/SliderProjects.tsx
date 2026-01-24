@@ -11,6 +11,33 @@ import {
   iim_cover,
 } from "./Data";
 
+// Optimiser les URLs Cloudinary
+const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
+  if (!url.includes("cloudinary.com")) return url;
+  
+  const parts = url.split("/image/upload/");
+  if (parts.length !== 2) return url;
+  
+  const [base, rest] = parts;
+  let params = `f_webp,q_${quality}`;
+  
+  if (width) {
+    params += `,w_${width}`;
+  }
+  
+  return `${base}/image/upload/${params}/${rest}`;
+};
+
+// Précharger une image
+const preloadImage = (src: string): Promise<void> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = src;
+  });
+};
+
 interface SliderProjectsProps {
   onTransitionToContact?: () => void;
   onTransitionFromContact?: () => void;
@@ -43,6 +70,32 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
+
+  // Précharger les images de la catégorie suivante et précédente
+  useEffect(() => {
+    const preloadAdjacentCategories = async () => {
+      const nextIndex = (currentIndex + 1) % covers.length;
+      const prevIndex = (currentIndex - 1 + covers.length) % covers.length;
+      
+      const categoriesToPreload = [
+        covers[nextIndex],
+        covers[prevIndex],
+      ];
+      
+      // Précharger les images de ces catégories
+      categoriesToPreload.forEach(cover => {
+        // Précharger l'image principale
+        preloadImage(optimizeCloudinaryUrl(cover.mainImage, 800, "85"));
+        
+        // Précharger les images du mosaic
+        cover.sideImages.slice(0, 4).forEach(src => {
+          preloadImage(optimizeCloudinaryUrl(src, 600, "80"));
+        });
+      });
+    };
+    
+    preloadAdjacentCategories();
+  }, [currentIndex, covers]);
 
   // Forcer l'index si forceIndex est défini
   // Mais IGNORER si on est en train de faire une transition depuis Contact

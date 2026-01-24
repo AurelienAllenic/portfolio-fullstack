@@ -53,9 +53,12 @@ const SinglePage = () => {
     }
   }, []);
 
-  const handleTransitionToProjects = () => {
+  const handleTransitionToProjects = (categoryIndex?: number) => {
     setShowProjects(true);
-    setForceProjectsIndex(undefined);
+    // Seulement réinitialiser forceProjectsIndex si pas de catégorie spécifiée
+    if (categoryIndex === undefined) {
+      setForceProjectsIndex(undefined);
+    }
   };
 
   const handleReturnToHero = () => {
@@ -118,7 +121,7 @@ const SinglePageContent = ({
   returnFromProjects: boolean;
   showContact: boolean;
   forceProjectsIndex: number | undefined;
-  handleTransitionToProjects: () => void;
+  handleTransitionToProjects: (categoryIndex?: number) => void;
   handleReturnToHero: () => void;
   handleTransitionToContact: () => void;
   handleCloseContact: () => void;
@@ -137,6 +140,7 @@ const SinglePageContent = ({
     shouldResetHeroStates,
     shouldResetHeroStatesRef,
     shouldResetProjectsStates,
+    lastProjectsCategoryIndexRef,
     resetNavigationFlags,
     updateCurrentSection
   } = useNavigation();
@@ -215,19 +219,21 @@ const SinglePageContent = ({
   }, [showProjects, showContact, handleReturnToHero, handleCloseContact, setReturnToHero, shouldResetHeroStates, shouldResetHeroStatesRef]);
 
   useEffect(() => {
-    setNavigateToProjects(() => {
+    setNavigateToProjects((categoryIndex?: number) => {
       // Fermer Contact si ouvert
       if (showContact) {
         handleCloseContact();
       }
-      handleTransitionToProjects();
-      // Forcer la première catégorie SEULEMENT si on vient d'ailleurs (pas déjà sur Projects)
+      handleTransitionToProjects(categoryIndex);
+      // Forcer la catégorie spécifiée ou la première si non spécifiée
       if (!showProjects) {
-        setForceProjectsIndex(0);
+        const indexToUse = categoryIndex !== undefined ? categoryIndex : 0;
+        setForceProjectsIndex(indexToUse);
         // Réinitialiser après un court délai pour éviter les re-applications
         setTimeout(() => {
           setForceProjectsIndex(undefined);
         }, 500);
+      } else {
       }
     });
   }, [setNavigateToProjects, handleTransitionToProjects, showContact, handleCloseContact, showProjects]);
@@ -252,8 +258,9 @@ const SinglePageContent = ({
   // Gérer la réinitialisation des états Projects lors de la navigation
   useEffect(() => {
     if (shouldResetProjectsStates) {
-      // Force l'index à 0 pour Projects
-      setForceProjectsIndex(0);
+      // Utiliser l'index sauvegardé, sinon forcer à 0
+      const indexToForce = lastProjectsCategoryIndexRef.current !== undefined ? lastProjectsCategoryIndexRef.current : 0;
+      setForceProjectsIndex(indexToForce);
       
       // Réinitialiser les flags ET le forceIndex après un court délai
       setTimeout(() => {
