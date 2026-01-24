@@ -67,7 +67,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     setTransitionDirection("close");
     
-    // Fermer le gradient (écran noir)
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // Changer l'état hero et activer le flag de réinitialisation AVANT d'appeler le callback
       setHeroState(destination);
@@ -80,13 +80,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         returnToHeroCallbackRef.current();
       }
       
-      setTransitionDirection("open");
-      
-      // Ouvrir le gradient pour révéler
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
   const navigateToProjects = (categoryIndex?: number) => {
@@ -97,6 +100,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     setTransitionDirection("close");
     
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // Revenir à Hero d'abord SEULEMENT si on n'est pas déjà sur Hero/Projects
       if (currentSectionRef.current === "contact" && returnToHeroCallbackRef.current) {
@@ -111,12 +115,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       setShouldResetProjectsStates(true);
       currentSectionRef.current = "projects";
       
-      setTransitionDirection("open");
-      
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
   const navigateToContact = () => {
@@ -125,6 +133,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     setTransitionDirection("close");
     
+    // Fermer le gradient (écran noir) - animation 1.2s
     setTimeout(() => {
       // NE PAS retourner à Hero - aller directement à Contact
       // La transition Projects → Contact est gérée par le scroll naturel
@@ -135,12 +144,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       }
       currentSectionRef.current = "contact";
       
-      setTransitionDirection("open");
-      
+      // Attendre 125ms avec écran noir avant de réouvrir
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    }, 800);
+        setTransitionDirection("open");
+        
+        // Ouvrir le gradient pour révéler - animation 1.2s
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1200);
+      }, 125); // Délai d'écran noir
+    }, 1200); // Durée de fermeture
   };
 
   return (
