@@ -133,8 +133,6 @@ const MobileNav = () => {
       
       // Attendre la fin de l'animation avant de fermer et de naviguer
       setTimeout(() => {
-        setIsOpen(false);
-        
         // Naviguer APRÈS toutes les animations
         switch (destination) {
           case "hero":
@@ -147,6 +145,13 @@ const MobileNav = () => {
             navigateToContact();
             break;
         }
+        
+        // Fermer la nav pendant le temps noir du radial
+        // Le radial se ferme en 1.2s, puis black screen 250ms
+        // Donc on ferme la nav à 1.2s + 250ms = 1.45s
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 1250);
         
         // Réinitialiser après la navigation
         setTimeout(() => {
@@ -324,14 +329,19 @@ const MobileNav = () => {
       );
       
       setTimeout(() => {
-        setIsOpen(false);
+        // Naviguer d'abord
         navigateToProjects(category.index);
+        
+        // Fermer la nav pendant le temps noir du radial (1.2s + 250ms = 1.45s)
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 1250);
         
         setTimeout(() => {
           setIsAnimating(false);
           lockedImageRef.current = null;
         }, 100);
-      }, 1000); // 600ms animation + 400ms de pause pour bien voir
+      }, 750); // 600ms animation + 150ms de pause avant radial
     } else {
       setTimeout(() => {
         setIsOpen(false);

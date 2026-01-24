@@ -181,7 +181,12 @@
     padding: 1rem;
     position: relative;
     z-index: 3;
-
+    @media(max-height: 870px){
+      gap: 0.5rem;
+    }
+    @media(max-height: 250px){
+      gap: 0rem;
+    }
     .separator {
       font-family: $font-family-secondary;
       font-size: 2.5rem;
@@ -189,6 +194,12 @@
       text-align: center;
       user-select: none;
       -webkit-user-select: none;
+      @media(max-height: 870px){
+        font-size: 20px;
+      }
+      @media(max-height: 500px){
+        font-size: 10px;
+      }
     }
 
     .menuItem {
@@ -219,7 +230,15 @@
         );
         transition: transform 0.3s ease;
       }
-
+      @media(max-height: 870px){
+        font-size: 2rem;
+      }
+      @media(max-height: 620px){
+        font-size: 1.5rem;
+      }
+      @media(max-height: 500px){
+        font-size: 1rem;
+      }
       &:hover {
         color: rgba(255, 255, 255, 0.8);
 
@@ -237,14 +256,19 @@
   // Croix pour revenir au menu principal
   .closeButton {
     position: absolute;
-    top: 35px;
+    top: clamp(50px, 10vh, 120px);
     left: 50px;
     font-size: 2rem;
     color: white;
     cursor: pointer;
     z-index: 4;
     transition: all 0.3s ease;
-
+    @media(max-height: 870px){
+     top: 120px;
+    }
+    @media(max-height: 720px){
+      top: 80px;
+     }
     &:hover {
       color: rgba(255, 255, 255, 0.7);
       transform: rotate(90deg);
