@@ -54,14 +54,10 @@ const SinglePage = () => {
   }, []);
 
   const handleTransitionToProjects = (categoryIndex?: number) => {
-    console.log('[handleTransitionToProjects] Appelé avec categoryIndex:', categoryIndex);
     setShowProjects(true);
     // Seulement réinitialiser forceProjectsIndex si pas de catégorie spécifiée
     if (categoryIndex === undefined) {
-      console.log('[handleTransitionToProjects] categoryIndex undefined, réinitialisation de forceProjectsIndex');
       setForceProjectsIndex(undefined);
-    } else {
-      console.log('[handleTransitionToProjects] categoryIndex défini, PAS de réinitialisation');
     }
   };
 
@@ -224,25 +220,20 @@ const SinglePageContent = ({
 
   useEffect(() => {
     setNavigateToProjects((categoryIndex?: number) => {
-      console.log('[setNavigateToProjects callback] Début avec categoryIndex:', categoryIndex, 'showProjects:', showProjects);
       // Fermer Contact si ouvert
       if (showContact) {
         handleCloseContact();
       }
       handleTransitionToProjects(categoryIndex);
-      console.log('[setNavigateToProjects callback] Après handleTransitionToProjects, showProjects:', showProjects);
       // Forcer la catégorie spécifiée ou la première si non spécifiée
       if (!showProjects) {
         const indexToUse = categoryIndex !== undefined ? categoryIndex : 0;
-        console.log('[setNavigateToProjects callback] showProjects est false, setForceProjectsIndex(', indexToUse, ')');
         setForceProjectsIndex(indexToUse);
         // Réinitialiser après un court délai pour éviter les re-applications
         setTimeout(() => {
-          console.log('[setNavigateToProjects callback] Réinitialisation de forceProjectsIndex après 500ms');
           setForceProjectsIndex(undefined);
         }, 500);
       } else {
-        console.log('[setNavigateToProjects callback] showProjects est true, skipping forceProjectsIndex');
       }
     });
   }, [setNavigateToProjects, handleTransitionToProjects, showContact, handleCloseContact, showProjects]);
@@ -269,7 +260,6 @@ const SinglePageContent = ({
     if (shouldResetProjectsStates) {
       // Utiliser l'index sauvegardé, sinon forcer à 0
       const indexToForce = lastProjectsCategoryIndexRef.current !== undefined ? lastProjectsCategoryIndexRef.current : 0;
-      console.log('[shouldResetProjectsStates] Forçage à l\'index:', indexToForce, 'lastProjectsCategoryIndexRef:', lastProjectsCategoryIndexRef.current);
       setForceProjectsIndex(indexToForce);
       
       // Réinitialiser les flags ET le forceIndex après un court délai

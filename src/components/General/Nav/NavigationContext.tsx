@@ -93,8 +93,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const navigateToProjects = (categoryIndex?: number) => {
-    console.log('[NavigationContext navigateToProjects] categoryIndex:', categoryIndex);
-    lastProjectsCategoryIndexRef.current = categoryIndex; // Sauvegarder l'index
+    lastProjectsCategoryIndexRef.current = categoryIndex;
     if (isTransitioning) return;
     
     setIsTransitioning(true);
@@ -107,8 +106,6 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
         returnToHeroCallbackRef.current();
       }
       
-      // Naviguer vers Projects et activer le flag de réinitialisation
-      console.log('[NavigationContext navigateToProjects] Appel du callback avec categoryIndex:', categoryIndex);
       if (navigateToProjectsCallbackRef.current) {
         navigateToProjectsCallbackRef.current(categoryIndex);
       }

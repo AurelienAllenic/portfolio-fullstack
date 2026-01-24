@@ -203,10 +203,6 @@ const MobileNav = () => {
       attempts++;
     }
     
-    console.log('[showProjectsMenu] START - hoveredImage avant:', hoveredImage);
-    console.log('[showProjectsMenu] randomImage (parmi', allProjects.length, 'projets):', randomImage);
-    console.log('[showProjectsMenu] currentImage:', currentImage);
-    
     setIsAnimating(true);
     
     const overlay = menuOverlayRef.current;
@@ -219,8 +215,6 @@ const MobileNav = () => {
       newImageElement.style.zIndex = '2';
       overlay.appendChild(newImageElement);
       
-      console.log('[showProjectsMenu] Élément temporaire créé avec l\'image:', randomImage);
-      
       gsap.fromTo(
         newImageElement,
         { scale: 0, opacity: 0 },
@@ -230,7 +224,6 @@ const MobileNav = () => {
           duration: 0.6,
           ease: "power2.out",
           onComplete: () => {
-            console.log('[showProjectsMenu] Animation complète, setHoveredImage à:', randomImage);
             setHoveredImage(randomImage);
             // Garder l'élément visible et ne le supprimer que quand on clique sur une catégorie
             // On le supprimera dans handleCategoryClick
@@ -261,8 +254,6 @@ const MobileNav = () => {
         }
       }, 600);
     } else {
-      console.log('[showProjectsMenu] Image identique, pas d\'animation');
-      // Si c'est la même image aléatoire, remplacer directement les liens
       const links = menuLinksRef.current;
       if (links) {
         const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);

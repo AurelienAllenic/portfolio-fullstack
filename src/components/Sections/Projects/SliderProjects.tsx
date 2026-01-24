@@ -47,9 +47,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   // Forcer l'index si forceIndex est défini
   // Mais IGNORER si on est en train de faire une transition depuis Contact
   useEffect(() => {
-    console.log('[SliderProjects useEffect forceIndex] forceIndex:', forceIndex, 'currentIndex:', currentIndex, 'isTransitioningFromContact:', isTransitioningFromContactRef.current);
     if (forceIndex !== undefined && forceIndex !== currentIndex && !isTransitioningFromContactRef.current) {
-      console.log('[SliderProjects] FORÇAGE de l\'index à:', forceIndex);
       setCurrentIndex(forceIndex);
       currentIndexRef.current = forceIndex;
       
