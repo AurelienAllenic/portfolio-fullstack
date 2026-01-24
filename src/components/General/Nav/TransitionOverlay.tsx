@@ -35,7 +35,7 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
         { "--gradient-size": "100%" },
         {
           "--gradient-size": "0%",
-          duration: 0.8,
+          duration: 1.2,
           ease: "power2.in",
           onComplete: () => {
             onComplete();
@@ -49,7 +49,7 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
         { "--gradient-size": "0%" },
         {
           "--gradient-size": "100%",
-          duration: 0.8,
+          duration: 1.2,
           ease: "power2.out",
         }
       );
