@@ -8,7 +8,7 @@ import ProjectsDropdown from "./ProjectsDropdown";
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
-  const { navigateToHero, navigateToProjects, navigateToContact } = useNavigation();
+  const { navigateToHero, navigateToContact } = useNavigation();
 
   // Categories from Data.ts covers - in reverse order
   const categories = [

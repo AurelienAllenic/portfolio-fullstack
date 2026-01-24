@@ -427,20 +427,22 @@ const MobileNav = () => {
         );
       }
       
-      // Animation des liens ET des tirets avec stagger
-      const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
-      tl.fromTo(
-        menuItems,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.1,
-          ease: "power2.out"
-        },
-        "-=0.4"
-      );
+      // Animation des liens ET des tirets avec stagger - SEULEMENT si ce n'est pas les catégories
+      if (!showProjectCategories) {
+        const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
+        tl.fromTo(
+          menuItems,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "power2.out"
+          },
+          "-=0.4"
+        );
+      }
     } else {
       // Fermer le menu
       const tl = gsap.timeline({
@@ -464,7 +466,8 @@ const MobileNav = () => {
     const links = menuLinksRef.current;
     if (!links) return;
 
-    const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
+    // Sélectionner SEULEMENT les items de projet ET les séparateurs, PAS la croix
+    const menuItems = links.querySelectorAll(`.${styles.menuItem}:not(.${styles.closeButton}), .${styles.separator}`);
     
     if (showProjectCategories && menuItems.length > 0) {
       // Les catégories viennent d'apparaître, animer leur apparition
@@ -668,17 +671,6 @@ const MobileNav = () => {
             </>
           )}
         </div>
-        
-        {/* Croix pour fermer et revenir au menu */}
-        {showProjectCategories && (
-          <div 
-            className={styles.closeButton}
-            onClick={hideProjectsMenu}
-            style={{ cursor: "pointer" }}
-          >
-            ✕
-          </div>
-        )}
       </div>
     </>
   );

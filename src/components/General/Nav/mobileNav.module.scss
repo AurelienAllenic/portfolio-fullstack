@@ -252,32 +252,6 @@
       }
     }
   }
-
-  // Croix pour revenir au menu principal
-  .closeButton {
-    position: absolute;
-    top: clamp(50px, 10vh, 120px);
-    left: 50px;
-    font-size: 2rem;
-    color: white;
-    cursor: pointer;
-    z-index: 4;
-    transition: all 0.3s ease;
-    @media(max-height: 870px){
-     top: 120px;
-    }
-    @media(max-height: 720px){
-      top: 80px;
-     }
-    &:hover {
-      color: rgba(255, 255, 255, 0.7);
-      transform: rotate(90deg);
-    }
-
-    &:active {
-      transform: rotate(90deg) scale(0.9);
-    }
-  }
 }
 
 @media (max-width: 475px) {
@@ -316,8 +290,6 @@
     }
 
     .closeButton {
-      top: 20px;
-      left: 25px;
       font-size: 1.5rem;
     }
   }
