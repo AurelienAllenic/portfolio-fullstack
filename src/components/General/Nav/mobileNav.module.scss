@@ -112,13 +112,15 @@
   backdrop-filter: blur(10px);
   color: white;
   text-align: center;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   
   // Image ronde au centre avec radial gradient
   .centerImage {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
     width: 100vw;
     height: 100vw; // Même hauteur que la largeur pour garder un aspect carré
     max-width: 100vh; // Limiter par la hauteur de l'écran si nécessaire
@@ -131,10 +133,16 @@
     pointer-events: none;
     z-index: 1;
     filter: brightness(0.75);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
     
     &.active {
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
+    }
+    
+    &:not(.active) {
+      transform: translate(-50%, -50%) scale(0) translateZ(0);
     }
     
     &::before {
@@ -214,6 +222,9 @@
       -webkit-touch-callout: none;
       user-select: none;
       -webkit-user-select: none;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      backface-visibility: hidden;
 
       &::after {
         content: '';
