@@ -53,9 +53,16 @@ const SinglePage = () => {
     }
   }, []);
 
-  const handleTransitionToProjects = () => {
+  const handleTransitionToProjects = (categoryIndex?: number) => {
+    console.log('[handleTransitionToProjects] Appelé avec categoryIndex:', categoryIndex);
     setShowProjects(true);
-    setForceProjectsIndex(undefined);
+    // Seulement réinitialiser forceProjectsIndex si pas de catégorie spécifiée
+    if (categoryIndex === undefined) {
+      console.log('[handleTransitionToProjects] categoryIndex undefined, réinitialisation de forceProjectsIndex');
+      setForceProjectsIndex(undefined);
+    } else {
+      console.log('[handleTransitionToProjects] categoryIndex défini, PAS de réinitialisation');
+    }
   };
 
   const handleReturnToHero = () => {
@@ -118,7 +125,7 @@ const SinglePageContent = ({
   returnFromProjects: boolean;
   showContact: boolean;
   forceProjectsIndex: number | undefined;
-  handleTransitionToProjects: () => void;
+  handleTransitionToProjects: (categoryIndex?: number) => void;
   handleReturnToHero: () => void;
   handleTransitionToContact: () => void;
   handleCloseContact: () => void;
@@ -137,6 +144,7 @@ const SinglePageContent = ({
     shouldResetHeroStates,
     shouldResetHeroStatesRef,
     shouldResetProjectsStates,
+    lastProjectsCategoryIndexRef,
     resetNavigationFlags,
     updateCurrentSection
   } = useNavigation();
@@ -215,19 +223,26 @@ const SinglePageContent = ({
   }, [showProjects, showContact, handleReturnToHero, handleCloseContact, setReturnToHero, shouldResetHeroStates, shouldResetHeroStatesRef]);
 
   useEffect(() => {
-    setNavigateToProjects(() => {
+    setNavigateToProjects((categoryIndex?: number) => {
+      console.log('[setNavigateToProjects callback] Début avec categoryIndex:', categoryIndex, 'showProjects:', showProjects);
       // Fermer Contact si ouvert
       if (showContact) {
         handleCloseContact();
       }
-      handleTransitionToProjects();
-      // Forcer la première catégorie SEULEMENT si on vient d'ailleurs (pas déjà sur Projects)
+      handleTransitionToProjects(categoryIndex);
+      console.log('[setNavigateToProjects callback] Après handleTransitionToProjects, showProjects:', showProjects);
+      // Forcer la catégorie spécifiée ou la première si non spécifiée
       if (!showProjects) {
-        setForceProjectsIndex(0);
+        const indexToUse = categoryIndex !== undefined ? categoryIndex : 0;
+        console.log('[setNavigateToProjects callback] showProjects est false, setForceProjectsIndex(', indexToUse, ')');
+        setForceProjectsIndex(indexToUse);
         // Réinitialiser après un court délai pour éviter les re-applications
         setTimeout(() => {
+          console.log('[setNavigateToProjects callback] Réinitialisation de forceProjectsIndex après 500ms');
           setForceProjectsIndex(undefined);
         }, 500);
+      } else {
+        console.log('[setNavigateToProjects callback] showProjects est true, skipping forceProjectsIndex');
       }
     });
   }, [setNavigateToProjects, handleTransitionToProjects, showContact, handleCloseContact, showProjects]);
@@ -252,8 +267,10 @@ const SinglePageContent = ({
   // Gérer la réinitialisation des états Projects lors de la navigation
   useEffect(() => {
     if (shouldResetProjectsStates) {
-      // Force l'index à 0 pour Projects
-      setForceProjectsIndex(0);
+      // Utiliser l'index sauvegardé, sinon forcer à 0
+      const indexToForce = lastProjectsCategoryIndexRef.current !== undefined ? lastProjectsCategoryIndexRef.current : 0;
+      console.log('[shouldResetProjectsStates] Forçage à l\'index:', indexToForce, 'lastProjectsCategoryIndexRef:', lastProjectsCategoryIndexRef.current);
+      setForceProjectsIndex(indexToForce);
       
       // Réinitialiser les flags ET le forceIndex après un court délai
       setTimeout(() => {

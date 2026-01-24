@@ -9,16 +9,17 @@ interface NavigationContextType {
   heroState: HeroState;
   setHeroState: (state: HeroState) => void;
   navigateToHero: (destination: HeroState) => void;
-  navigateToProjects: () => void;
+  navigateToProjects: (categoryIndex?: number) => void;
   navigateToContact: () => void;
   isTransitioning: boolean;
   transitionDirection: "close" | "open";
   setReturnToHero: (callback: () => void) => void;
-  setNavigateToProjects: (callback: () => void) => void;
+  setNavigateToProjects: (callback: (categoryIndex?: number) => void) => void;
   setNavigateToContact: (callback: () => void) => void;
   shouldResetHeroStates: boolean; // Flag pour réinitialiser les états Hero
   shouldResetHeroStatesRef: React.RefObject<boolean>; // Ref pour lecture synchrone
   shouldResetProjectsStates: boolean; // Flag pour réinitialiser les états Projects
+  lastProjectsCategoryIndexRef: React.RefObject<number | undefined>; // Ref pour le dernier categoryIndex
   resetNavigationFlags: () => void; // Fonction pour réinitialiser les flags
   updateCurrentSection?: (section: "hero" | "projects" | "contact") => void; // Synchronisation manuelle
 }
@@ -33,15 +34,16 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
   const [shouldResetProjectsStates, setShouldResetProjectsStates] = useState(false);
   const currentSectionRef = useRef<"hero" | "projects" | "contact">("hero"); // Suivre la section actuelle
   const shouldResetHeroStatesRef = useRef(false); // Ref pour lecture synchrone
+  const lastProjectsCategoryIndexRef = useRef<number | undefined>(undefined); // Ref pour le dernier categoryIndex
   const returnToHeroCallbackRef = useRef<(() => void) | null>(null);
-  const navigateToProjectsCallbackRef = useRef<(() => void) | null>(null);
+  const navigateToProjectsCallbackRef = useRef<((categoryIndex?: number) => void) | null>(null);
   const navigateToContactCallbackRef = useRef<(() => void) | null>(null);
 
   const setReturnToHero = (callback: () => void) => {
     returnToHeroCallbackRef.current = callback;
   };
 
-  const setNavigateToProjects = (callback: () => void) => {
+  const setNavigateToProjects = (callback: (categoryIndex?: number) => void) => {
     navigateToProjectsCallbackRef.current = callback;
   };
 
@@ -87,7 +89,9 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
     }, 800);
   };
 
-  const navigateToProjects = () => {
+  const navigateToProjects = (categoryIndex?: number) => {
+    console.log('[NavigationContext navigateToProjects] categoryIndex:', categoryIndex);
+    lastProjectsCategoryIndexRef.current = categoryIndex; // Sauvegarder l'index
     if (isTransitioning) return;
     
     setIsTransitioning(true);
@@ -100,8 +104,9 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       }
       
       // Naviguer vers Projects et activer le flag de réinitialisation
+      console.log('[NavigationContext navigateToProjects] Appel du callback avec categoryIndex:', categoryIndex);
       if (navigateToProjectsCallbackRef.current) {
-        navigateToProjectsCallbackRef.current();
+        navigateToProjectsCallbackRef.current(categoryIndex);
       }
       setShouldResetProjectsStates(true);
       currentSectionRef.current = "projects";
@@ -153,6 +158,7 @@ export const NavigationProvider = ({ children }: { children: ReactNode }) => {
       shouldResetHeroStates,
       shouldResetHeroStatesRef,
       shouldResetProjectsStates,
+      lastProjectsCategoryIndexRef,
       resetNavigationFlags,
       updateCurrentSection
     }}>

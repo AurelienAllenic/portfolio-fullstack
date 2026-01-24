@@ -3,11 +3,21 @@ import { gsap } from "gsap";
 import { useEffect, useRef } from "react";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
+import ProjectsDropdown from "./ProjectsDropdown";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToProjects, navigateToContact } = useNavigation();
+
+  // Categories from Data.ts covers - in reverse order
+  const categories = [
+    { title: 'Projets personnels', index: 0 },
+    { title: 'Mastère IIM', index: 1 },
+    { title: 'Formation Python', index: 2 },
+    { title: 'Formation React', index: 3 },
+    { title: 'Formation Développeur Web', index: 4 },
+  ];
 
   useEffect(() => {
     const navEl = navRef.current;
@@ -66,12 +76,7 @@ const Nav = () => {
             </div>
           </li>
           <li>
-            <div
-              onClick={() => navigateToProjects()}
-              style={{ cursor: "pointer" }}
-            >
-              Projects
-            </div>
+            <ProjectsDropdown categories={categories} />
           </li>
           <li>
             <div
