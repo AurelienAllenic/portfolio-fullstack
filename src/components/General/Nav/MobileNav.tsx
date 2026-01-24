@@ -3,6 +3,18 @@ import { gsap } from "gsap";
 import styles from "./mobileNav.module.scss";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
+import {
+  openclassrooms1_cover,
+  openclassrooms2_cover,
+  openclassrooms3_cover,
+  projects_cover,
+  iim_cover,
+  openclassrooms1,
+  openclassrooms2,
+  openclassrooms3,
+  projects,
+  iim,
+} from "../../Sections/Projects/Data";
 
 // Images pour chaque section (en dehors du composant pour éviter les re-créations)
 const IMAGES = {
@@ -12,8 +24,18 @@ const IMAGES = {
   contact: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gameon_uieupe.webp",
 };
 
+// Catégories de projets avec titres et images (dans le même ordre que SliderProjects)
+const PROJECT_CATEGORIES = [
+  { title: projects_cover.title, index: 0, image: projects_cover.mainImage },
+  { title: iim_cover.title, index: 1, image: iim_cover.mainImage },
+  { title: openclassrooms3_cover.title, index: 2, image: openclassrooms3_cover.mainImage },
+  { title: openclassrooms2_cover.title, index: 3, image: openclassrooms2_cover.mainImage },
+  { title: openclassrooms1_cover.title, index: 4, image: openclassrooms1_cover.mainImage },
+];
+
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showProjectCategories, setShowProjectCategories] = useState(false);
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const { openModal } = useModalCV();
@@ -92,15 +114,19 @@ const MobileNav = () => {
           duration: 0.6,
           ease: "power2.out",
           onComplete: () => {
-            // Une fois l'animation terminée, mettre à jour l'image React et supprimer la temporaire
+            // Une fois l'animation terminée, mettre à jour l'image React
             setHoveredImage(imageUrl);
             
-            // Attendre un frame puis supprimer l'élément temporaire
-            requestAnimationFrame(() => {
-              if (overlay.contains(newImageElement)) {
-                overlay.removeChild(newImageElement);
+            // MAINTENANT nettoyer les anciens éléments temporaires du clic précédent
+            const oldElements = overlay.querySelectorAll(`.${styles.centerImage}.${styles.active}`);
+            oldElements.forEach((el) => {
+              if (el !== newImageElement && overlay.contains(el)) {
+                overlay.removeChild(el);
               }
             });
+            
+            // Ne pas supprimer le nouvel élément - le laisser visible
+            // Il disparaîtra quand le menu fermera
           }
         }
       );
@@ -153,8 +179,171 @@ const MobileNav = () => {
     }
   };
 
+  // Fonction pour passer du menu principal aux catégories de projets
+  const showProjectsMenu = () => {
+    if (isAnimating) return;
+    
+    lockedImageRef.current = hoveredImage;
+    const currentImage = lockedImageRef.current;
+    
+    // Combiner tous les projets de toutes les catégories
+    const allProjects = [...openclassrooms1, ...openclassrooms2, ...openclassrooms3, ...iim, ...projects];
+    
+    // Prendre une image aléatoire parmi TOUS les projets (sauf si c'est la même que currentImage)
+    let randomImage = currentImage;
+    let attempts = 0;
+    while (randomImage === currentImage && attempts < 10) {
+      const randomIndex = Math.floor(Math.random() * allProjects.length);
+      randomImage = allProjects[randomIndex].image;
+      attempts++;
+    }
+    
+    console.log('[showProjectsMenu] START - hoveredImage avant:', hoveredImage);
+    console.log('[showProjectsMenu] randomImage (parmi', allProjects.length, 'projets):', randomImage);
+    console.log('[showProjectsMenu] currentImage:', currentImage);
+    
+    setIsAnimating(true);
+    
+    const overlay = menuOverlayRef.current;
+    
+    if (overlay && currentImage !== randomImage) {
+      // Créer un élément temporaire avec une image aléatoire
+      const newImageElement = document.createElement('div');
+      newImageElement.className = `${styles.centerImage} ${styles.active}`;
+      newImageElement.style.backgroundImage = `url(${randomImage})`;
+      newImageElement.style.zIndex = '2';
+      overlay.appendChild(newImageElement);
+      
+      console.log('[showProjectsMenu] Élément temporaire créé avec l\'image:', randomImage);
+      
+      gsap.fromTo(
+        newImageElement,
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          onComplete: () => {
+            console.log('[showProjectsMenu] Animation complète, setHoveredImage à:', randomImage);
+            setHoveredImage(randomImage);
+            // Garder l'élément visible et ne le supprimer que quand on clique sur une catégorie
+            // On le supprimera dans handleCategoryClick
+          }
+        }
+      );
+      
+      // Attendre la fin de l'animation avant de remplacer les liens
+      setTimeout(() => {
+        // Animer la disparition des liens actuels
+        const links = menuLinksRef.current;
+        if (links) {
+          const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
+          gsap.to(menuItems, {
+            opacity: 0,
+            y: -30,
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: () => {
+              setShowProjectCategories(true);
+              // Réinitialiser après
+              setTimeout(() => {
+                setIsAnimating(false);
+                lockedImageRef.current = null;
+              }, 100);
+            }
+          });
+        }
+      }, 600);
+    } else {
+      console.log('[showProjectsMenu] Image identique, pas d\'animation');
+      // Si c'est la même image aléatoire, remplacer directement les liens
+      const links = menuLinksRef.current;
+      if (links) {
+        const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
+        gsap.to(menuItems, {
+          opacity: 0,
+          y: -30,
+          duration: 0.3,
+          ease: "power2.in",
+          onComplete: () => {
+            setShowProjectCategories(true);
+            setTimeout(() => {
+              setIsAnimating(false);
+              lockedImageRef.current = null;
+            }, 100);
+          }
+        });
+      }
+    }
+  };
 
-  // Animation d'entrée initiale de la nav
+  // Fonction pour revenir au menu principal depuis les catégories
+  const hideProjectsMenu = () => {
+    const links = menuLinksRef.current;
+    if (!links) return;
+
+    setShowProjectCategories(false);
+    
+    // Les nouveaux éléments vont apparaître avec animation dans le useEffect
+  };
+
+  // Fonction pour gérer le clic sur une catégorie de projet
+  const handleCategoryClick = (category: typeof PROJECT_CATEGORIES[0]) => {
+    if (isAnimating) return;
+    
+    lockedImageRef.current = hoveredImage;
+    const currentImage = lockedImageRef.current;
+    
+    setIsAnimating(true);
+    
+    const overlay = menuOverlayRef.current;
+    
+    if (overlay && currentImage !== category.image) {
+      // Créer le nouvel élément qui va s'animer par-dessus l'ancien
+      const newImageElement = document.createElement('div');
+      newImageElement.className = `${styles.centerImage} ${styles.active}`;
+      newImageElement.style.backgroundImage = `url(${category.image})`;
+      newImageElement.style.zIndex = '2';
+      overlay.appendChild(newImageElement);
+      
+      gsap.fromTo(
+        newImageElement,
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          onComplete: () => {
+            setHoveredImage(category.image);
+            // Ne pas supprimer l'élément temporaire - le laisser visible
+            // Il disparaîtra quand le menu fermera
+          }
+        }
+      );
+      
+      setTimeout(() => {
+        setIsOpen(false);
+        navigateToProjects(category.index);
+        
+        setTimeout(() => {
+          setIsAnimating(false);
+          lockedImageRef.current = null;
+        }, 100);
+      }, 1000); // 600ms animation + 400ms de pause pour bien voir
+    } else {
+      setTimeout(() => {
+        setIsOpen(false);
+        navigateToProjects(category.index);
+        
+        setTimeout(() => {
+          setIsAnimating(false);
+          lockedImageRef.current = null;
+        }, 100);
+      }, 300);
+    }
+  };
   useEffect(() => {
     const root = mobileNavRef.current;
     if (!root) return;
@@ -248,6 +437,7 @@ const MobileNav = () => {
         onComplete: () => {
           gsap.set(overlay, { display: "none" });
           setHoveredImage(null);
+          setShowProjectCategories(false); // Réinitialiser à false
         }
       });
       
@@ -257,7 +447,30 @@ const MobileNav = () => {
         ease: "power2.in"
       });
     }
-  }, [isOpen, getDefaultImage]);
+  }, [isOpen, showProjectCategories, getDefaultImage]);
+
+  // Animation de transition vers les catégories de projets
+  useEffect(() => {
+    const links = menuLinksRef.current;
+    if (!links) return;
+
+    const menuItems = links.querySelectorAll(`.${styles.menuItem}, .${styles.separator}`);
+    
+    if (showProjectCategories && menuItems.length > 0) {
+      // Les catégories viennent d'apparaître, animer leur apparition
+      gsap.fromTo(
+        menuItems,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power2.out"
+        }
+      );
+    }
+  }, [showProjectCategories]);
 
   return (
     <>
@@ -387,6 +600,12 @@ const MobileNav = () => {
         ref={menuOverlayRef} 
         className={styles.menuOverlay}
         style={{ opacity: 0, display: "none" }}
+        onClick={(e) => {
+          // Clic en dehors des liens revient au menu si on est dans les catégories
+          if (showProjectCategories && e.target === menuOverlayRef.current) {
+            hideProjectsMenu();
+          }
+        }}
       >
         {/* Image ronde au centre */}
         <div 
@@ -398,27 +617,58 @@ const MobileNav = () => {
         />
         
         <div ref={menuLinksRef} className={styles.menuContent}>
-          <div 
-            className={styles.menuItem}
-            onClick={() => handleNavigate("hero", IMAGES.hero2)}
-          >
-            About
-          </div>
-          <div className={styles.separator}>-</div>
-          <div 
-            className={styles.menuItem}
-            onClick={() => handleNavigate("projects", IMAGES.projects)}
-          >
-            Projects
-          </div>
-          <div className={styles.separator}>-</div>
-          <div 
-            className={styles.menuItem}
-            onClick={() => handleNavigate("contact", IMAGES.contact)}
-          >
-            Contact
-          </div>
+          {!showProjectCategories ? (
+            <>
+              <div 
+                className={styles.menuItem}
+                onClick={() => handleNavigate("hero", IMAGES.hero2)}
+              >
+                About
+              </div>
+              <div className={styles.separator}>-</div>
+              <div 
+                className={styles.menuItem}
+                onClick={() => showProjectsMenu()}
+              >
+                Projects
+              </div>
+              <div className={styles.separator}>-</div>
+              <div 
+                className={styles.menuItem}
+                onClick={() => handleNavigate("contact", IMAGES.contact)}
+              >
+                Contact
+              </div>
+            </>
+          ) : (
+            <>
+              {PROJECT_CATEGORIES.map((category) => (
+                <div key={category.index}>
+                  <div 
+                    className={styles.menuItem}
+                    onClick={() => handleCategoryClick(category)}
+                  >
+                    {category.title}
+                  </div>
+                  {category.index < PROJECT_CATEGORIES.length - 1 && (
+                    <div className={styles.separator}>-</div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
         </div>
+        
+        {/* Croix pour fermer et revenir au menu */}
+        {showProjectCategories && (
+          <div 
+            className={styles.closeButton}
+            onClick={hideProjectsMenu}
+            style={{ cursor: "pointer" }}
+          >
+            ✕
+          </div>
+        )}
       </div>
     </>
   );
