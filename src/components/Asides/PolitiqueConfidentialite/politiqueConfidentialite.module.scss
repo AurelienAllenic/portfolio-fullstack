@@ -20,7 +20,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        filter: brightness(0.7);
+        filter: brightness(0.5);
         z-index: 0;
     }
 }
@@ -98,10 +98,10 @@
 
 .politiqueConfidentialiteContainer {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-direction: column;
-    gap: 0px;
+    gap: 30px;
     min-height: 100vh;
     color: white;
     transition: opacity 0.3s ease;
@@ -110,46 +110,129 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 5;
+    width: 90%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    overflow-y: auto;
+    max-height: 90vh;
+    
     h1{
         font-family: $font-family-secondary;
-        font-size: 100px;
-        letter-spacing: 0.2rem;
-        @media(min-width: 420px){
-            font-size: 120px;
-        }
-        @media(min-width: 767px){
-            font-size: 175px;
-        }
-        @media(min-width: 1000px){
-            font-size: 200px;
-        }
-        @media(min-width: 1200px){
-            font-size: 250px;
-        }
-    }
-    p{
-        font-family: $font-family-secondary;
         font-size: 30px;
+        letter-spacing: 0.2rem;
+        margin-bottom: 20px;
+        text-align: center;
         @media(min-width: 420px){
-            font-size: 35px;
-        }
-        @media(min-width: 767px){
             font-size: 45px;
         }
-        @media(min-width: 1000px){
+        @media(min-width: 767px){
             font-size: 55px;
         }
         @media(min-width: 1200px){
             font-size: 65px;
         }
     }
+
+    .privacyContent {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            
+            h2 {
+                font-family: $font-family-secondary;
+                font-size: 25px;
+                font-weight: 600;
+                margin: 0;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+                padding-bottom: 10px;
+                
+                @media(min-width: 767px){
+                    font-size: 32px;
+                }
+            }
+            
+            .sectionContent {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                
+                p {
+                    font-family: $font-family-primary;
+                    font-size: 14px;
+                    line-height: 1.6;
+                    color: rgba(255, 255, 255, 0.9);
+                    margin: 0;
+                    
+                    @media(min-width: 767px){
+                        font-size: 16px;
+                    }
+                    
+                    strong {
+                        color: white;
+                        font-weight: 600;
+                    }
+                    a{
+                        color: #fff!important;
+                        text-decoration: underline;
+                        font-weight: 500;
+                        transition: color 0.3s ease;
+                        &:hover {
+                            color: #fff;
+                            text-decoration: underline;
+                        }
+                    }
+                }
+                
+                ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    
+                    li {
+                        font-family: $font-family-primary;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        color: rgba(255, 255, 255, 0.9);
+                        padding-left: 20px;
+                        position: relative;
+                        
+                        @media(min-width: 767px){
+                            font-size: 16px;
+                        }
+                        
+                        &::before {
+                            content: '▸';
+                            position: absolute;
+                            left: 0;
+                            color: rgba(255, 255, 255, 0.5);
+                        }
+
+                        strong {
+                            color: white;
+                            font-weight: 600;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     .backButton {
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        margin-top: 50px;
+        margin-top: 30px;
         font-family: $font-family-secondary;
         position: relative;
         background: none;
@@ -176,4 +259,56 @@
             font-size: 40px;
         }
     }
+
+    .backButtonSmall {
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+        font-family: $font-family-secondary;
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 0;
+        transition: opacity 0.3s ease;
+        
+        &:hover {
+            opacity: 0.8;
+        }
+        @media(min-width: 420px){
+            font-size: 16px;
+        }
+        @media(min-width: 767px){
+            font-size: 18px;
+        }
+        @media(min-width: 1000px){
+            font-size: 20px;
+        }
+        @media(min-width: 1200px){
+            font-size: 22px;
+        }
+    }
+}
+
+.emailLink {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    
+    &:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+}
+
+.conditionsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }

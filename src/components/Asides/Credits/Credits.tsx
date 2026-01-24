@@ -10,6 +10,10 @@ const Credits = () => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [isTransitioningToPage, setIsTransitioningToPage] = useState(false);
+  const mentionsLinkRef = useRef<HTMLAnchorElement>(null);
+  const politiqueLinkRef = useRef<HTMLAnchorElement>(null);
+  const targetPath = useRef<string>("");
 
   // Animation du radial gradient à l'entrée (comme NotFound)
   useEffect(() => {
@@ -39,6 +43,30 @@ const Credits = () => {
     // Marquer qu'on vient de Credits et qu'on veut aller à Contact
     sessionStorage.setItem('returningFromCreditsToContact', 'true');
     navigate("/");
+  };
+
+  // Gérer les clics sur les liens internes
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    e.preventDefault();
+    
+    // Calculer la position du lien pour centrer le gradient
+    const linkRef = path === '/mentions-legales' ? mentionsLinkRef : politiqueLinkRef;
+    const linkRect = linkRef.current?.getBoundingClientRect();
+    if (linkRect) {
+      const centerX = linkRect.left + linkRect.width / 2;
+      const centerY = linkRect.top + linkRect.height / 2;
+      
+      // Stocker la position pour RadialTransitionOverlay
+      sessionStorage.setItem('gradientCenterX', centerX.toString());
+      sessionStorage.setItem('gradientCenterY', centerY.toString());
+    }
+    
+    targetPath.current = path;
+    setIsTransitioningToPage(true);
+  };
+
+  const handlePageTransitionComplete = () => {
+    navigate(targetPath.current);
   };
 
   const imageCredits = [
@@ -303,7 +331,31 @@ const Credits = () => {
               </div>
             ))}
           </div>
-          <button onClick={handleBackToSite} className={styles.backButton}>
+          
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Autres pages</h2>
+            <p>
+              Consultez également nos{" "}
+              <a 
+                ref={mentionsLinkRef}
+                href="/mentions-legales" 
+                className={styles.link}
+                onClick={(e) => handleLinkClick(e, '/mentions-legales')}
+              >
+                Mentions légales
+              </a> et notre{" "}
+              <a 
+                ref={politiqueLinkRef}
+                href="/politique-confidentialite" 
+                className={styles.link}
+                onClick={(e) => handleLinkClick(e, '/politique-confidentialite')}
+              >
+                Politique de confidentialité
+              </a>.
+            </p>
+          </section>
+          
+          <button onClick={handleBackToSite} className={styles.backButtonSmall}>
             <FaArrowRight />Retour au site
           </button>
         </div>
@@ -312,6 +364,11 @@ const Credits = () => {
         isActive={isTransitioningBack}
         direction="in"
         onComplete={handleTransitionBackComplete}
+      />
+      <RadialTransitionOverlay
+        isActive={isTransitioningToPage}
+        direction="in"
+        onComplete={handlePageTransitionComplete}
       />
     </>
   );
