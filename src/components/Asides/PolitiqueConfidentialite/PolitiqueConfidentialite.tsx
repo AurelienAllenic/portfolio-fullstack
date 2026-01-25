@@ -6,6 +6,7 @@ import { FaArrowRight } from "react-icons/fa6";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import ProtectedEmail from "../../General/ProtectedEmail/ProtectedEmail";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import LanguageToggle from "../../General/Language/LanguageToggle";
 
 const PolitiqueConfidentialite = () => {
   const { t } = useLanguage();

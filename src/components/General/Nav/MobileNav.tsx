@@ -25,15 +25,6 @@ const IMAGES = {
   contact: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gameon_uieupe.webp",
 };
 
-// Catégories de projets avec images (dans le même ordre que SliderProjects)
-const PROJECT_CATEGORIES_BASE = [
-  { index: 0, image: projects_cover.mainImage },
-  { index: 1, image: iim_cover.mainImage },
-  { index: 2, image: openclassrooms3_cover.mainImage },
-  { index: 3, image: openclassrooms2_cover.mainImage },
-  { index: 4, image: openclassrooms1_cover.mainImage },
-];
-
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProjectCategories, setShowProjectCategories] = useState(false);
