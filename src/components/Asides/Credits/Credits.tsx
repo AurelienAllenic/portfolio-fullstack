@@ -1,11 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import styles from "./credits.module.scss";
 import { FaArrowRight } from "react-icons/fa6";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import { useLanguage } from "../../General/Language/LanguageContext";
+import LanguageToggle from "../../General/Language/LanguageToggle";
 
 const Credits = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const overlayRef = useRef<HTMLDivElement>(null);
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
@@ -69,9 +72,9 @@ const Credits = () => {
     navigate(targetPath.current);
   };
 
-  const imageCredits = [
+  const imageCredits = useMemo(() => [
     {
-      category: "Image de fond principale",
+      category: t("credits.credits.categories.mainBackground"),
       projects: [
         {
           name: "Image de fond générale",
@@ -81,7 +84,7 @@ const Credits = () => {
       ]
     },
     {
-      category: "React",
+      category: t("credits.credits.categories.react"),
       projects: [
         {
           name: "Kasa",
@@ -111,7 +114,7 @@ const Credits = () => {
       ]
     },
     {
-      category: "Python",
+      category: t("credits.credits.categories.python"),
       projects: [
         {
           name: "BooksToScrape",
@@ -166,7 +169,7 @@ const Credits = () => {
       ]
     },
     {
-      category: "IIM Projets",
+      category: t("credits.credits.categories.iim"),
       projects: [
         {
           name: "car-ecommerce",
@@ -225,7 +228,7 @@ const Credits = () => {
       ]
     },
     {
-      category: "Projets perso",
+      category: t("credits.credits.categories.personal"),
       projects: [
         {
           name: "ascent",
@@ -245,7 +248,7 @@ const Credits = () => {
       ]
     },
     {
-      category: "Projets formation web",
+      category: t("credits.credits.categories.web"),
       projects: [
         {
           name: "booki",
@@ -279,14 +282,14 @@ const Credits = () => {
         }
       ]
     }
-  ];
+  ], [t]);
 
   return (
     <>
       <div className={styles.containerCredits}>
         <div ref={overlayRef} className={styles.overlay}></div>
         <div className={styles.creditsContainer} style={{ opacity: showContent ? 1 : 0 }}>
-          <h1>Crédits images</h1>
+          <h1>{t("credits.title")}</h1>
           <div className={styles.creditsList}>
             {imageCredits.map((category, categoryIndex) => (
               <div key={categoryIndex} className={styles.categorySection}>
@@ -295,20 +298,20 @@ const Credits = () => {
                   {category.projects.map((project: any, projectIndex) => {
                     // Déterminer l'URL de l'image et le nom du site
                     let imageUrl: string | null = null;
-                    let buttonText = "Voir l'image";
+                    let buttonText = t("credits.credits.seeImage");
                     
                     if ('pexelsUrl' in project && project.pexelsUrl) {
                       imageUrl = project.pexelsUrl;
-                      buttonText = "Voir sur Pexels";
+                      buttonText = t("credits.credits.seeOnPexels");
                     } else if ('unsplashUrl' in project && project.unsplashUrl) {
                       imageUrl = project.unsplashUrl;
-                      buttonText = "Voir sur Unsplash";
+                      buttonText = t("credits.credits.seeOnUnsplash");
                     } else if ('istockUrl' in project && project.istockUrl) {
                       imageUrl = project.istockUrl;
-                      buttonText = "Voir sur iStock";
+                      buttonText = t("credits.credits.seeOnIstock");
                     } else if ('imageUrl' in project && project.imageUrl) {
                       imageUrl = project.imageUrl;
-                      buttonText = "Voir l'image";
+                      buttonText = t("credits.credits.seeImage");
                     }
                     
                     return (
@@ -333,30 +336,30 @@ const Credits = () => {
           </div>
           
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Autres pages</h2>
+            <h2 className={styles.sectionTitle}>{t("credits.otherPages")}</h2>
             <p>
-              Consultez également nos{" "}
+              {t("credits.otherPages.text")}{" "}
               <a 
                 ref={mentionsLinkRef}
                 href="/mentions-legales" 
                 className={styles.link}
                 onClick={(e) => handleLinkClick(e, '/mentions-legales')}
               >
-                Mentions légales
-              </a> et notre{" "}
+                {t("credits.otherPages.mentions")}
+              </a> {t("credits.otherPages.and")}{" "}
               <a 
                 ref={politiqueLinkRef}
                 href="/politique-confidentialite" 
                 className={styles.link}
                 onClick={(e) => handleLinkClick(e, '/politique-confidentialite')}
               >
-                Politique de confidentialité
+                {t("credits.otherPages.privacy")}
               </a>.
             </p>
           </section>
           
           <button onClick={handleBackToSite} className={styles.backButtonSmall}>
-            <FaArrowRight />Retour au site
+            <FaArrowRight />{t("common.backToSite")}
           </button>
         </div>
       </div>
@@ -370,6 +373,7 @@ const Credits = () => {
         direction="in"
         onComplete={handlePageTransitionComplete}
       />
+      <LanguageToggle />
     </>
   );
 };

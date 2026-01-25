@@ -1,6 +1,7 @@
-import { forwardRef, useEffect, useRef, useState, useLayoutEffect } from "react";
+import { forwardRef, useEffect, useRef, useState, useLayoutEffect, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
+import { useLanguage } from "../../General/Language/LanguageContext";
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
@@ -25,35 +26,34 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects, isForced, forceTextIndex, onNavigationReset },
     ref
   ) => {
-    const texts: TextContent[] = [
-      "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
+    const { t } = useLanguage();
+    
+    const texts: TextContent[] = useMemo(() => [
+      t("hero.afterScroll.text1"),
       {
-        beforeLink:
-          "Je suis titulaire d'un mastère en développement web fullstack à ",
-        linkText: "l'IIM Digital School",
+        beforeLink: t("hero.afterScroll.text2.before"),
+        linkText: t("hero.afterScroll.text2.link"),
         linkHref: "https://www.iim.fr/",
-        afterLink: " du pôle Léonard de Vinci.",
+        afterLink: t("hero.afterScroll.text2.after"),
       },
       {
-        beforeLink:
-          "Pendant ces deux années de mastère, j'ai réalisé une alternance chez ",
-        linkText: "Solead agency",
+        beforeLink: t("hero.afterScroll.text3.before"),
+        linkText: t("hero.afterScroll.text3.link"),
         linkHref: "https://soleadagency.com",
-        afterLink:
-          " en tant que développeur web. Travaillant à la fois sur du front et du back",
+        afterLink: t("hero.afterScroll.text3.after"),
       },
       {
-        beforeLink: "J'ai également suivi trois formations ",
-        linkText: "OpenClassrooms",
+        beforeLink: t("hero.afterScroll.text4.before"),
+        linkText: t("hero.afterScroll.text4.link"),
         linkHref: "https://openclassrooms.com/",
         afterLink: [
-          ":",
-          "Développeur Web,",
-          "Développeur d'application - JavaScript/React,",
-          "Développeur d'application - Python.",
+          t("hero.afterScroll.text4.after1"),
+          t("hero.afterScroll.text4.after2"),
+          t("hero.afterScroll.text4.after3"),
+          t("hero.afterScroll.text4.after4"),
         ],
       },
-    ];
+    ], [t]);
 
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
     const textRef = useRef<HTMLParagraphElement | null>(null);
@@ -732,7 +732,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         <div ref={contentContainerRef} className={styles.contentContainer}>
           <div className={styles.contentLeft}>
             <h2 className={styles.titleLeft}>
-              Mon <span className={styles.titleLeftHighlight}>PARCOURS</span>
+              {t("hero.afterScroll.title").split(" ").map((word, index, array) => {
+                if (index === array.length - 1) {
+                  return <span key={index} className={styles.titleLeftHighlight}>{word}</span>;
+                }
+                return <span key={index}>{word} </span>;
+              })}
             </h2>
             <div className={styles.containerSubtitle}>
               <p

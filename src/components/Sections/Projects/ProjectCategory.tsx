@@ -1,8 +1,9 @@
-import { useEffect, useRef, useLayoutEffect, useState } from "react";
+import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { HiArrowRight } from "react-icons/hi2";
+import { useLanguage } from "../../General/Language/LanguageContext";
 
 // Optimiser les URLs Cloudinary
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -86,10 +87,33 @@ const getTechName = (url: string): string => {
 };
 
 const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
+  const { t } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+  
+  // Mapping des slugs vers les clés de traduction
+  const categoryKeyMap: Record<string, string> = {
+    'formation-web': 'web',
+    'formation-react': 'react',
+    'formation-python': 'python',
+    'projets-personnels': 'personnel',
+    'mastere-iim': 'iim',
+  };
+  
+  const categoryKey = categoryKeyMap[cover.slug] || 'web';
+  const categoryTitle = useMemo(() => t(`projects.category.${categoryKey}`), [t, categoryKey]);
+  const categoryDescription = useMemo(() => t(`projects.category.${categoryKey}.description`), [t, categoryKey]);
+  
+  // Séparer le titre en deux parties (premier mot et le reste)
+  const titleParts = useMemo(() => {
+    const parts = categoryTitle.split(" ");
+    return {
+      main: parts[0] || "WEB",
+      accent: parts.slice(1).join(" ") || "WEB"
+    };
+  }, [categoryTitle]);
 
   // Précharger les images au montage
   useEffect(() => {
@@ -478,17 +502,17 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
         <div className={styles.mobileHeaderRow}>
           <div className={styles.mobileTitle}>
             <h2 className={styles.mobileTitleMain}>
-              {cover.title.split(" ")[0]}
+              {titleParts.main}
             </h2>
             <h3 className={styles.mobileTitleAccent}>
-              {cover.title.split(" ").slice(1).join(" ") || "WEB"}
+              {titleParts.accent}
             </h3>
           </div>
           <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, 800, "85")} alt="main" className={styles.mobileImage} />
         </div>
 
         <div className={styles.mobileDescription}>
-          {cover.content.split(". ").map((line, i, arr) => (
+          {categoryDescription.split(". ").map((line, i, arr) => (
             <p key={i}>
               {line.trim()}
               {i < arr.length - 1 ? "." : ""}
@@ -515,22 +539,22 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           onClick={handleViewProjectsClick}
         >
           <span className={styles.arrow} aria-hidden><HiArrowRight /></span>
-          <span>Voir les projets</span>
+          <span>{t("projects.view")}</span>
         </a>
       </aside>
 
       <div className={styles.center}>
         <h2 className={styles.title}>
           <span className={styles.titleMain}>
-            {cover.title.split(" ")[0]}
+            {titleParts.main}
           </span>
           <span className={styles.titleAccent}>
-            {cover.title.split(" ").slice(1).join(" ") || "WEB"}
+            {titleParts.accent}
           </span>
         </h2>
 
         <div className={styles.contentBox}>
-          {cover.content.split(". ").map((line, i, arr) => (
+          {categoryDescription.split(". ").map((line, i, arr) => (
             <p key={i}>
               {line.trim()}
               {i < arr.length - 1 ? "." : ""}
@@ -621,7 +645,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             <span className={styles.arrow} aria-hidden>
             <HiArrowRight />
             </span>
-            <span>Voir les projets</span>
+            <span>{t("projects.view")}</span>
           </a>
         </div>
       </div>

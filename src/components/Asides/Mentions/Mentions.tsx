@@ -5,8 +5,11 @@ import styles from "./mentions.module.scss";
 import { FaArrowRight } from "react-icons/fa6";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import ProtectedEmail from "../../General/ProtectedEmail/ProtectedEmail";
+import { useLanguage } from "../../General/Language/LanguageContext";
+import LanguageToggle from "../../General/Language/LanguageToggle";
 
 const Mentions = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const overlayRef = useRef<HTMLDivElement>(null);
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
@@ -78,17 +81,17 @@ const Mentions = () => {
       <div className={styles.containerMentions}>
         <div ref={overlayRef} className={styles.overlay}></div>
         <div className={styles.mentionsContainer} style={{ opacity: showContent ? 1 : 0 }}>
-          <h1>Mentions légales</h1>
+          <h1>{t("mentions.title")}</h1>
           <div className={styles.legalContent}>
             
             {/* Identification du site */}
             <section className={styles.section}>
-              <h2>Identification du site</h2>
+              <h2>{t("mentions.section.identification")}</h2>
               <div className={styles.sectionContent}>
-                <p><strong>Propriétaire/Auteur :</strong> Aurélien Allenic</p>
-                <p><strong>Profession :</strong> Développeur Web et Mobile Fullstack</p>
+                <p><strong>{t("mentions.section.identification.owner")}</strong> Aurélien Allenic</p>
+                <p><strong>{t("mentions.section.identification.profession")}</strong> {t("mentions.section.identification.profession.value")}</p>
                 <p>
-                  <strong>Email :</strong> {" "}
+                  <strong>{t("mentions.section.identification.email")}</strong> {" "}
                   <ProtectedEmail 
                     encodedEmail={encodedEmail}
                     className={styles.emailLink}
@@ -99,108 +102,100 @@ const Mentions = () => {
 
             {/* Informations techniques */}
             <section className={styles.section}>
-              <h2>Informations techniques</h2>
+              <h2>{t("mentions.section.technical")}</h2>
               <div className={styles.sectionContent}>
-                <p><strong>Hébergement Frontend :</strong> OVH</p>
-                <p><strong>Hébergement Backend :</strong> Vercel</p>
-                <p><strong>Responsable de publication :</strong> Aurélien Allenic</p>
+                <p><strong>{t("mentions.section.technical.frontend")}</strong> OVH</p>
+                <p><strong>{t("mentions.section.technical.backend")}</strong> Vercel</p>
+                <p><strong>{t("mentions.section.technical.publisher")}</strong> Aurélien Allenic</p>
               </div>
             </section>
 
             {/* Propriété intellectuelle */}
             <section className={styles.section}>
-              <h2>Propriété intellectuelle</h2>
+              <h2>{t("mentions.section.intellectual")}</h2>
               <div className={styles.sectionContent}>
-                <p>© {new Date().getFullYear()} Aurélien Allenic. Tous droits réservés.</p>
+                <p>© {new Date().getFullYear()} Aurélien Allenic. {t("mentions.section.intellectual.copyright")}</p>
                 <p>
-                  Le contenu de ce site (textes, images, code source) est protégé par le droit d'auteur. 
-                  Vous ne pouvez pas reproduire, distribuer ou transmettre le contenu sans autorisation préalable.
+                  {t("mentions.section.intellectual.content")}
                 </p>
                 <p>
-                  <strong>Liens vers les crédits images :</strong> Consultez notre page{" "}
+                  <strong>{t("mentions.section.intellectual.creditsLink")}</strong> {t("mentions.section.intellectual.creditsLink.text")}{" "}
                   <a 
                     ref={creditsLinkRef}
                     href="/credits" 
                     className={styles.link}
                     onClick={(e) => handleLinkClick(e, '/credits')}
                   >
-                    Crédits images
-                  </a> pour
-                  connaître les sources de toutes les images utilisées sur ce site.
+                    {t("mentions.section.intellectual.creditsLink.credits")}
+                  </a> {t("mentions.section.intellectual.creditsLink.for")}
                 </p>
               </div>
             </section>
 
             {/* Politique de confidentialité */}
             <section className={styles.section}>
-              <h2>Politique de confidentialité</h2>
+              <h2>{t("mentions.section.privacy")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Consultez notre{" "}
+                  {t("mentions.section.privacy.text")}{" "}
                   <a 
                     ref={politiqueLinkRef}
                     href="/politique-confidentialite" 
                     className={styles.link}
                     onClick={(e) => handleLinkClick(e, '/politique-confidentialite')}
                   >
-                    Politique de confidentialité
-                  </a> pour connaître nos pratiques en matière de protection des données.
+                    {t("mentions.section.privacy.link")}
+                  </a> {t("mentions.section.privacy.for")}
                 </p>
               </div>
             </section>
 
             {/* Limitation de responsabilité */}
             <section className={styles.section}>
-              <h2>Limitation de responsabilité</h2>
+              <h2>{t("mentions.section.liability")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Ce site est fourni "tel quel" sans aucune garantie, expresse ou implicite. 
-                  L'auteur de ce site ne peut pas être tenu responsable des dommages directs, 
-                  indirects, accidentels, spéciaux ou consécutifs découlant de l'accès ou 
-                  de l'utilisation du site.
+                  {t("mentions.section.liability.text1")}
                 </p>
                 <p>
-                  L'auteur ne peut pas être tenu responsable des contenus externes auxquels 
-                  le site rend accès par des liens hypertextes.
+                  {t("mentions.section.liability.text2")}
                 </p>
               </div>
             </section>
 
             {/* Conditions d'accès */}
             <section className={styles.section}>
-              <h2>Conditions d'accès</h2>
+              <h2>{t("mentions.section.access")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  L'accès à ce site est gratuit. Vous vous engagez à :
+                  {t("mentions.section.access.text")}
                 </p>
                 <ul className={styles.conditionsList}>
-                  <li>Respecter les lois et réglementations applicables</li>
-                  <li>Ne pas utiliser de robots ou outils de scraping</li>
-                  <li>Ne pas tenter d'accéder à des sections non autorisées</li>
-                  <li>Ne pas perturber le fonctionnement du site</li>
-                  <li>Respecter les droits d'auteur et la propriété intellectuelle</li>
+                  <li>{t("mentions.section.access.condition1")}</li>
+                  <li>{t("mentions.section.access.condition2")}</li>
+                  <li>{t("mentions.section.access.condition3")}</li>
+                  <li>{t("mentions.section.access.condition4")}</li>
+                  <li>{t("mentions.section.access.condition5")}</li>
                 </ul>
               </div>
             </section>
 
             {/* Cookies et données */}
             <section className={styles.section}>
-              <h2>Cookies</h2>
+              <h2>{t("mentions.section.cookies")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Ce site n'utilise pas de cookies de suivi ou d'analytique pour le moment. 
-                  Aucune donnée personnelle n'est collectée sans votre consentement.
+                  {t("mentions.section.cookies.text")}
                 </p>
               </div>
             </section>
 
             {/* Contact */}
             <section className={styles.section}>
-              <h2>Contact</h2>
+              <h2>{t("mentions.section.contact")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Pour toute question concernant ces mentions légales ou le site, 
-                  n'hésitez pas à nous contacter à l'adresse :{" "}
+                  {t("mentions.section.contact.text")}{" "}
                   <ProtectedEmail 
                     encodedEmail={encodedEmail}
                     className={styles.emailLink}
@@ -212,7 +207,7 @@ const Mentions = () => {
           </div>
 
           <button onClick={handleBackToSite} className={styles.backButtonSmall}>
-            <FaArrowRight />Retour au site
+            <FaArrowRight />{t("common.backToSite")}
           </button>
         </div>
       </div>
@@ -226,6 +221,7 @@ const Mentions = () => {
         direction="in"
         onComplete={handlePageTransitionComplete}
       />
+      <LanguageToggle />
     </>
   );
 };
