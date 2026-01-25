@@ -14,12 +14,19 @@ const RadialTransitionOverlay = ({
   onComplete,
 }: RadialTransitionOverlayProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const currentDirectionRef = useRef<"in" | "out" | null>(null);
+  const animationRef = useRef<gsap.core.Tween | null>(null);
 
   useEffect(() => {
     if (!isActive || !overlayRef.current) {
       // Si inactif, s'assurer que l'overlay est caché
       if (overlayRef.current) {
         gsap.set(overlayRef.current, { display: "none" });
+      }
+      currentDirectionRef.current = null;
+      if (animationRef.current) {
+        animationRef.current.kill();
+        animationRef.current = null;
       }
       return;
     }
@@ -41,9 +48,8 @@ const RadialTransitionOverlay = ({
       centerX = parseFloat(customCenterX);
       centerY = parseFloat(customCenterY);
       
-      // Nettoyer sessionStorage après utilisation
-      sessionStorage.removeItem('gradientCenterX');
-      sessionStorage.removeItem('gradientCenterY');
+      // Ne pas nettoyer sessionStorage ici si on change de direction (pour garder la position)
+      // On nettoiera seulement après l'ouverture complète
     } else if (isMobile) {
       // Le centre du gradient = position de scroll + milieu du viewport visible
       centerX = window.innerWidth / 2;
@@ -65,43 +71,64 @@ const RadialTransitionOverlay = ({
     overlay.style.setProperty('--center-x', `${centerX}px`);
     overlay.style.setProperty('--center-y', `${centerY}px`);
 
+    // Si on change de direction pendant une animation, tuer l'animation en cours
+    if (animationRef.current && currentDirectionRef.current !== direction) {
+      animationRef.current.kill();
+      animationRef.current = null;
+    }
+
     if (direction === "in") {
       // Fermeture : le transparent rétrécit, le noir grandit depuis les bords (100% → 0%)
       // Commencer avec le gradient à 100% (transparent au centre, visible sur les bords)
-      gsap.set(overlay, {
-        display: "block",
-        "--gradient-size": "100%",
-      });
+      if (currentDirectionRef.current !== "in") {
+        gsap.set(overlay, {
+          display: "block",
+          "--gradient-size": "100%",
+        });
+      }
 
       // Attendre un frame pour s'assurer que l'overlay est visible avant d'animer
       requestAnimationFrame(() => {
-        gsap.to(overlay, {
+        animationRef.current = gsap.to(overlay, {
           "--gradient-size": "0%",
           duration: 1.2,
           ease: "power2.inOut",
           onComplete: () => {
+            animationRef.current = null;
             if (onComplete) onComplete();
           },
         });
+        currentDirectionRef.current = "in";
       });
     } else {
       // Ouverture : le transparent grandit, le noir rétrécit vers les bords (0% → 100%)
-      // Commencer avec tout noir (0%) pour couvrir le contenu IMMÉDIATEMENT
-      gsap.set(overlay, {
-        display: "block",
-        "--gradient-size": "0%",
-      });
+      // Si on vient de "in", l'overlay est déjà à 0% (noir), pas besoin de réinitialiser
+      if (currentDirectionRef.current !== "out") {
+        gsap.set(overlay, {
+          display: "block",
+          "--gradient-size": "0%",
+        });
+      }
+
+      // Nettoyer sessionStorage maintenant qu'on ouvre
+      if (customCenterX && customCenterY) {
+        sessionStorage.removeItem('gradientCenterX');
+        sessionStorage.removeItem('gradientCenterY');
+      }
 
       // Commencer l'animation immédiatement
-      gsap.to(overlay, {
+      animationRef.current = gsap.to(overlay, {
         "--gradient-size": "100%",
         duration: 1.2,
         ease: "power2.inOut",
         onComplete: () => {
           gsap.set(overlay, { display: "none" });
+          animationRef.current = null;
+          currentDirectionRef.current = null;
           if (onComplete) onComplete();
         },
       });
+      currentDirectionRef.current = "out";
     }
   }, [isActive, direction, onComplete]);
 

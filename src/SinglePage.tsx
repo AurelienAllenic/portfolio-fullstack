@@ -8,6 +8,7 @@ import SliderProjects from "./components/Sections/Projects/SliderProjects";
 import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
 import { NavigationProvider, useNavigation } from "./components/General/Nav/NavigationContext";
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
+import LanguageToggle from "./components/General/Language/LanguageToggle";
 
 const SinglePage = () => {
   // Vérifier immédiatement si on doit restaurer
@@ -371,6 +372,7 @@ const SinglePageContent = ({
         )}
         </div>
       )}
+      <LanguageToggle />
     </>
   );
 };
