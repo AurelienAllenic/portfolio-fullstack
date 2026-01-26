@@ -285,7 +285,8 @@ const SingleProject = ({
       tensorflow : "https://res.cloudinary.com/dwpbyyhoq/image/upload/tensorflow_t6u5t9.webp",
       keras : "https://res.cloudinary.com/dwpbyyhoq/image/upload/keras_cjv2id.webp",
       flutter : "https://res.cloudinary.com/dwpbyyhoq/image/upload/flutter_zfmqyx.webp",
-      symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp"
+      symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp",
+      jquery: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp"
     };
     return techMap[tech.toLowerCase()] || "";
   };
@@ -324,7 +325,7 @@ const SingleProject = ({
       tensorflow: "Tensorflow",
       keras: "Keras",
       flutter: "Flutter",
-      symfony: "Symfony"
+      symfony: "Symfony",
     };
     return techNames[tech.toLowerCase()] || tech.charAt(0).toUpperCase() + tech.slice(1);
   };
