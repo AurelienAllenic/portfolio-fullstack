@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SingleProject from "./SingleProject";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import LanguageToggle from "../../General/Language/LanguageToggle";
 import {
   openclassrooms1_cover,
   openclassrooms2_cover,
@@ -115,6 +116,7 @@ const SingleProjectPage = () => {
           onBack={handleBack}
         />
       </div>
+      <LanguageToggle />
     </>
   );
 };

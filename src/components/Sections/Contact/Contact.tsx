@@ -3,8 +3,10 @@ import styles from "./contact.module.scss";
 import { BsArrowRight } from "react-icons/bs";
 import Footer from "../../General/Footer/Footer";
 import { gsap } from "gsap";
+import { useLanguage } from "../../General/Language/LanguageContext";
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -95,7 +97,7 @@ const Contact = () => {
     } catch (error) {
       console.error('Erreur:', error);
       setSubmitStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue. Veuillez réessayer.');
+      setErrorMessage(error instanceof Error ? error.message : t("contact.form.error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -112,7 +114,7 @@ const Contact = () => {
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label htmlFor="name" className={styles.label}>
-                VOTRE NOM
+                {t("contact.form.name")}
               </label>
               <input
                 type="text"
@@ -127,7 +129,7 @@ const Contact = () => {
 
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
-                VOTRE EMAIL
+                {t("contact.form.email")}
               </label>
               <input
                 type="email"
@@ -142,7 +144,7 @@ const Contact = () => {
 
             <div className={styles.formGroup}>
               <label htmlFor="message" className={styles.label}>
-                VOTRE MESSAGE
+                {t("contact.form.message")}
               </label>
               <textarea
                 id="message"
@@ -157,7 +159,7 @@ const Contact = () => {
 
             {submitStatus === 'success' && (
               <div className={styles.successMessage}>
-                ✓ Message envoyé avec succès ! Vous recevrez une confirmation par email.
+                {t("contact.form.success")}
               </div>
             )}
             {submitStatus === 'error' && (
@@ -178,7 +180,7 @@ const Contact = () => {
                   required
                 />
                 <label htmlFor="consent" className={styles.checkboxLabel}>
-                En envoyant ce message, je consens à être recontacté via l'adresse email fournie
+                {t("contact.form.consent")}
                 </label>
               </div>
               <button 
@@ -189,7 +191,7 @@ const Contact = () => {
                 <span className={styles.arrow} aria-hidden>
                   <BsArrowRight />
                 </span>
-                <span>{isSubmitting ? 'ENVOI...' : 'ENVOYER'}</span>
+                <span>{isSubmitting ? t("contact.form.submitting") : t("contact.form.submit")}</span>
               </button>
             </div>
           </form>
@@ -199,13 +201,11 @@ const Contact = () => {
         <div className={styles.infoSection}>
           <div className={styles.infoContent}>
             <h2 className={styles.infoTitle}>
-              <span className={styles.titleMain}>Me</span>
-              <span className={styles.titleAccent}>CONTACTER</span>
+              <span className={styles.titleMain}>{t("contact.title.main")}</span>
+              <span className={styles.titleAccent}>{t("contact.title.accent")}</span>
             </h2>
             <p className={styles.description}>
-              N'HÉSITEZ PAS À ME CONTACTER QUANT À TOUT PROJET DE CRÉATION DE
-              SITE INTERNET OU POUR TOUTE AUTRE QUESTION. JE VOUS RÉPONDRAI
-              DANS LES PLUS BREFS DÉLAIS.
+              {t("contact.description")}
             </p>
           </div>
         </div>

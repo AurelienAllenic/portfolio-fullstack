@@ -5,8 +5,11 @@ import styles from "./politiqueConfidentialite.module.scss";
 import { FaArrowRight } from "react-icons/fa6";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import ProtectedEmail from "../../General/ProtectedEmail/ProtectedEmail";
+import { useLanguage } from "../../General/Language/LanguageContext";
+import LanguageToggle from "../../General/Language/LanguageToggle";
 
 const PolitiqueConfidentialite = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const overlayRef = useRef<HTMLDivElement>(null);
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
@@ -78,98 +81,95 @@ const PolitiqueConfidentialite = () => {
       <div className={styles.containerPolitiqueConfidentialite}>
         <div ref={overlayRef} className={styles.overlay}></div>
         <div className={styles.politiqueConfidentialiteContainer} style={{ opacity: showContent ? 1 : 0 }}>
-          <h1>Politique de confidentialité</h1>
+          <h1>{t("privacy.title")}</h1>
           <div className={styles.privacyContent}>
 
             {/* Introduction */}
             <section className={styles.section}>
-              <h2>Introduction</h2>
+              <h2>{t("privacy.section.introduction")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Chez Aurélien Allenic, nous accordons une grande importance à votre vie privée. 
-                  Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos données personnelles.
+                  {t("privacy.section.introduction.text")}
                 </p>
               </div>
             </section>
 
             {/* Collecte de données */}
             <section className={styles.section}>
-              <h2>Collecte de données</h2>
+              <h2>{t("privacy.section.collection")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  <strong>Données collectées via le formulaire de contact :</strong>
+                  <strong>{t("privacy.section.collection.title")}</strong>
                 </p>
                 <ul className={styles.conditionsList}>
-                  <li>Nom</li>
-                  <li>Email</li>
-                  <li>Message</li>
-                  <li>Case à cocher pour consentement</li>
+                  <li>{t("privacy.section.collection.item1")}</li>
+                  <li>{t("privacy.section.collection.item2")}</li>
+                  <li>{t("privacy.section.collection.item3")}</li>
+                  <li>{t("privacy.section.collection.item4")}</li>
                 </ul>
                 <p>
-                  Ces données sont collectées uniquement lorsque vous remplissez volontairement le formulaire de contact.
+                  {t("privacy.section.collection.text")}
                 </p>
               </div>
             </section>
 
             {/* Utilisation des données */}
             <section className={styles.section}>
-              <h2>Utilisation des données</h2>
+              <h2>{t("privacy.section.usage")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Vos données personnelles sont utilisées exclusivement pour :
+                  {t("privacy.section.usage.text1")}
                 </p>
                 <ul className={styles.conditionsList}>
-                  <li>Répondre à vos demandes de contact</li>
-                  <li>Améliorer notre site et nos services</li>
-                  <li>Respecter nos obligations légales</li>
+                  <li>{t("privacy.section.usage.item1")}</li>
+                  <li>{t("privacy.section.usage.item2")}</li>
+                  <li>{t("privacy.section.usage.item3")}</li>
                 </ul>
                 <p>
-                  Nous ne vendons, ne partageons et n'échangeons jamais vos données avec des tiers sans votre consentement explicite.
+                  {t("privacy.section.usage.text2")}
                 </p>
               </div>
             </section>
 
             {/* Protection des données */}
             <section className={styles.section}>
-              <h2>Protection des données</h2>
+              <h2>{t("privacy.section.protection")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Nous mettons en œuvre des mesures de sécurité appropriées pour protéger vos données contre 
-                  l'accès non autorisé, la modification ou la destruction accidentelle ou volontaire.
+                  {t("privacy.section.protection.text1")}
                 </p>
                 <p>
-                  Cependant, aucune transmission sur Internet n'est garantie à 100% sécurisée.
+                  {t("privacy.section.protection.text2")}
                 </p>
               </div>
             </section>
 
             {/* Cookies */}
             <section className={styles.section}>
-              <h2>Cookies et technologies de suivi</h2>
+              <h2>{t("privacy.section.cookies")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Ce site n'utilise pas de cookies de suivi, d'analytique ou de publicités pour le moment. 
-                  Aucune donnée de navigation n'est collectée sans votre consentement.
+                  {t("privacy.section.cookies.text")}
                 </p>
               </div>
             </section>
 
             {/* Droits RGPD */}
             <section className={styles.section}>
-              <h2>Vos droits selon le RGPD</h2>
+              <h2>{t("privacy.section.gdpr")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  En tant que résident de l'Union Européenne, vous disposez des droits suivants :
+                  {t("privacy.section.gdpr.text1")}
                 </p>
                 <ul className={styles.conditionsList}>
-                  <li><strong>Droit d'accès :</strong> Accéder à vos données personnelles</li>
-                  <li><strong>Droit de rectification :</strong> Corriger vos données inexactes</li>
-                  <li><strong>Droit à l'oubli :</strong> Demander la suppression de vos données</li>
-                  <li><strong>Droit à la portabilité :</strong> Recevoir vos données dans un format structuré</li>
-                  <li><strong>Droit d'opposition :</strong> Vous opposer à l'utilisation de vos données</li>
+                  <li><strong>{t("privacy.section.gdpr.right1")}</strong> {t("privacy.section.gdpr.right1.desc")}</li>
+                  <li><strong>{t("privacy.section.gdpr.right2")}</strong> {t("privacy.section.gdpr.right2.desc")}</li>
+                  <li><strong>{t("privacy.section.gdpr.right3")}</strong> {t("privacy.section.gdpr.right3.desc")}</li>
+                  <li><strong>{t("privacy.section.gdpr.right4")}</strong> {t("privacy.section.gdpr.right4.desc")}</li>
+                  <li><strong>{t("privacy.section.gdpr.right5")}</strong> {t("privacy.section.gdpr.right5.desc")}</li>
                 </ul>
                 <p>
-                  Pour exercer ces droits, veuillez nous contacter à :{" "}
+                  {t("privacy.section.gdpr.text2")}{" "}
                   <ProtectedEmail 
                     encodedEmail={encodedEmail}
                     className={styles.emailLink}
@@ -180,48 +180,45 @@ const PolitiqueConfidentialite = () => {
 
             {/* Durée de conservation */}
             <section className={styles.section}>
-              <h2>Durée de conservation des données</h2>
+              <h2>{t("privacy.section.retention")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Les données personnelles collectées via le formulaire de contact sont conservées 
-                  aussi longtemps que nécessaire pour traiter votre demande, puis supprimées.
+                  {t("privacy.section.retention.text")}
                 </p>
               </div>
             </section>
 
             {/* Tiers */}
             <section className={styles.section}>
-              <h2>Partage avec des tiers</h2>
+              <h2>{t("privacy.section.sharing")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Nous ne partageons pas vos données personnelles avec des tiers à moins que :
+                  {t("privacy.section.sharing.text")}
                 </p>
                 <ul className={styles.conditionsList}>
-                  <li>Vous ayez donné votre consentement explicite</li>
-                  <li>Cela soit requis par la loi</li>
-                  <li>Cela soit nécessaire pour protéger nos droits légaux</li>
+                  <li>{t("privacy.section.sharing.item1")}</li>
+                  <li>{t("privacy.section.sharing.item2")}</li>
+                  <li>{t("privacy.section.sharing.item3")}</li>
                 </ul>
               </div>
             </section>
 
             {/* Modifications */}
             <section className={styles.section}>
-              <h2>Modifications de cette politique</h2>
+              <h2>{t("privacy.section.modifications")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Nous nous réservons le droit de modifier cette politique de confidentialité à tout moment. 
-                  Les modifications prendront effet dès leur publication sur ce site.
+                  {t("privacy.section.modifications.text")}
                 </p>
               </div>
             </section>
 
             {/* Contact et liens */}
             <section className={styles.section}>
-              <h2>Contact</h2>
+              <h2>{t("privacy.section.contact")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Pour toute question concernant cette politique de confidentialité ou vos données personnelles, 
-                  contactez-nous à :{" "}
+                  {t("privacy.section.contact.text")}{" "}
                   <ProtectedEmail 
                     encodedEmail={encodedEmail}
                     className={styles.emailLink}
@@ -232,25 +229,25 @@ const PolitiqueConfidentialite = () => {
 
             {/* Navigation */}
             <section className={styles.section}>
-              <h2>Autres pages</h2>
+              <h2>{t("privacy.section.otherPages")}</h2>
               <div className={styles.sectionContent}>
                 <p>
-                  Consultez également nos {" "}
+                  {t("privacy.section.otherPages.text")}{" "}
                   <a 
                     ref={mentionsLinkRef}
                     href="/mentions-legales" 
                     className={styles.link}
                     onClick={(e) => handleLinkClick(e, '/mentions-legales')}
                   >
-                    Mentions légales
-                  </a> et notre page de{" "}
+                    {t("privacy.section.otherPages.mentions")}
+                  </a> {t("privacy.section.otherPages.and")}{" "}
                   <a 
                     ref={creditsLinkRef}
                     href="/credits" 
                     className={styles.link}
                     onClick={(e) => handleLinkClick(e, '/credits')}
                   >
-                    Crédits images
+                    {t("privacy.section.otherPages.credits")}
                   </a>.
                 </p>
               </div>
@@ -259,7 +256,7 @@ const PolitiqueConfidentialite = () => {
           </div>
 
           <button onClick={handleBackToSite} className={styles.backButtonSmall}>
-            <FaArrowRight />Retour au site
+            <FaArrowRight />{t("common.backToSite")}
           </button>
         </div>
       </div>
@@ -273,6 +270,7 @@ const PolitiqueConfidentialite = () => {
         direction="in"
         onComplete={handlePageTransitionComplete}
       />
+      <LanguageToggle />
     </>
   );
 };

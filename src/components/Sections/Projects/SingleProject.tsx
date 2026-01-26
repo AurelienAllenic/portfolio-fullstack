@@ -4,6 +4,7 @@ import styles from "./projects.module.scss";
 import type { Project } from "./ProjectCategory";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { useLanguage } from "../../General/Language/LanguageContext";
 
 interface SingleProjectProps {
   projects: Project[];
@@ -18,6 +19,7 @@ const SingleProject = ({
   initialProjectIndex = 0,
   onBack 
 }: SingleProjectProps) => {
+  const { language } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -28,6 +30,8 @@ const SingleProject = ({
   const gifDurationsRef = useRef<Map<string, number>>(new Map());
   
   const selectedProject = projects[selectedIndex];
+  const projectTitle = language === "en" && selectedProject.titleEn ? selectedProject.titleEn : selectedProject.title;
+  const projectDescription = language === "en" && selectedProject.descriptionEn ? selectedProject.descriptionEn : selectedProject.description;
   
   // Obtenir les images du projet
   const getProjectImages = (project: Project): string[] => {
@@ -281,7 +285,8 @@ const SingleProject = ({
       tensorflow : "https://res.cloudinary.com/dwpbyyhoq/image/upload/tensorflow_t6u5t9.webp",
       keras : "https://res.cloudinary.com/dwpbyyhoq/image/upload/keras_cjv2id.webp",
       flutter : "https://res.cloudinary.com/dwpbyyhoq/image/upload/flutter_zfmqyx.webp",
-      symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp"
+      symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp",
+      jquery: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp"
     };
     return techMap[tech.toLowerCase()] || "";
   };
@@ -320,7 +325,7 @@ const SingleProject = ({
       tensorflow: "Tensorflow",
       keras: "Keras",
       flutter: "Flutter",
-      symfony: "Symfony"
+      symfony: "Symfony",
     };
     return techNames[tech.toLowerCase()] || tech.charAt(0).toUpperCase() + tech.slice(1);
   };
@@ -395,8 +400,8 @@ const SingleProject = ({
 
           {/* Détails du projet */}
           <div className={styles.projectDetails}>
-            <h2 className={styles.projectTitle}>{selectedProject.title}</h2>
-            <p className={styles.projectDescription}>{selectedProject.description}</p>
+            <h2 className={styles.projectTitle}>{projectTitle}</h2>
+            <p className={styles.projectDescription}>{projectDescription}</p>
 
             <div className={styles.techIcons}>
               {selectedProject.technologies.map((tech, index) => {
@@ -467,7 +472,7 @@ const SingleProject = ({
         </div>
 
         <button onClick={onBack} className={styles.backButton}>
-          ← Retour
+          ← {language === "en" ? "Back" : "Retour"}
         </button>
       </div>
     </>

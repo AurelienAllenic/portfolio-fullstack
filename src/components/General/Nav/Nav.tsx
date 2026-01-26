@@ -4,19 +4,21 @@ import { useEffect, useRef } from "react";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
 import ProjectsDropdown from "./ProjectsDropdown";
+import { useLanguage } from "../Language/LanguageContext";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToContact } = useNavigation();
+  const { t } = useLanguage();
 
   // Categories from Data.ts covers - in reverse order
   const categories = [
-    { title: 'Projets personnels', index: 0 },
-    { title: 'Mastère IIM', index: 1 },
-    { title: 'Formation Python', index: 2 },
-    { title: 'Formation React', index: 3 },
-    { title: 'Formation Développeur Web', index: 4 },
+    { title: t("projects.category.personnel"), index: 0 },
+    { title: t("projects.category.iim"), index: 1 },
+    { title: t("projects.category.python"), index: 2 },
+    { title: t("projects.category.react"), index: 3 },
+    { title: t("projects.category.web"), index: 4 },
   ];
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const Nav = () => {
               onClick={() => navigateToHero("hero2")}
               style={{ cursor: "pointer" }}
             >
-              About
+              {t("nav.about")}
             </div>
           </li>
           <li>
@@ -83,7 +85,7 @@ const Nav = () => {
               onClick={() => navigateToContact()}
               style={{ cursor: "pointer" }}
             >
-              Contact
+              {t("nav.contact")}
             </div>
           </li>
         </ul>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useNavigation } from './NavigationContext';
 import styles from './nav.module.scss';
+import { useLanguage } from '../Language/LanguageContext';
 
 interface Category {
   title: string;
@@ -13,6 +14,7 @@ interface ProjectsDropdownProps {
 }
 
 const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -63,7 +65,7 @@ const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
         onClick={() => setIsOpen(!isOpen)}
         style={{ cursor: 'pointer' }}
       >
-        Projects
+        {t("nav.projects")}
       </div>
       {isOpen && (
         <div

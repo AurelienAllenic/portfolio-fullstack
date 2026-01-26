@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./mobileNav.module.scss";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
+import { useLanguage } from "../Language/LanguageContext";
 import {
   openclassrooms1_cover,
   openclassrooms2_cover,
@@ -24,15 +25,6 @@ const IMAGES = {
   contact: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gameon_uieupe.webp",
 };
 
-// Catégories de projets avec titres et images (dans le même ordre que SliderProjects)
-const PROJECT_CATEGORIES = [
-  { title: projects_cover.title, index: 0, image: projects_cover.mainImage },
-  { title: iim_cover.title, index: 1, image: iim_cover.mainImage },
-  { title: openclassrooms3_cover.title, index: 2, image: openclassrooms3_cover.mainImage },
-  { title: openclassrooms2_cover.title, index: 3, image: openclassrooms2_cover.mainImage },
-  { title: openclassrooms1_cover.title, index: 4, image: openclassrooms1_cover.mainImage },
-];
-
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProjectCategories, setShowProjectCategories] = useState(false);
@@ -40,6 +32,16 @@ const MobileNav = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToProjects, navigateToContact, heroState } = useNavigation();
+  const { t } = useLanguage();
+  
+  // Catégories traduites
+  const PROJECT_CATEGORIES = useMemo(() => [
+    { title: t("projects.category.personnel"), index: 0, image: projects_cover.mainImage },
+    { title: t("projects.category.iim"), index: 1, image: iim_cover.mainImage },
+    { title: t("projects.category.python"), index: 2, image: openclassrooms3_cover.mainImage },
+    { title: t("projects.category.react"), index: 3, image: openclassrooms2_cover.mainImage },
+    { title: t("projects.category.web"), index: 4, image: openclassrooms1_cover.mainImage },
+  ], [t]);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);
   const menuLinksRef = useRef<HTMLDivElement>(null);
@@ -627,21 +629,21 @@ const MobileNav = () => {
                 className={styles.menuItem}
                 onClick={() => handleNavigate("hero", IMAGES.hero2)}
               >
-                About
+                {t("nav.about")}
               </div>
               <div className={styles.separator}>-</div>
               <div 
                 className={styles.menuItem}
                 onClick={() => showProjectsMenu()}
               >
-                Projects
+                {t("nav.projects")}
               </div>
               <div className={styles.separator}>-</div>
               <div 
                 className={styles.menuItem}
                 onClick={() => handleNavigate("contact", IMAGES.contact)}
               >
-                Contact
+                {t("nav.contact")}
               </div>
             </>
           ) : (

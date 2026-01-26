@@ -2,10 +2,12 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './footer.module.scss';
 import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
+import { useLanguage } from '../Language/LanguageContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isTransitioningToCredits, setIsTransitioningToCredits] = useState(false);
   const [isTransitioningToMentions, setIsTransitioningToMentions] = useState(false);
   const [isTransitioningToPolitiqueConfidentialite, setIsTransitioningToPolitiqueConfidentialite] = useState(false);
@@ -93,7 +95,7 @@ const Footer = () => {
               className={styles.footerLink}
               onClick={handleCreditsClick}
             >
-              Crédits images
+              {t("footer.credits")}
             </a>
             <a 
               ref={mentionsLinkRef}
@@ -101,7 +103,7 @@ const Footer = () => {
               className={styles.footerLink}
               onClick={handleMentionsClick}
             >
-              Mentions légales
+              {t("footer.mentions")}
             </a>
             <a 
               ref={politiqueConfidentialiteLinkRef}
@@ -109,11 +111,11 @@ const Footer = () => {
               className={styles.footerLink}
               onClick={handlePolitiqueConfidentialiteClick}
             >
-              Politique de confidentialité
+              {t("footer.privacy")}
             </a>
           </div>
           <div className={styles.copyright}>
-            <p>© {currentYear} Aurélien Allenic. Tous droits réservés.</p>
+            <p>© {currentYear} Aurélien Allenic. {t("footer.copyright")}</p>
           </div>
         </div>
       </footer>

@@ -1,0 +1,44 @@
+@use "../../abstract/_variables.scss" as *;
+
+.languageToggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 100px;
+  height: 60px;
+  border-radius: 30px;
+  background: transparent;
+  box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  font-family: $font-family-secondary;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 900px) {
+    width: 60px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 12px;
+    border-radius: 25px;
+  }
+}

@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import styles from "./modalCV.module.scss";
+import { useLanguage } from "../Language/LanguageContext";
 
 interface ModalCVProps {
   isOpen: boolean;
@@ -7,8 +8,26 @@ interface ModalCVProps {
 }
 
 const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
+  const { language } = useLanguage();
   const modalRef = useRef<HTMLDivElement>(null);
   const cvImageRef = useRef<HTMLDivElement>(null);
+  
+  // URLs du CV selon la langue
+  const { cvImageUrl, cvPdfUrl } = useMemo(() => {
+    if (language === "fr") {
+      // Français : WebP CV_ko43f7, PDF CV_mwcaqj
+      return {
+        cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/CV_ko43f7.webp",
+        cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/CV_mwcaqj.pdf"
+      };
+    } else {
+      // Anglais : WebP resume_o3byqk, PDF resume_fcuwmh
+      return {
+        cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/resume_o3byqk.webp",
+        cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/resume_fcuwmh.pdf"
+      };
+    }
+  }, [language]);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,10 +88,7 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
 
   const handleCVClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    const pdfUrl = "https://res.cloudinary.com/dwpbyyhoq/image/upload/CV_mwcaqj.pdf";
-    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-    
+    window.open(cvPdfUrl, '_blank', 'noopener,noreferrer');
   };
 
   if (!isOpen) return null;
@@ -93,12 +109,13 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
           onClick={handleCVClick}
         >
           <img
-            src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/CV_ko43f7.webp"
+            key={language}
+            src={cvImageUrl}
             alt="CV"
             className={styles.cvImage}
           />
           <div className={styles.downloadButton}>
-            Télécharger
+            {language === "fr" ? "Télécharger" : "Download"}
           </div>
         </div>
       </div>
