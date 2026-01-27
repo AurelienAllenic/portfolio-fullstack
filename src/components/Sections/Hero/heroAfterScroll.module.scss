@@ -303,7 +303,7 @@
           line-height: 26px;
           height: 190px;
         }
-        @media (max-height: 490px) {
+        @media (max-height: 590px) {
           font-size: 14px;
           line-height: 21px;
         }
@@ -361,9 +361,6 @@
       }
       @media (max-width: 445px) {
         gap: 15px;
-      }
-      @media (max-height: 545px) {
-        padding: 0 0 85px 0;
       }
       @media (max-height: 490px) {
         padding: 10px 0 0 0;
