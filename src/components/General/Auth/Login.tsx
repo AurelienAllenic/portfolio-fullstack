@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { gsap } from 'gsap';
 import { useAuth } from './AuthContext';
 import styles from './login.module.scss';
 import { FcGoogle } from 'react-icons/fc';
@@ -14,29 +13,16 @@ const Login: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isOpening, setIsOpening] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Animation du radial gradient à l'entrée (comme NotFound)
+  // Animation d'ouverture au chargement
   useEffect(() => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-
-    // Initialiser le gradient à 0% (tout noir)
-    gsap.set(overlay, { "--gradient-size": "0%" });
-    
-    // Animer le gradient pour révéler l'image (0% → 100%)
-    gsap.to(overlay, {
-      "--gradient-size": "100%",
-      duration: 1.2,
-      ease: "power2.inOut",
-      onComplete: () => {
-        setShowContent(true);
-      },
-    });
+    // L'animation d'ouverture commence immédiatement
+    setIsOpening(true);
   }, []);
 
   // Vérifier si l'utilisateur est déjà connecté
@@ -101,6 +87,12 @@ const Login: React.FC = () => {
     }
   };
 
+  // Gérer l'ouverture complète
+  const handleOpeningComplete = () => {
+    setShowContent(true);
+    setIsOpening(false);
+  };
+
   // Gérer la transition vers le dashboard
   const handleTransitionComplete = () => {
     navigate('/dashboard');
@@ -109,7 +101,6 @@ const Login: React.FC = () => {
   return (
     <>
       <div className={styles.loginContainer}>
-        <div ref={overlayRef} className={styles.overlay}></div>
         <div className={styles.loginCard} style={{ opacity: showContent ? 1 : 0 }}>
           <h1 className={styles.title}>Connexion</h1>
           
@@ -177,6 +168,11 @@ const Login: React.FC = () => {
           </button>
         </div>
       </div>
+      <RadialTransitionOverlay
+        isActive={isOpening}
+        direction="out"
+        onComplete={handleOpeningComplete}
+      />
       <RadialTransitionOverlay
         isActive={isTransitioning}
         direction="in"

@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../Auth/AuthContext';
 import styles from './dashboard.module.scss';
 import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
@@ -7,31 +6,24 @@ import { FaArrowRight } from 'react-icons/fa6';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const overlayRef = useRef<HTMLDivElement>(null);
   const [showContent, setShowContent] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isOpening, setIsOpening] = useState(true);
 
-  // Animation du radial gradient à l'entrée (comme NotFound)
+  // Animation d'ouverture au chargement
   useEffect(() => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-
-    // Initialiser le gradient à 0% (tout noir)
-    gsap.set(overlay, { "--gradient-size": "0%" });
-    
-    // Animer le gradient pour révéler l'image (0% → 100%)
-    gsap.to(overlay, {
-      "--gradient-size": "100%",
-      duration: 1.2,
-      ease: "power2.inOut",
-      onComplete: () => {
-        setShowContent(true);
-      },
-    });
+    // L'animation d'ouverture commence immédiatement
+    setIsOpening(true);
   }, []);
 
   const handleLogout = async () => {
     setIsTransitioning(true);
+  };
+
+  // Gérer l'ouverture complète
+  const handleOpeningComplete = () => {
+    setShowContent(true);
+    setIsOpening(false);
   };
 
   const handleTransitionComplete = async () => {
@@ -42,7 +34,6 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <div className={styles.dashboardContainer}>
-        <div ref={overlayRef} className={styles.overlay}></div>
         <div className={styles.dashboardCard} style={{ opacity: showContent ? 1 : 0 }}>
           <h1 className={styles.title}>Dashboard</h1>
           
@@ -72,6 +63,11 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </div>
+      <RadialTransitionOverlay
+        isActive={isOpening}
+        direction="out"
+        onComplete={handleOpeningComplete}
+      />
       <RadialTransitionOverlay
         isActive={isTransitioning}
         direction="in"
