@@ -1,17 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { gsap } from 'gsap';
 import { useAuth } from './AuthContext';
 import styles from './login.module.scss';
 import { FcGoogle } from 'react-icons/fc';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
+import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Animation du radial gradient à l'entrée (comme NotFound)
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+
+    // Initialiser le gradient à 0% (tout noir)
+    gsap.set(overlay, { "--gradient-size": "0%" });
+    
+    // Animer le gradient pour révéler l'image (0% → 100%)
+    gsap.to(overlay, {
+      "--gradient-size": "100%",
+      duration: 1.2,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setShowContent(true);
+      },
+    });
+  }, []);
 
   // Vérifier si l'utilisateur est déjà connecté
   useEffect(() => {
@@ -26,9 +52,8 @@ const Login: React.FC = () => {
     const successParam = searchParams.get('success');
     
     if (successParam === 'logged_in') {
-      // Si on revient du callback OAuth avec succès, vérifier la session
-      // Le backend a déjà créé la session, on vérifie juste
-      navigate('/dashboard');
+      // Si on revient du callback OAuth avec succès, déclencher l'animation de transition
+      setIsTransitioning(true);
       return;
     }
     
@@ -47,7 +72,7 @@ const Login: React.FC = () => {
           setError('Une erreur est survenue lors de la connexion.');
       }
     }
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   // URL de l'API backend
   const getApiUrl = () => {
@@ -68,72 +93,96 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/dashboard');
+      // Démarrer l'animation de fermeture avant la navigation
+      setIsTransitioning(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la connexion');
-    } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Gérer la transition vers le dashboard
+  const handleTransitionComplete = () => {
+    navigate('/dashboard');
+  };
+
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginCard}>
-        <h1 className={styles.title}>Connexion</h1>
-        
-        {error && <div className={styles.errorMessage}>{error}</div>}
+    <>
+      <div className={styles.loginContainer}>
+        <div ref={overlayRef} className={styles.overlay}></div>
+        <div className={styles.loginCard} style={{ opacity: showContent ? 1 : 0 }}>
+          <h1 className={styles.title}>Connexion</h1>
+          
+          {error && <div className={styles.errorMessage}>{error}</div>}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isSubmitting}
-              placeholder="votre@email.com"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isSubmitting}
+                placeholder="votre@email.com"
+              />
+            </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="password">Mot de passe</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isSubmitting}
-              placeholder="••••••••"
-            />
+            <div className={styles.formGroup}>
+              <label htmlFor="password">Mot de passe</label>
+              <div className={styles.passwordInputWrapper}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isSubmitting}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isSubmitting}
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                >
+                  {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isSubmitting || isTransitioning}
+            >
+              {isSubmitting ? 'Connexion...' : 'Se connecter'}
+            </button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>ou</span>
           </div>
 
           <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isSubmitting}
+            type="button"
+            onClick={handleGoogleLogin}
+            className={styles.googleButton}
+            disabled={isSubmitting || isTransitioning}
           >
-            {isSubmitting ? 'Connexion...' : 'Se connecter'}
+            <FcGoogle className={styles.googleIcon} />
+            Se connecter avec Google
           </button>
-        </form>
-
-        <div className={styles.divider}>
-          <span>ou</span>
         </div>
-
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className={styles.googleButton}
-          disabled={isSubmitting}
-        >
-          <FcGoogle className={styles.googleIcon} />
-          Se connecter avec Google
-        </button>
       </div>
-    </div>
+      <RadialTransitionOverlay
+        isActive={isTransitioning}
+        direction="in"
+        onComplete={handleTransitionComplete}
+      />
+    </>
   );
 };
 
