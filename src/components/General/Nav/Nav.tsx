@@ -12,13 +12,14 @@ const Nav = () => {
   const { navigateToHero, navigateToContact } = useNavigation();
   const { t } = useLanguage();
 
-  // Categories from Data.ts covers - in reverse order
+  // Categories from Data.ts covers - order matches SliderProjects covers
   const categories = [
     { title: t("projects.category.personnel"), index: 0 },
-    { title: t("projects.category.iim"), index: 1 },
-    { title: t("projects.category.python"), index: 2 },
-    { title: t("projects.category.react"), index: 3 },
-    { title: t("projects.category.web"), index: 4 },
+    { title: t("projects.category.solead"), index: 1 },
+    { title: t("projects.category.iim"), index: 2 },
+    { title: t("projects.category.python"), index: 3 },
+    { title: t("projects.category.react"), index: 4 },
+    { title: t("projects.category.web"), index: 5 },
   ];
 
   useEffect(() => {

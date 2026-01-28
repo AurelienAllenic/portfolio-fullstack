@@ -7,6 +7,9 @@ const nodeJs = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/
 const Python = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp'
 const Django = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp'
 const NextJs = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp'
+const Wordpress = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/wordpress-icon_ngq76k.webp'
+const Php = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp'
+const JQuery = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/jquery_wk7xot.webp'
 
 const Booki = "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/booki_c6gjvd.webp"
 const Ohmyfood = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ohmyfood_phb4aq.webp'
@@ -45,6 +48,16 @@ const Ascent = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/
 const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp'
 const PrreviousAurelien="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_xxjzsw.webp"
 
+const District = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/district_ztpd3h.webp'
+const Alteys = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/alteys_v61q7f.webp'
+const OpticDuroc = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/optic-duroc_jqxe1g.webp'
+const GillesEtBoissier = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gillesetboissier_x2ryxn.webp'
+const Norelive = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/norelive_tipe9n.webp'
+const PatrickRubinstein = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/patrick-rubinstein_sirhrb.webp'
+const EcoAlternativ = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eco-alternativ_cgopaz.webp'
+const PierreGasly = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_qombd8.webp'
+const Eliebenhamou = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_sc5vhr.webp'
+
 const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
 const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
 const GenerativeArt = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/art_sbdrvx.webp'
@@ -73,6 +86,16 @@ const AIMnistGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_aut
 const PurpleGoghGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/purplegogh_ydj3ot.gif'
 const MintGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/mint_rxsc1g.gif'
 const CarECommerceGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecomerce_bpgi1w.gif'
+
+const DistrictGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/district_1_sx4ulp.gif'
+const AlteysGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/alteys_xb5zfa.gif'
+const OpticDurocGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/opticduroc_ewerno.gif'
+const GillesEtBoissierGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/gillesetboissier_k22ons.gif'
+const NoreliveGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/norelive_fzjlhq.gif'
+const PatrickRubinsteinGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rubinstein_2_oov6qq.gif'
+const EcoAlternativGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eco-alternativ_d9xfwa.gif'
+const PierreGaslyGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_1_hsgtgl.gif'
+const EliebenhamouGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_cnbstj.gif'
 
 
 /* COVERS */
@@ -120,6 +143,15 @@ export const iim_cover = {
     sideImages: [Pie, AIMnist, SymfonyECommerce, Learnify],
     mainImage: CarEcommerce,
     listIcons: [ReactJs, Django, nodeJs, Python, NextJs ]
+}
+
+export const solead_cover = {
+    title: 'Projets Solead',
+    slug: 'projets-solead',
+    content: "Projets réalisés chez Solead. Sites vitrines et e-commerce sous Wordpress : refontes visuelles, création de pages produits et catégories, correctifs et animations.",
+    sideImages: [District, Alteys, OpticDuroc, GillesEtBoissier],
+    mainImage: Norelive,
+    listIcons: [Wordpress, Php, HTML, CSS, Js, JQuery]
 }
 
 /* PROJECTS */
@@ -649,5 +681,134 @@ export const iim = [
         figma:'',
         folder:'',
         technologies: ['reactnative', 'typescript', 'expo']
+    },
+]
+
+export const solead = [
+    {
+        id: 1,
+        image: District,
+        imageDiaporama: [District, DistrictGif],
+        title: 'District',
+        description: "J'ai participé à la refonte visuelle du projet. L'ensemble des pages de ce site d'immobilier ont été recréées visuellement par mes soins.",
+        titleEn: 'District',
+        descriptionEn: "I participated in the visual redesign of the project. All pages of this real estate website were visually recreated by me.",
+        github: '',
+        demo: 'https://distict-immo.com',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'css', 'php', 'javascript', 'html', 'jquery']
+    },
+    {
+        id: 2,
+        image: Alteys,
+        imageDiaporama: [Alteys, AlteysGif],
+        title: 'Alteys',
+        description: "Dans le cadre de ce site proposant des produits de collection et de magazines, j'ai participé à la création de pages de produits et de catégories de produit.",
+        titleEn: 'Alteys',
+        descriptionEn: "For this site offering collection products and magazines, I participated in the creation of product pages and product categories.",
+        github: '',
+        demo: 'https://www.alteyscollections.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'php', 'jquery']
+    },
+    {
+        id: 3,
+        image: OpticDuroc,
+        imageDiaporama: [OpticDuroc, OpticDurocGif],
+        title: 'Optic Duroc',
+        description: "J'ai pu intervenir sur le design des pages de produit de ce site de matériel ophtalmologique.",
+        titleEn: 'Optic Duroc',
+        descriptionEn: "I worked on the design of the product pages for this ophthalmological equipment website.",
+        github: '',
+        demo: 'https://opticduroc.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 4,
+        image: GillesEtBoissier,
+        imageDiaporama: [GillesEtBoissier, GillesEtBoissierGif],
+        title: 'Gilles et Boissier',
+        description: "Ce site propose du mobilier de luxe. Je suis intervenu sur des correctifs visuels portant sur l'ensemble du site et j'ai également créé des pages complètes pour ce projet.",
+        titleEn: 'Gilles et Boissier',
+        descriptionEn: "This site offers luxury furniture. I worked on visual fixes across the entire site and also created complete pages for this project.",
+        github: '',
+        demo: 'https://www.gillesetboissier.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 5,
+        image: Norelive,
+        imageDiaporama: [Norelive, NoreliveGif],
+        title: 'Norelive',
+        description: "Ce site a pour mission de mettre en avant les projets de l'entreprise d'évènementiel Norelive. J'ai réalisé from scratch, entièrement ce projet.",
+        titleEn: 'Norelive',
+        descriptionEn: "This site aims to showcase the projects of the events company Norelive. I built this project entirely from scratch.",
+        github: '',
+        demo: 'https://norelive.staging.prodsolead.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 6,
+        image: PatrickRubinstein,
+        imageDiaporama: [PatrickRubinstein, PatrickRubinsteinGif],
+        title: 'Patrick Rubinstein',
+        description: "Je suis intervenu sur cet site créé pour promouvoir les créations de l'artiste Patrick Rubinstein. J'ai réalisé différentes animations et j'ai pu participer à des correctifs concernant la visite immersive de ses œuvres.",
+        titleEn: 'Patrick Rubinstein',
+        descriptionEn: "I worked on this site created to promote the creations of the artist Patrick Rubinstein. I created various animations and participated in fixes for the immersive visit of his works.",
+        github: '',
+        demo: 'https://www.patrickrubinstein.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 7,
+        image: EcoAlternativ,
+        imageDiaporama: [EcoAlternativ, EcoAlternativGif],
+        title: 'Eco Alternativ',
+        description: "Ce projet de site vitrine de chauffagiste et d'expert en rénovation énergétique a été l'objet de modifications importantes au niveau de son style et de sa structure.",
+        titleEn: 'Eco Alternativ',
+        descriptionEn: "This showcase site project for a heating engineer and energy renovation expert underwent significant modifications to its style and structure.",
+        github: '',
+        demo: 'https://www.eco-alternativ-energies.fr/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 8,
+        image: PierreGasly,
+        imageDiaporama: [PierreGasly, PierreGaslyGif],
+        title: 'Pierre Gasly',
+        description: "Je suis intervenu sur différentes parties du site du coureur automobile Pierre Gasly. Ces correctifs étaient principalement axés autour de correctifs et améliorations visuelles.",
+        titleEn: 'Pierre Gasly',
+        descriptionEn: "I worked on various parts of the racing driver Pierre Gasly's website. These fixes were mainly focused on visual corrections and improvements.",
+        github: '',
+        demo: 'https://www.pierregasly.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 9,
+        image: Eliebenhamou,
+        imageDiaporama: [Eliebenhamou, EliebenhamouGif],
+        title: 'Elie Benhamou',
+        description: "J'ai réalisé ce projet de site de pompes funèbres from scratch.",
+        titleEn: 'Elie Benhamou',
+        descriptionEn: "I built this funeral services website project from scratch.",
+        github: '',
+        demo: 'https://eliebenhamou.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
     },
 ]

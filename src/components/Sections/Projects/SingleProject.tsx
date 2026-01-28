@@ -286,7 +286,9 @@ const SingleProject = ({
       keras : "https://res.cloudinary.com/dwpbyyhoq/image/upload/keras_cjv2id.webp",
       flutter : "https://res.cloudinary.com/dwpbyyhoq/image/upload/flutter_zfmqyx.webp",
       symfony: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp",
-      jquery: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp"
+      jquery: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp",
+      wordpress: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
+      php: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp",
     };
     return techMap[tech.toLowerCase()] || "";
   };
@@ -303,6 +305,8 @@ const SingleProject = ({
       django: "Django",
       nextjs: "Next.js",
       jquery: "jQuery",
+      wordpress: "Wordpress",
+      php: "PHP",
       seo: "SEO",
       backlog: "Backlog",
       twig: "Twig",
