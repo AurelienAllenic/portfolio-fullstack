@@ -23,11 +23,22 @@ const SingleProject = ({
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const slideIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTransitioningRef = useRef(false);
   const gifDurationsRef = useRef<Map<string, number>>(new Map());
+  
+  // Détecter si on est en mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const selectedProject = projects[selectedIndex];
   const projectTitle = language === "en" && selectedProject.titleEn ? selectedProject.titleEn : selectedProject.title;
@@ -139,31 +150,67 @@ const SingleProject = ({
     }
   };
 
-  // Précharger TOUTES les images et calculer les durées des GIFs
+  // Optimiser les URLs Cloudinary
+  const optimizeImageUrl = (url: string, width?: number, quality: string = "auto"): string => {
+    if (!url.includes("cloudinary.com")) return url;
+    
+    const parts = url.split("/image/upload/");
+    if (parts.length !== 2) return url;
+    
+    const [base, rest] = parts;
+    let params = `f_webp,q_${quality}`;
+    
+    if (width) {
+      params += `,w_${width}`;
+    }
+    
+    return `${base}/image/upload/${params}/${rest}`;
+  };
+
+  // Précharger seulement la première image et calculer les durées des GIFs
   useEffect(() => {
     const preloadImages = async () => {
-      const promises = projectImages.map(async (src) => {
-        // Précharger l'image
-        await new Promise<void>((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          img.src = src;
-        });
-        
-        // Si c'est un GIF, calculer et stocker sa durée
-        if (isGif(src)) {
-          const duration = await getGifDuration(src);
-          gifDurationsRef.current.set(src, duration);
-        }
+      if (projectImages.length === 0) return;
+      
+      // Précharger seulement la première image immédiatement
+      const firstImage = projectImages[0];
+      const optimizedFirstImage = optimizeImageUrl(firstImage, 1200, "85");
+      
+      await new Promise<void>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = optimizedFirstImage;
       });
       
-      await Promise.all(promises);
+      // Si c'est un GIF, calculer sa durée
+      if (isGif(firstImage)) {
+        const duration = await getGifDuration(firstImage);
+        gifDurationsRef.current.set(firstImage, duration);
+      }
+      
+      // Précharger les autres images en arrière-plan avec délai
+      if (projectImages.length > 1) {
+        setTimeout(() => {
+          projectImages.slice(1).forEach(async (src) => {
+            const optimizedSrc = optimizeImageUrl(src, 1200, "85");
+            await new Promise<void>((resolve) => {
+              const img = new Image();
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+              img.src = optimizedSrc;
+            });
+            
+            if (isGif(src)) {
+              const duration = await getGifDuration(src);
+              gifDurationsRef.current.set(src, duration);
+            }
+          });
+        }, 500);
+      }
     };
 
-    if (projectImages.length > 0) {
-      preloadImages();
-    }
+    preloadImages();
   }, [selectedIndex, projectImages]);
 
   // Gestion du diaporama automatique avec respect de la durée des GIFs
@@ -355,6 +402,8 @@ const SingleProject = ({
             {projects.map((project, index) => {
               const projectImages = getProjectImages(project);
               const firstImage = projectImages[0] || '';
+              const optimizedThumbnail = optimizeImageUrl(firstImage, isMobile ? 200 : 300, "75");
+              
               return (
                 <div
                   key={project.id}
@@ -363,7 +412,11 @@ const SingleProject = ({
                   } ${isGif(firstImage) ? styles.sliderImageGif : ""}`}
                   onClick={() => handleImageClick(index)}
                 >
-                  <img src={firstImage} alt={project.title} />
+                  <img 
+                    src={optimizedThumbnail} 
+                    alt={project.title}
+                    loading={index < 3 ? "eager" : "lazy"}
+                  />
                 </div>
               );
             })}
@@ -381,25 +434,34 @@ const SingleProject = ({
         <div className={styles.projectContent}>
           {/* Image principale avec transition crossfade */}
           <div className={styles.projectMainImage}>
-            {projectImages.map((imgSrc, index) => (
-              <img 
-                key={`${selectedProject.id}-${index}`}
-                src={imgSrc} 
-                alt={`${selectedProject.title} - Image ${index + 1}`}
-                className={`${styles.slideshowImage} ${
-                  index === currentImageIndex ? styles.slideshowImageActive : ''
-                }`}
-                style={{
-                  position: index === 0 ? 'relative' : 'absolute',
-                  top: index === 0 ? 'auto' : 0,
-                  left: index === 0 ? 'auto' : 0,
-                  width: '100%', // Toujours 100% pour éviter l'espace à droite
-                  height: '100%',
-                  maxWidth: '100%',
-                  objectFit: 'cover'
-                }}
-              />
-            ))}
+            {projectImages.map((imgSrc, index) => {
+              const optimizedSrc = optimizeImageUrl(
+                imgSrc, 
+                isMobile ? 800 : 1200, 
+                "85"
+              );
+              
+              return (
+                <img 
+                  key={`${selectedProject.id}-${index}`}
+                  src={optimizedSrc} 
+                  alt={`${selectedProject.title} - Image ${index + 1}`}
+                  className={`${styles.slideshowImage} ${
+                    index === currentImageIndex ? styles.slideshowImageActive : ''
+                  }`}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  style={{
+                    position: index === 0 ? 'relative' : 'absolute',
+                    top: index === 0 ? 'auto' : 0,
+                    left: index === 0 ? 'auto' : 0,
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              );
+            })}
           </div>
 
           {/* Détails du projet */}

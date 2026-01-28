@@ -48,6 +48,7 @@ interface SliderProjectsProps {
 
 const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   
   const [scrollLocked, setScrollLocked] = useState(true);
   const touchStartY = useRef<number | null>(null);
@@ -59,6 +60,16 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const isAtBottomRef = useRef(false);
   const isAtTopRef = useRef(false);
   const isTransitioningFromContactRef = useRef(false);
+  
+  // Détecter si on est en mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const covers: ProjectCover[] = [
     projects_cover,
@@ -73,31 +84,30 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
-  // Précharger les images de la catégorie suivante et précédente
+  // Précharger seulement la catégorie suivante avec délai
   useEffect(() => {
-    const preloadAdjacentCategories = async () => {
+    const preloadNextCategory = async () => {
       const nextIndex = (currentIndex + 1) % covers.length;
-      const prevIndex = (currentIndex - 1 + covers.length) % covers.length;
+      const nextCover = covers[nextIndex];
       
-      const categoriesToPreload = [
-        covers[nextIndex],
-        covers[prevIndex],
-      ];
-      
-      // Précharger les images de ces catégories
-      categoriesToPreload.forEach(cover => {
-        // Précharger l'image principale
-        preloadImage(optimizeCloudinaryUrl(cover.mainImage, 800, "85"));
+      // Attendre un peu avant de précharger pour ne pas bloquer le chargement initial
+      setTimeout(() => {
+        // Précharger seulement l'image principale de la catégorie suivante
+        const mainImageWidth = isMobile ? 600 : 800;
+        preloadImage(optimizeCloudinaryUrl(nextCover.mainImage, mainImageWidth, "85"));
         
-        // Précharger les images du mosaic
-        cover.sideImages.slice(0, 4).forEach(src => {
-          preloadImage(optimizeCloudinaryUrl(src, 600, "80"));
-        });
-      });
+        // Précharger seulement les 2 premières images du mosaic avec un délai supplémentaire
+        setTimeout(() => {
+          const mosaicWidth = isMobile ? 400 : 600;
+          nextCover.sideImages.slice(0, 2).forEach(src => {
+            preloadImage(optimizeCloudinaryUrl(src, mosaicWidth, "80"));
+          });
+        }, 500);
+      }, 1000);
     };
     
-    preloadAdjacentCategories();
-  }, [currentIndex, covers]);
+    preloadNextCategory();
+  }, [currentIndex, covers, isMobile]);
 
   // Forcer l'index si forceIndex est défini
   // Mais IGNORER si on est en train de faire une transition depuis Contact

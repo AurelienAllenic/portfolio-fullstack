@@ -91,7 +91,18 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+  
+  // Détecter si on est en mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Mapping des slugs vers les clés de traduction
   const categoryKeyMap: Record<string, string> = {
@@ -116,22 +127,24 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     };
   }, [categoryTitle]);
 
-  // Précharger les images au montage
+  // Précharger seulement les images critiques au montage
   useEffect(() => {
     const preloadImages = async () => {
       try {
-        // Précharger l'image principale
-        await preloadImage(optimizeCloudinaryUrl(cover.mainImage, 800, "85"));
+        const mainImageWidth = isMobile ? 600 : 800;
         
-        // Précharger les images du mosaic
-        const promises = cover.sideImages.slice(0, 4).map(src => 
-          preloadImage(optimizeCloudinaryUrl(src, 600, "80"))
-        );
+        // Précharger seulement l'image principale
+        await preloadImage(optimizeCloudinaryUrl(cover.mainImage, mainImageWidth, "85"));
         
-        await Promise.all(promises);
+        // Précharger seulement les 2 premières images du mosaic avec délai
+        setTimeout(() => {
+          cover.sideImages.slice(0, 2).forEach(src => {
+            const mosaicWidth = isMobile ? 400 : 600;
+            preloadImage(optimizeCloudinaryUrl(src, mosaicWidth, "80"));
+          });
+        }, 300);
       } catch (err) {
         console.warn("Erreur au préchargement des images:", err);
-        // Même en cas d'erreur, on continue
       }
     };
     
@@ -509,7 +522,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
               {titleParts.accent}
             </h3>
           </div>
-          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, 800, "85")} alt="main" className={styles.mobileImage} />
+          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
         </div>
 
         <div className={styles.mobileDescription}>
@@ -526,8 +539,8 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
           {cover.sideImages.slice(0, 4).map((src, i) => (
             <div key={i} className={styles.mosaicItem}>
               <img 
-                loading="eager" 
-                src={optimizeCloudinaryUrl(src, 600, "80")} 
+                loading={i < 2 ? "eager" : "lazy"} 
+                src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
                 alt={`side-${i + 1}`}
               />
             </div>
@@ -593,13 +606,13 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       </div>
 
         <aside className={styles.right}>
-          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, 800, "85")} alt="main" />
+          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
         </aside>
 
         <div className={styles.mobileBottomSection}>
           <img
-            loading="eager"
-            src={optimizeCloudinaryUrl(cover.sideImages[1], 500, "80")}
+            loading="lazy"
+            src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
             alt="mobile-1"
             className={styles.mobileImageLeft}
           />
@@ -633,8 +646,8 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
             })}
           </div>
           <img
-            loading="eager"
-            src={optimizeCloudinaryUrl(cover.sideImages[2], 500, "80")}
+            loading="lazy"
+            src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
             alt="mobile-2"
             className={styles.mobileImageRight}
           />
