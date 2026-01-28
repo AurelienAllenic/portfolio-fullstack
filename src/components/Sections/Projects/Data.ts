@@ -57,6 +57,7 @@ const PatrickRubinstein = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_w
 const EcoAlternativ = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eco-alternativ_cgopaz.webp'
 const PierreGasly = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_qombd8.webp'
 const Eliebenhamou = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_sc5vhr.webp'
+const LaCommune = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_xnku7a.webp'
 
 const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
 const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
@@ -96,6 +97,7 @@ const PatrickRubinsteinGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/
 const EcoAlternativGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eco-alternativ_d9xfwa.gif'
 const PierreGaslyGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_1_hsgtgl.gif'
 const EliebenhamouGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_cnbstj.gif'
+const LaCommuneGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_ddcxu3.gif'
 
 
 /* COVERS */
@@ -807,6 +809,20 @@ export const solead = [
         descriptionEn: "I built this funeral services website project from scratch.",
         github: '',
         demo: 'https://eliebenhamou.com/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 10,
+        image: LaCommune,
+        imageDiaporama: [LaCommune, LaCommuneGif],
+        title: 'La Commune',
+        description: "J'ai créé des menus de restaurants pour ce projet qui propose des food court.",
+        titleEn: 'La Commune',
+        descriptionEn: "I created restaurant menus for this project offering food courts.",
+        github: '',
+        demo: 'https://lacommune.co/menu/',
         figma: '',
         folder: '',
         technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
