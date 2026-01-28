@@ -9,11 +9,13 @@ import {
   openclassrooms2_cover,
   openclassrooms3_cover,
   projects_cover,
+  solead_cover,
   iim_cover,
   openclassrooms1,
   openclassrooms2,
   openclassrooms3,
   projects,
+  solead,
   iim,
 } from "../../Sections/Projects/Data";
 
@@ -34,13 +36,14 @@ const MobileNav = () => {
   const { navigateToHero, navigateToProjects, navigateToContact, heroState } = useNavigation();
   const { t } = useLanguage();
   
-  // Catégories traduites
+  // Catégories traduites — ordre identique à SliderProjects covers
   const PROJECT_CATEGORIES = useMemo(() => [
     { title: t("projects.category.personnel"), index: 0, image: projects_cover.mainImage },
-    { title: t("projects.category.iim"), index: 1, image: iim_cover.mainImage },
-    { title: t("projects.category.python"), index: 2, image: openclassrooms3_cover.mainImage },
-    { title: t("projects.category.react"), index: 3, image: openclassrooms2_cover.mainImage },
-    { title: t("projects.category.web"), index: 4, image: openclassrooms1_cover.mainImage },
+    { title: t("projects.category.solead"), index: 1, image: solead_cover.mainImage },
+    { title: t("projects.category.iim"), index: 2, image: iim_cover.mainImage },
+    { title: t("projects.category.python"), index: 3, image: openclassrooms3_cover.mainImage },
+    { title: t("projects.category.react"), index: 4, image: openclassrooms2_cover.mainImage },
+    { title: t("projects.category.web"), index: 5, image: openclassrooms1_cover.mainImage },
   ], [t]);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);
@@ -194,7 +197,7 @@ const MobileNav = () => {
     const currentImage = lockedImageRef.current;
     
     // Combiner tous les projets de toutes les catégories
-    const allProjects = [...openclassrooms1, ...openclassrooms2, ...openclassrooms3, ...iim, ...projects];
+    const allProjects = [...projects, ...solead, ...iim, ...openclassrooms3, ...openclassrooms2, ...openclassrooms1];
     
     // Prendre une image aléatoire parmi TOUS les projets (sauf si c'est la même que currentImage)
     let randomImage = currentImage;

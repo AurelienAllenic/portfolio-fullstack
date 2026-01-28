@@ -99,6 +99,7 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
     'formation-react': 'react',
     'formation-python': 'python',
     'projets-personnels': 'personnel',
+    'projets-solead': 'solead',
     'mastere-iim': 'iim',
   };
   

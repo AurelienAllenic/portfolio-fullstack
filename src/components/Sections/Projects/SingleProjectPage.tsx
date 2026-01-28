@@ -8,10 +8,12 @@ import {
   openclassrooms2_cover,
   openclassrooms3_cover,
   projects_cover,
+  solead_cover,
   openclassrooms1,
   openclassrooms2,
   openclassrooms3,
   projects,
+  solead,
   iim,
   iim_cover,
 } from "./Data";
@@ -25,6 +27,7 @@ const SingleProjectPage = () => {
 
   const covers: ProjectCover[] = [
     projects_cover,
+    solead_cover,
     iim_cover,
     openclassrooms3_cover,
     openclassrooms2_cover,
@@ -33,6 +36,7 @@ const SingleProjectPage = () => {
 
   const projectsData: Project[][] = [
     projects,
+    solead,
     iim,
     openclassrooms3,
     openclassrooms2,

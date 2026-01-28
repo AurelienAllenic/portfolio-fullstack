@@ -8,6 +8,7 @@ import {
   openclassrooms2_cover,
   openclassrooms3_cover,
   projects_cover,
+  solead_cover,
   iim_cover,
 } from "./Data";
 
@@ -61,6 +62,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
   const covers: ProjectCover[] = [
     projects_cover,
+    solead_cover,
     iim_cover,
     openclassrooms3_cover,
     openclassrooms2_cover,
