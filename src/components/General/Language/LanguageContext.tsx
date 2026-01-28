@@ -42,6 +42,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.afterScroll.text4.after2": "Développeur Web,",
     "hero.afterScroll.text4.after3": "Développeur d'application - JavaScript/React,",
     "hero.afterScroll.text4.after4": "Développeur d'application - Python.",
+    "hero.afterScroll.text5": "J'utilise des solutions d'IA (&nbsp;cloud et locales&nbsp;) pour optimiser le développement de projets complexes. L'IA étant un levier de productivité puissant, non un substitut au raisonnement ou à la maîtrise technique.",
     
     // Contact
     "contact.title.main": "Me",
@@ -217,6 +218,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.afterScroll.text4.after2": "Web Developer,",
     "hero.afterScroll.text4.after3": "Application Developer - JavaScript/React,",
     "hero.afterScroll.text4.after4": "Application Developer - Python.",
+    "hero.afterScroll.text5": "I use AI solutions (&nbsp;cloud and local&nbsp;) to optimize the development of complex projects. AI is a powerful productivity lever, not a substitute for reasoning or technical mastery.",
     
     // Contact
     "contact.title.main": "Contact",

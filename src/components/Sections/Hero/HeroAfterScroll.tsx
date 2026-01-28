@@ -53,6 +53,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           t("hero.afterScroll.text4.after4"),
         ],
       },
+      t("hero.afterScroll.text5"),
     ], [t]);
 
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
@@ -745,7 +746,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 className={`${styles.subtitle} ${
                   textIndex === 2
                     ? styles.mediumSubtitle
-                    : textIndex === 3
+                    : textIndex === 3 || textIndex === 4
                     ? styles.largeSubtitle
                     : ""
                 } ${
