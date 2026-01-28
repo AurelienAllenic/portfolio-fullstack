@@ -281,6 +281,61 @@ const Credits = () => {
           pexelsUrl: "https://www.pexels.com/photo/person-holding-world-globe-facing-mountain-346885/"
         }
       ]
+    },
+    {
+      category: t("credits.credits.categories.solead"),
+      projects: [
+        {
+          name: "District",
+          cloudinaryId: "district_ztpd3h",
+          demoUrl: "https://district-immo.com"
+        },
+        {
+          name: "Alteys",
+          cloudinaryId: "alteys_v61q7f",
+          demoUrl: "https://www.alteyscollections.com/"
+        },
+        {
+          name: "Optic Duroc",
+          cloudinaryId: "optic-duroc_jqxe1g",
+          demoUrl: "https://opticduroc.com/"
+        },
+        {
+          name: "Gilles et Boissier",
+          cloudinaryId: "gillesetboissier_x2ryxn",
+          demoUrl: "https://www.gillesetboissier.com/"
+        },
+        {
+          name: "Norelive",
+          cloudinaryId: "norelive_tipe9n",
+          demoUrl: "https://norelive.staging.prodsolead.com/"
+        },
+        {
+          name: "Patrick Rubinstein",
+          cloudinaryId: "patrick-rubinstein_sirhrb",
+          demoUrl: "https://www.patrickrubinstein.com/"
+        },
+        {
+          name: "Eco Alternativ",
+          cloudinaryId: "eco-alternativ_cgopaz",
+          demoUrl: "https://www.eco-alternativ-energies.fr/"
+        },
+        {
+          name: "Pierre Gasly",
+          cloudinaryId: "pierre-gasly_qombd8",
+          demoUrl: "https://www.pierregasly.com/"
+        },
+        {
+          name: "Eliebenhamou",
+          cloudinaryId: "eliebenhamou_sc5vhr",
+          demoUrl: "https://eliebenhamou.com/"
+        },
+        {
+          name: "La Commune",
+          cloudinaryId: "lacommune_xnku7a",
+          demoUrl: "https://lacommune.co/menu/"
+        }
+      ]
     }
   ], [t]);
 
@@ -300,7 +355,11 @@ const Credits = () => {
                     let imageUrl: string | null = null;
                     let buttonText = t("credits.credits.seeImage");
                     
-                    if ('pexelsUrl' in project && project.pexelsUrl) {
+                    if ('demoUrl' in project && project.demoUrl) {
+                      // Pour les projets Solead, utiliser le lien demo
+                      imageUrl = project.demoUrl;
+                      buttonText = t("credits.credits.seeDemo");
+                    } else if ('pexelsUrl' in project && project.pexelsUrl) {
                       imageUrl = project.pexelsUrl;
                       buttonText = t("credits.credits.seeOnPexels");
                     } else if ('unsplashUrl' in project && project.unsplashUrl) {

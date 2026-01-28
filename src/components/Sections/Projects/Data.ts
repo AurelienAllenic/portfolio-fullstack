@@ -152,7 +152,7 @@ export const solead_cover = {
     slug: 'projets-solead',
     content: "Projets réalisés chez Solead. Sites vitrines et e-commerce sous Wordpress : refontes visuelles, création de pages produits et catégories, correctifs et animations.",
     sideImages: [District, Alteys, OpticDuroc, GillesEtBoissier],
-    mainImage: Norelive,
+    mainImage: PierreGasly,
     listIcons: [Wordpress, Php, HTML, CSS, Js, JQuery]
 }
 
@@ -696,7 +696,7 @@ export const solead = [
         titleEn: 'District',
         descriptionEn: "I participated in the visual redesign of the project. All pages of this real estate website were visually recreated by me.",
         github: '',
-        demo: 'https://distict-immo.com',
+        demo: 'https://district-immo.com',
         figma: '',
         folder: '',
         technologies: ['wordpress', 'css', 'php', 'javascript', 'html', 'jquery']

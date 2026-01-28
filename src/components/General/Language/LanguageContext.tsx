@@ -95,10 +95,12 @@ const translations: Record<Language, Record<string, string>> = {
     "credits.credits.categories.iim": "IIM Projets",
     "credits.credits.categories.personal": "Projets perso",
     "credits.credits.categories.web": "Projets formation web",
+    "credits.credits.categories.solead": "Projets Solead",
     "credits.credits.seeImage": "Voir l'image",
     "credits.credits.seeOnPexels": "Voir sur Pexels",
     "credits.credits.seeOnUnsplash": "Voir sur Unsplash",
     "credits.credits.seeOnIstock": "Voir sur iStock",
+    "credits.credits.seeDemo": "Voir le site",
     
     // Mentions Page
     "mentions.title": "Mentions légales",
@@ -271,10 +273,12 @@ const translations: Record<Language, Record<string, string>> = {
     "credits.credits.categories.iim": "IIM Projects",
     "credits.credits.categories.personal": "Personal projects",
     "credits.credits.categories.web": "Web training projects",
+    "credits.credits.categories.solead": "Solead projects",
     "credits.credits.seeImage": "View image",
     "credits.credits.seeOnPexels": "View on Pexels",
     "credits.credits.seeOnUnsplash": "View on Unsplash",
     "credits.credits.seeOnIstock": "View on iStock",
+    "credits.credits.seeDemo": "View site",
     
     // Mentions Page
     "mentions.title": "Legal notice",
