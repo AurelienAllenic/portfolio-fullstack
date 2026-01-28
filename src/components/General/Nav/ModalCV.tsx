@@ -1,6 +1,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import styles from "./modalCV.module.scss";
 import { useLanguage } from "../Language/LanguageContext";
+import { useCv } from "./CvContext";
 
 interface ModalCVProps {
   isOpen: boolean;
@@ -9,25 +10,35 @@ interface ModalCVProps {
 
 const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
   const { language } = useLanguage();
+  const { getCvImageUrl, getCvPdfUrl } = useCv();
   const modalRef = useRef<HTMLDivElement>(null);
   const cvImageRef = useRef<HTMLDivElement>(null);
   
-  // URLs du CV selon la langue
+  // URLs du CV selon la langue depuis le backend
   const { cvImageUrl, cvPdfUrl } = useMemo(() => {
-    if (language === "fr") {
-      // Français : WebP CV_ko43f7, PDF CV_mwcaqj
-      return {
-        cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/CV_ko43f7.webp",
-        cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/CV_mwcaqj.pdf"
-      };
-    } else {
-      // Anglais : WebP resume_o3byqk, PDF resume_fcuwmh
-      return {
-        cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/resume_o3byqk.webp",
-        cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/resume_fcuwmh.pdf"
-      };
+    const imageUrl = getCvImageUrl(language);
+    const pdfUrl = getCvPdfUrl(language);
+    
+    // Fallback vers les URLs par défaut si le backend ne retourne pas de données
+    if (!imageUrl || !pdfUrl) {
+      if (language === "fr") {
+        return {
+          cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/CV_ko43f7.webp",
+          cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/CV_mwcaqj.pdf"
+        };
+      } else {
+        return {
+          cvImageUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/resume_o3byqk.webp",
+          cvPdfUrl: "https://res.cloudinary.com/dwpbyyhoq/image/upload/resume_fcuwmh.pdf"
+        };
+      }
     }
-  }, [language]);
+    
+    return {
+      cvImageUrl: imageUrl,
+      cvPdfUrl: pdfUrl,
+    };
+  }, [language, getCvImageUrl, getCvPdfUrl]);
 
   useEffect(() => {
     if (isOpen) {

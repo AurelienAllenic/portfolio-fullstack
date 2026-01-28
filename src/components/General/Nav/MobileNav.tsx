@@ -4,6 +4,7 @@ import styles from "./mobileNav.module.scss";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
 import { useLanguage } from "../Language/LanguageContext";
+import { useCv } from "./CvContext";
 import {
   openclassrooms1_cover,
   openclassrooms2_cover,
@@ -35,6 +36,7 @@ const MobileNav = () => {
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToProjects, navigateToContact, heroState } = useNavigation();
   const { t } = useLanguage();
+  const { error: cvError } = useCv();
   
   // Catégories traduites — ordre identique à SliderProjects covers
   const PROJECT_CATEGORIES = useMemo(() => [
@@ -566,12 +568,14 @@ const MobileNav = () => {
         </div>
         <div className={styles.right}>
           <div className={styles.socialIcons}>
-            <div onClick={openModal} style={{ cursor: "pointer" }}>
-              <img
-                src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
-                alt="CV"
-              />
-            </div>
+            {!cvError && (
+              <div onClick={openModal} style={{ cursor: "pointer" }}>
+                <img
+                  src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
+                  alt="CV"
+                />
+              </div>
+            )}
             <a
               href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
               target="_blank"
