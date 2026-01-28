@@ -5,12 +5,14 @@ import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
 import ProjectsDropdown from "./ProjectsDropdown";
 import { useLanguage } from "../Language/LanguageContext";
+import { useCv } from "./CvContext";
 
 const Nav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToContact } = useNavigation();
   const { t } = useLanguage();
+  const { error: cvError } = useCv();
 
   // Categories from Data.ts covers - order matches SliderProjects covers
   const categories = [
@@ -91,12 +93,14 @@ const Nav = () => {
           </li>
         </ul>
         <div className={styles.socialIcons}>
-          <div onClick={openModal} style={{ cursor: "pointer" }}>
-            <img
-              src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
-              alt="CV"
-            />
-          </div>
+          {!cvError && (
+            <div onClick={openModal} style={{ cursor: "pointer" }}>
+              <img
+                src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
+                alt="CV"
+              />
+            </div>
+          )}
           <a
             href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
             target="_blank"

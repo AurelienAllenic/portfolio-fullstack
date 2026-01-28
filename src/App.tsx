@@ -10,6 +10,7 @@ import Mentions from "./components/Asides/Mentions/Mentions";
 import PolitiqueConfidentialite from "./components/Asides/PolitiqueConfidentialite/PolitiqueConfidentialite";
 import { LanguageProvider } from "./components/General/Language/LanguageContext";
 import { AuthProvider } from "./components/General/Auth/AuthContext";
+import { CvProvider } from "./components/General/Nav/CvContext";
 import Login from "./components/General/Auth/Login";
 import Dashboard from "./components/General/Dashboard/Dashboard";
 import ProtectedRoute from "./components/General/Auth/ProtectedRoute";
@@ -18,7 +19,8 @@ const App: React.FC = () => {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <CvProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<SinglePage />} />
             <Route path="/projects/:categorySlug" element={<SingleProjectPage />} />
@@ -37,6 +39,7 @@ const App: React.FC = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </CvProvider>
       </AuthProvider>
     </LanguageProvider>
   );

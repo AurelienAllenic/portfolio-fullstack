@@ -4,8 +4,9 @@ import styles from './dashboard.module.scss';
 import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
 import { FaArrowRight } from 'react-icons/fa6';
 import Messages from './Messages';
+import CvManagement from './CvManagement';
 
-type TabType = 'home' | 'messages';
+type TabType = 'home' | 'messages' | 'cv';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -54,6 +55,12 @@ const Dashboard: React.FC = () => {
             >
               Messages
             </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'cv' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('cv')}
+            >
+              CV
+            </button>
           </div>
 
           <div className={styles.tabContent}>
@@ -80,8 +87,10 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
               </>
-            ) : (
+            ) : activeTab === 'messages' ? (
               <Messages />
+            ) : (
+              <CvManagement />
             )}
           </div>
 
