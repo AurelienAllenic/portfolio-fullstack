@@ -86,6 +86,265 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    // Icônes d'IA pour mobile et dernier texte desktop
+    const aiIcons = useMemo(() => [
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/chatgpt_mefpin.webp",
+        name: "ChatGPT",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/grok_dkpy3i.webp",
+        name: "Grok",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/claude_y8vo09.webp",
+        name: "Claude",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/gemini_trlcb2.webp",
+        name: "Gemini",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/cursor_levshl.webp",
+        name: "Cursor",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/ollama_pf9fbp.webp",
+        name: "Ollama",
+      },
+    ], []);
+
+    // Fonction pour obtenir les icônes selon le textIndex (desktop uniquement)
+    const getIconsForTextIndex = useMemo(() => {
+      return (index: number) => {
+        switch (index) {
+          case 0: // Premier texte
+            return [
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+                name: "React",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
+                name: "React Native",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
+                name: "Node.js",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+                name: "Next.js",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
+                name: "MongoDB",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
+                name: "Prisma",
+              },
+            ];
+          case 1: // Deuxième texte
+            return [
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
+                name: "HTML",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+                name: "CSS",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
+                name: "SCSS",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+                name: "React",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
+                name: "React Native",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
+                name: "Docker",
+              },
+            ];
+        case 2: // Troisième texte
+          return [
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
+              name: "HTML",
+            },
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+              name: "CSS",
+            },
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
+              name: "JavaScript",
+            },
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp",
+              name: "jQuery",
+            },
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp",
+              name: "PHP",
+            },
+            {
+              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
+              name: "WordPress",
+            },
+          ];
+          case 3: // Quatrième texte
+            return [
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
+                name: "HTML",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+                name: "CSS",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
+                name: "SCSS",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
+                name: "JavaScript",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+                name: "React",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+                name: "Next.js",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
+                name: "Node.js",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
+                name: "Python",
+              },
+              {
+                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
+                name: "Django",
+              },
+            ];
+          case 4: // Cinquième texte (IA)
+            return aiIcons;
+          default:
+            return [];
+        }
+      };
+    }, [aiIcons]);
+
+    // Pour mobile : toutes les icônes de base + icônes d'IA à la fin
+    const allIconsMobile = useMemo(() => [
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
+        name: "HTML",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
+        name: "CSS",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
+        name: "SCSS",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
+        name: "JavaScript",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp",
+        name: "jQuery",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
+        name: "React",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
+        name: "React Native",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
+        name: "Next.js",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
+        name: "Wordpress",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
+        name: "Node.js",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
+        name: "Python",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
+        name: "Django",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp",
+        name: "PHP",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp",
+        name: "Symfony",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
+        name: "MongoDb",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
+        name: "Docker",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
+        name: "Prisma",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/chatgpt_mefpin.webp",
+        name: "ChatGPT",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/grok_dkpy3i.webp",
+        name: "Grok",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/claude_y8vo09.webp",
+        name: "Claude",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/gemini_trlcb2.webp",
+        name: "Gemini",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/cursor_levshl.webp",
+        name: "Cursor",
+      },
+      {
+        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/ollama_pf9fbp.webp",
+        name: "Ollama",
+      },
+    ], []);
+
+    // Pour desktop : icônes selon textIndex
+    const allIconsDesktop = useMemo(() => getIconsForTextIndex(textIndex), [getIconsForTextIndex, textIndex]);
+
     // Gérer la réinitialisation lors de la navigation par liens
     useEffect(() => {
       if (onNavigationReset && !wasNavigationReset.current) {
@@ -135,15 +394,24 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [returnFromProjects]);
 
     useEffect(() => {
-      const timeouts = iconContainers.current.map((container, index) => {
+      // Réinitialiser les refs quand les icônes changent
+      iconContainers.current = [];
+      
+      const iconCount = isMobile ? allIconsMobile.length : allIconsDesktop.length;
+      
+      const timeouts: number[] = [];
+      for (let index = 0; index < iconCount; index++) {
         const delay = 0.5 + index * 0.1;
-        return setTimeout(() => {
-          if (container) container.classList.add(styles.appeared);
+        const timeout = setTimeout(() => {
+          if (iconContainers.current[index]) {
+            iconContainers.current[index]?.classList.add(styles.appeared);
+          }
         }, (delay + 0.8) * 1000);
-      });
+        timeouts.push(timeout);
+      }
 
       const lastIconDelay =
-        0.5 + (iconContainers.current.length - 1) * 0.1 + 0.8;
+        0.5 + (iconCount - 1) * 0.1 + 0.8;
 
       const allAnimationsTimeout = setTimeout(() => {
         setAllAnimationsComplete(true);
@@ -153,7 +421,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         timeouts.forEach(clearTimeout);
         clearTimeout(allAnimationsTimeout);
       };
-    }, []);
+    }, [textIndex, isMobile]);
 
     useEffect(() => {
       if (overlayRef.current) {
@@ -184,8 +452,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         const wrapper = iconsWrapperRef.current;
         const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
         // Supprimer les icônes dupliquées (celles après les originales)
-        if (allIcons.length > allIcons.length / 2) {
-          Array.from(allIcons).slice(allIcons.length / 2).forEach((icon) => {
+        const expectedCount = allIconsMobile.length;
+        if (allIcons.length > expectedCount) {
+          const iconsArray = Array.from(allIcons);
+          const duplicates = iconsArray.slice(expectedCount);
+          duplicates.forEach((icon) => {
             if (icon.parentNode) {
               icon.parentNode.removeChild(icon);
             }
@@ -356,12 +627,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (iconsWrapperRef.current) {
           const wrapper = iconsWrapperRef.current;
           const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-          const originalCount = allIcons.length / 2;
-          Array.from(allIcons).slice(originalCount).forEach((icon) => {
-            if (icon.parentNode) {
-              icon.parentNode.removeChild(icon);
-            }
-          });
+          const expectedCount = allIconsMobile.length;
+          if (allIcons.length > expectedCount) {
+            const iconsArray = Array.from(allIcons);
+            const duplicates = iconsArray.slice(expectedCount);
+            duplicates.forEach((icon) => {
+              if (icon.parentNode) {
+                icon.parentNode.removeChild(icon);
+              }
+            });
+          }
         }
       };
     }, [isMobile]);
@@ -668,61 +943,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
     }, [textIndex, direction, returnFromProjects]);
 
-    const allIcons = [
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
-        name: "HTML",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-        name: "CSS",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
-        name: "SCSS",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
-        name: "JavaScript",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-        name: "React",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
-        name: "Next.js",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
-        name: "Node.js",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
-        name: "Python",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
-        name: "Django",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
-        name: "Wordpress",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
-        name: "MongoDb",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
-        name: "Docker",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
-        name: "Prisma",
-      },
-    ];
-
     return (
       <div
         ref={ref}
@@ -822,9 +1042,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                   ref={iconsWrapperRef} 
                   style={{ display: 'flex', gap: '25px', willChange: 'transform' }}
                 >
-                  {allIcons.map((icon, index) => (
+                  {allIconsMobile.map((icon, index) => (
                     <div
-                      key={index}
+                      key={`mobile-${index}`}
                       ref={(el) => {
                         iconContainers.current[index] = el;
                       }}
@@ -848,9 +1068,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 </div>
               ) : (
                 <>
-                  {allIcons.map((icon, index) => (
+                  {allIconsDesktop.map((icon, index) => (
                     <div
-                      key={index}
+                      key={`desktop-${textIndex}-${index}`}
                       ref={(el) => {
                         iconContainers.current[index] = el;
                       }}
