@@ -533,7 +533,7 @@ const SingleProject = ({
               const displaySrc = isImgGif ? imgSrc : optimizeImageUrl(imgSrc, isMobile ? 800 : 1200, "85");
               const slideClass = `${styles.slideshowImage} ${index === currentImageIndex ? styles.slideshowImageActive : ""}`;
               const slideStyle = {
-                position: (index === 0 ? "relative" : "absolute") as const,
+                position: (index === 0 ? "relative" : "absolute") as "relative" | "absolute",
                 top: index === 0 ? "auto" : 0,
                 left: index === 0 ? "auto" : 0,
                 width: "100%",

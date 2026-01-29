@@ -404,17 +404,20 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
       const mobileCta = container.querySelector(`.${styles.mobileCta}`);
 
-      if (mosaicItems.length === 0) {
+      // Sur mobile les .mosaicItem sont en display:none mais toujours dans le DOM (4 éléments).
+      // Si jamais on a 0 ou peu d'items, on lance quand même l'animation pour le reste (images droite, mobile, etc.)
+      const mosaicArray = Array.from(mosaicItems);
+      const hasEnoughMosaic = mosaicArray.length >= 2;
+
+      if (mosaicArray.length === 0) {
         setTimeout(() => runAnimation(), 50);
         return;
       }
 
-      if (mosaicItems.length < 3) {
+      if (!hasEnoughMosaic && mosaicArray.length === 1) {
         setTimeout(() => runAnimation(), 100);
         return;
       }
-
-      const mosaicArray = Array.from(mosaicItems);
       
       const allConnected = mosaicArray.every((item) => item.isConnected);
       if (!allConnected) {
@@ -611,6 +614,32 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         }, 0.7);
       }
     }
+
+    // Fallback : forcer l'affichage des images (mosaic + cover) après 0,8 s si l'animation n'a pas suffi
+    const fallbackTimer = setTimeout(() => {
+      const el = containerRef.current;
+      if (!el) return;
+      const mosaicItems = el.querySelectorAll(`.${styles.mosaicItem}`);
+      const mosaicImgs = el.querySelectorAll(`.${styles.mosaicItem} img`);
+      const rightImg = el.querySelector(`.${styles.right} img`);
+      const mobileImg = el.querySelector(`.${styles.mobileImage}`);
+      const mobileLeft = el.querySelector(`.${styles.mobileImageLeft}`);
+      const mobileRight = el.querySelector(`.${styles.mobileImageRight}`);
+      const toShow = [
+        ...mosaicItems,
+        ...mosaicImgs,
+        ...(rightImg ? [rightImg] : []),
+        ...(mobileImg ? [mobileImg] : []),
+        ...(mobileLeft ? [mobileLeft] : []),
+        ...(mobileRight ? [mobileRight] : []),
+      ];
+      toShow.forEach((node) => {
+        if (node && parseFloat(getComputedStyle(node as Element).opacity) < 0.95) {
+          gsap.set(node, { opacity: 1, x: 0, y: 0, scale: 1 });
+        }
+      });
+    }, 800);
+    return () => clearTimeout(fallbackTimer);
   }, [categoryIndex]);
 
   return (

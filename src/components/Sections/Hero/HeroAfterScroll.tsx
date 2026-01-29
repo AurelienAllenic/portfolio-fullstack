@@ -1011,6 +1011,33 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 )}
               </p>
             </div>
+            <button
+              type="button"
+              className={styles.linkToProjects}
+              onClick={() => {
+                if (allAnimationsComplete) {
+                  setScrollLocked(true);
+                  const tl = gsap.timeline({
+                    onComplete: () => {
+                      onTransitionToProjects?.();
+                    },
+                  });
+                  tl.to(overlayRef.current, {
+                    "--gradient-size": "0%",
+                    duration: 0.5,
+                    ease: "power2.out",
+                  });
+                  tl.to(
+                    contentContainerRef.current,
+                    { opacity: 0, duration: 0.5, ease: "power2.out" },
+                    "-=0.5"
+                  );
+                }
+              }}
+              aria-label={t("projects.view")}
+            >
+              {t("projects.view")}
+            </button>
           </div>
           <div className={styles.iconsWrapper}>
             <div 

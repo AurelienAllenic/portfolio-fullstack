@@ -94,6 +94,7 @@
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 200px 180px;
   gap: 14px;
+  width: 100%;
   position: relative;
 
   .mosaicItem {
@@ -255,6 +256,7 @@
   left: 65%;
   top: 5px;
   z-index: 1;
+
   @media (max-width: 586px) {
     font-size: 45px;
   }
@@ -306,16 +308,25 @@
 
 .mobileHeaderRow {
   display: none;
-  
+
   @media (max-width: 900px) {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     gap: 10px;
+    position: relative;
   }
   @media (max-width: 630px) {
     justify-content: center;
+  }
+
+  /* Forcer les dimensions du wrapper BlurImage pour ne pas casser le layout (wrapper = width/height 100% par défaut) */
+  .mobileImage {
+    width: 200px !important;
+    min-width: 200px;
+    height: 265px !important;
+    flex-shrink: 0;
   }
 }
 
@@ -324,7 +335,8 @@
   flex-direction: column;
   gap: 0;
   flex: 1;
-  
+  position: relative;
+
   @media (max-width: 480px) {
     flex: 0 0 30%;
   }
@@ -340,7 +352,7 @@
 
 .mobileDescription {
   display: none;
-  
+
   @media (max-width: 900px) {
     display: block;
     font-family: $font-family-primary;
@@ -348,7 +360,7 @@
     line-height: 1.6;
     padding: 50px 0 0 0;
     width: 55%;
-    
+
     p {
       margin: 0 0 6px;
     }
@@ -533,22 +545,32 @@
 }
 
 .right {
-  display: flex; align-items: center; justify-content: center;
-  padding-right: 65px;
-  
-  @media (max-width: 1214px) {
-    padding-right: 100px;
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0;
+  /* Hauteur explicite pour que l’image cover ait de la place (grid align-items: center sinon colonne à 0) */
+  align-self: stretch;
+  min-height: min(60vh, 480px);
+
   @media (max-width: 900px) {
     display: none;
   }
 
+  > a,
+  > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: min(60vh, 480px);
+  }
+
   img {
-    width:90%;
+    width: 100%;
     height: min(60vh, 480px);
     aspect-ratio: 3 / 4;
     object-fit: cover;
+    object-position: center;
     display: block;
     filter: brightness(0.7);
     opacity: 0;
@@ -556,10 +578,8 @@
     background-color: #1a1a1a;
     background-image: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
     background-size: 200% 100%;
-    
-    @media (max-width: 1214px) {
-      width: 100%;
-      height: 430px;
+    @media(max-width: 767px){
+      min-width: 400px;
     }
   }
 }
@@ -576,7 +596,7 @@
   background-color: #1a1a1a;
   background-image: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
   background-size: 200% 100%;
-  
+
   @media (max-width: 480px) {
     flex: 1;
     width: auto;
@@ -751,7 +771,9 @@
   filter: blur(20px);
   transform: scale(1.05);
   overflow: hidden;
-
+  @media(max-width: 767px){
+    min-width: 400px;
+  }
   img {
     position: absolute;
     inset: 0;

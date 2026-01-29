@@ -39,14 +39,14 @@
   justify-content: center;
   align-items: flex-end;
   
-  padding-top: 120px;
-  padding-bottom: 15vh;
+  padding-top: 80px;
+  padding-bottom: 8vh;
   z-index: 5;
   overflow: visible;
 
   @media (max-width: 768px) {
     align-items: center;
-    padding-top: 80px;
+    padding-top: 60px;
     padding-bottom: 0;
     overflow: visible;
   }
@@ -244,6 +244,27 @@
         @media (max-height: 590px) and (min-width: 768px) {
           font-size: 14px;
           line-height: 21px;
+        }
+      }
+
+      .linkToProjects {
+        margin-top: 1rem;
+        padding: 0;
+        background: none;
+        border: none;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1rem;
+        text-decoration: underline;
+        cursor: pointer;
+        opacity: 0.9;
+        transition: opacity 0.2s ease;
+        &:hover {
+          opacity: 1;
+        }
+        @media (max-width: 768px) {
+          margin-top: 0.75rem;
+          font-size: 0.95rem;
         }
       }
 
