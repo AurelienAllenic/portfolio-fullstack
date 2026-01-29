@@ -23,6 +23,7 @@ const App: React.FC = () => {
           <BrowserRouter>
           <Routes>
             <Route path="/" element={<SinglePage />} />
+            <Route path="/projects/:categorySlug/:programmingLanguage" element={<SingleProjectPage />} />
             <Route path="/projects/:categorySlug" element={<SingleProjectPage />} />
             <Route path="/credits" element={<Credits />} />
             <Route path="/mentions-legales" element={<Mentions />} />

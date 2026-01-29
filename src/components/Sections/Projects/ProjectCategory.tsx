@@ -86,6 +86,33 @@ const getTechName = (url: string): string => {
   return 'Technologie';
 };
 
+// Extraire le slug du langage depuis l'URL de l'icône (pour la route)
+const getTechSlug = (url: string): string => {
+  // Extraire le nom de fichier depuis l'URL Cloudinary
+  const match = url.match(/\/([^/]+)_[^_]+\.webp$/);
+  if (match) {
+    let name = match[1];
+    // Enlever les suffixes comme "-icon"
+    name = name.replace(/-icon$/, '');
+    
+    // Normaliser les noms pour correspondre aux technologies dans les projets
+    if (name === 'nodejs' || name === 'node') return 'nodejs';
+    if (name === 'reactjs' || name === 'react') return 'reactjs';
+    if (name === 'nextjs' || name === 'next') return 'nextjs';
+    if (name === 'wordpress') return 'wordpress';
+    if (name === 'php') return 'php';
+    if (name === 'javascript' || name === 'js') return 'javascript';
+    if (name === 'jquery') return 'jquery';
+    if (name === 'html') return 'html';
+    if (name === 'css') return 'css';
+    if (name === 'scss') return 'scss';
+    if (name === 'python') return 'python';
+    if (name === 'django') return 'django';
+    return name.toLowerCase();
+  }
+  return '';
+};
+
 const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProps) => {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
@@ -228,6 +255,22 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       const projectUrl = `/projects/${cover.slug}?project=${projectIndex}`;
       pendingUrlRef.current = projectUrl;
+      
+      // Déclencher l'animation
+      setIsTransitioning(true);
+    }
+  };
+
+  const handleTechIconClick = (e: React.MouseEvent<HTMLAnchorElement>, techUrl: string) => {
+    e.preventDefault();
+    
+    // Sauvegarder l'index de la catégorie
+    if (categoryIndex !== undefined) {
+      sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
+      sessionStorage.setItem('shouldRestoreScroll', 'true');
+      const techSlug = getTechSlug(techUrl);
+      const techUrl_path = `/projects/${cover.slug}/${techSlug}`;
+      pendingUrlRef.current = techUrl_path;
       
       // Déclencher l'animation
       setIsTransitioning(true);
@@ -591,17 +634,20 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
               {titleParts.accent}
             </h3>
           </div>
-          {projects && projects[0] ? (
-            <a
-              href={`/projects/${cover.slug}?project=0`}
-              onClick={(e) => handleProjectImageClick(e, 0)}
-              style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
-            >
+          {(() => {
+            const projectIndex = findProjectIndexByImage(cover.mainImage);
+            return projectIndex !== null ? (
+              <a
+                href={`/projects/${cover.slug}?project=${projectIndex}`}
+                onClick={(e) => handleProjectImageClick(e, projectIndex)}
+                style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+              >
+                <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+              </a>
+            ) : (
               <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
-            </a>
-          ) : (
-            <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
-          )}
+            );
+          })()}
         </div>
 
         <div className={styles.mobileDescription}>
@@ -677,13 +723,27 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         <div className={styles.icons}>
           {cover.listIcons.map((it, i) => {
             if (typeof it === "string") {
+              const techSlug = isUrl(it) ? getTechSlug(it) : null;
+              const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+              
               return (
                 <div key={i} className={styles.iconContainer}>
                   {isUrl(it) ? (
-                    <>
-                      <img src={it} alt={getTechName(it)} />
-                      <span className={styles.tooltip}>{getTechName(it)}</span>
-                    </>
+                    techUrl ? (
+                      <a
+                        href={techUrl}
+                        onClick={(e) => handleTechIconClick(e, it)}
+                        style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+                      >
+                        <img src={it} alt={getTechName(it)} />
+                        <span className={styles.tooltip}>{getTechName(it)}</span>
+                      </a>
+                    ) : (
+                      <>
+                        <img src={it} alt={getTechName(it)} />
+                        <span className={styles.tooltip}>{getTechName(it)}</span>
+                      </>
+                    )
                   ) : (
                     <>
                       <span>{it}</span>
@@ -693,10 +753,26 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
                 </div>
               );
             }
+            const techSlug = getTechSlug(it.src);
+            const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+            
             return (
               <div key={i} className={styles.iconContainer}>
-                <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+                {techUrl ? (
+                  <a
+                    href={techUrl}
+                    onClick={(e) => handleTechIconClick(e, it.src)}
+                    style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+                  >
+                    <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                    <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+                  </a>
+                ) : (
+                  <>
+                    <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                    <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+                  </>
+                )}
               </div>
             );
           })}
@@ -704,17 +780,20 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       </div>
 
         <aside className={styles.right}>
-          {projects && projects[0] ? (
-            <a
-              href={`/projects/${cover.slug}?project=0`}
-              onClick={(e) => handleProjectImageClick(e, 0)}
-              style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
-            >
+          {(() => {
+            const projectIndex = findProjectIndexByImage(cover.mainImage);
+            return projectIndex !== null ? (
+              <a
+                href={`/projects/${cover.slug}?project=${projectIndex}`}
+                onClick={(e) => handleProjectImageClick(e, projectIndex)}
+                style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+              >
+                <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+              </a>
+            ) : (
               <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
-            </a>
-          ) : (
-            <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
-          )}
+            );
+          })()}
         </aside>
 
         <div className={styles.mobileBottomSection}>
@@ -745,13 +824,27 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           <div className={styles.mobileIcons}>
             {cover.listIcons.map((it, i) => {
               if (typeof it === "string") {
+                const techSlug = isUrl(it) ? getTechSlug(it) : null;
+                const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+                
                 return (
                   <div key={i} className={styles.iconContainer}>
                     {isUrl(it) ? (
-                      <>
-                        <img src={it} alt={getTechName(it)} />
-                        <span className={styles.tooltip}>{getTechName(it)}</span>
-                      </>
+                      techUrl ? (
+                        <a
+                          href={techUrl}
+                          onClick={(e) => handleTechIconClick(e, it)}
+                          style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+                        >
+                          <img src={it} alt={getTechName(it)} />
+                          <span className={styles.tooltip}>{getTechName(it)}</span>
+                        </a>
+                      ) : (
+                        <>
+                          <img src={it} alt={getTechName(it)} />
+                          <span className={styles.tooltip}>{getTechName(it)}</span>
+                        </>
+                      )
                     ) : (
                       <>
                         <span>{it}</span>
@@ -761,12 +854,30 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
                   </div>
                 );
               }
+              const techSlug = getTechSlug(it.src);
+              const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+              
               return (
                 <div key={i} className={styles.iconContainer}>
-                  <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                  <span className={styles.tooltip}>
-                    {it.alt ?? getTechName(it.src)}
-                  </span>
+                  {techUrl ? (
+                    <a
+                      href={techUrl}
+                      onClick={(e) => handleTechIconClick(e, it.src)}
+                      style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+                    >
+                      <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                      <span className={styles.tooltip}>
+                        {it.alt ?? getTechName(it.src)}
+                      </span>
+                    </a>
+                  ) : (
+                    <>
+                      <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
+                      <span className={styles.tooltip}>
+                        {it.alt ?? getTechName(it.src)}
+                      </span>
+                    </>
+                  )}
                 </div>
               );
             })}
