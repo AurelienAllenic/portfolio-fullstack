@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SingleProject from "./SingleProject";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
@@ -21,9 +21,14 @@ import type { ProjectCover, Project } from "./ProjectCategory";
 
 const SingleProjectPage = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  
+  // Récupérer l'index du projet depuis l'URL
+  const projectIndexParam = searchParams.get('project');
+  const initialProjectIndex = projectIndexParam ? parseInt(projectIndexParam, 10) : 0;
 
   const covers: ProjectCover[] = [
     projects_cover,
@@ -117,6 +122,7 @@ const SingleProjectPage = () => {
         <SingleProject
           projects={projectsData[categoryIndex]}
           categoryTitle={covers[categoryIndex].title}
+          initialProjectIndex={isNaN(initialProjectIndex) ? 0 : initialProjectIndex}
           onBack={handleBack}
         />
       </div>

@@ -86,13 +86,67 @@ const getTechName = (url: string): string => {
   return 'Technologie';
 };
 
-const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProps) => {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  // Fonction pour trouver l'index du projet correspondant à une image
+  const findProjectIndexByImage = (imageUrl: string): number | null => {
+    if (!projects || projects.length === 0) return null;
+    
+    // Extraire le nom de fichier de base (sans transformations Cloudinary)
+    const extractBaseFilename = (url: string): string => {
+      // Extraire la partie après "/image/upload/"
+      const uploadMatch = url.match(/\/image\/upload\/[^/]+\/(.+)$/);
+      if (uploadMatch) {
+        return uploadMatch[1].split('?')[0];
+      }
+      // Fallback: prendre la dernière partie de l'URL
+      const parts = url.split('/');
+      return parts[parts.length - 1].split('?')[0];
+    };
+    
+    const baseFilename = extractBaseFilename(imageUrl);
+    
+    // Chercher dans les projets
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+      
+      // Vérifier l'image principale
+      if (project.image) {
+        const projectBaseFilename = extractBaseFilename(project.image);
+        if (projectBaseFilename === baseFilename) {
+          return i;
+        }
+      }
+      
+      // Vérifier les images du diaporama
+      if (project.imageDiaporama && project.imageDiaporama.length > 0) {
+        for (const diapoImage of project.imageDiaporama) {
+          const diapoBaseFilename = extractBaseFilename(diapoImage);
+          if (diapoBaseFilename === baseFilename) {
+            return i;
+          }
+        }
+      }
+      
+      // Vérifier le tableau images
+      if (project.images && project.images.length > 0) {
+        for (const img of project.images) {
+          const imgBaseFilename = extractBaseFilename(img);
+          if (imgBaseFilename === baseFilename) {
+            return i;
+          }
+        }
+      }
+    }
+    
+    return null;
+  };
   
   // Détecter si on est en mobile
   useEffect(() => {
@@ -159,6 +213,21 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       pendingUrlRef.current = e.currentTarget.href;
+      
+      // Déclencher l'animation
+      setIsTransitioning(true);
+    }
+  };
+
+  const handleProjectImageClick = (e: React.MouseEvent<HTMLAnchorElement>, projectIndex: number) => {
+    e.preventDefault();
+    
+    // Sauvegarder l'index de la catégorie et l'URL avec l'index du projet
+    if (categoryIndex !== undefined) {
+      sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
+      sessionStorage.setItem('shouldRestoreScroll', 'true');
+      const projectUrl = `/projects/${cover.slug}?project=${projectIndex}`;
+      pendingUrlRef.current = projectUrl;
       
       // Déclencher l'animation
       setIsTransitioning(true);
@@ -522,7 +591,17 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
               {titleParts.accent}
             </h3>
           </div>
-          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+          {projects && projects[0] ? (
+            <a
+              href={`/projects/${cover.slug}?project=0`}
+              onClick={(e) => handleProjectImageClick(e, 0)}
+              style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+            >
+              <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+            </a>
+          ) : (
+            <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+          )}
         </div>
 
         <div className={styles.mobileDescription}>
@@ -536,15 +615,34 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
 
         <aside className={styles.left}>
         <div className={styles.mosaic}>
-          {cover.sideImages.slice(0, 4).map((src, i) => (
-            <div key={i} className={styles.mosaicItem}>
-              <img 
-                loading={i < 2 ? "eager" : "lazy"} 
-                src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
-                alt={`side-${i + 1}`}
-              />
-            </div>
-          ))}
+          {cover.sideImages.slice(0, 4).map((src, i) => {
+            const projectIndex = findProjectIndexByImage(src);
+            const projectUrl = projectIndex !== null ? `/projects/${cover.slug}?project=${projectIndex}` : null;
+            
+            return (
+              <div key={i} className={styles.mosaicItem}>
+                {projectUrl ? (
+                  <a 
+                    href={projectUrl}
+                    onClick={(e) => projectIndex !== null && handleProjectImageClick(e, projectIndex)}
+                    style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+                  >
+                    <img 
+                      loading={i < 2 ? "eager" : "lazy"} 
+                      src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
+                      alt={`side-${i + 1}`}
+                    />
+                  </a>
+                ) : (
+                  <img 
+                    loading={i < 2 ? "eager" : "lazy"} 
+                    src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
+                    alt={`side-${i + 1}`}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <a 
@@ -606,16 +704,44 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
       </div>
 
         <aside className={styles.right}>
-          <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+          {projects && projects[0] ? (
+            <a
+              href={`/projects/${cover.slug}?project=0`}
+              onClick={(e) => handleProjectImageClick(e, 0)}
+              style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+            >
+              <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+            </a>
+          ) : (
+            <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+          )}
         </aside>
 
         <div className={styles.mobileBottomSection}>
-          <img
-            loading="lazy"
-            src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
-            alt="mobile-1"
-            className={styles.mobileImageLeft}
-          />
+          {(() => {
+            const projectIndex = cover.sideImages[1] ? findProjectIndexByImage(cover.sideImages[1]) : null;
+            return projectIndex !== null ? (
+              <a
+                href={`/projects/${cover.slug}?project=${projectIndex}`}
+                onClick={(e) => handleProjectImageClick(e, projectIndex)}
+                style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+              >
+                <img
+                  loading="lazy"
+                  src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
+                  alt="mobile-1"
+                  className={styles.mobileImageLeft}
+                />
+              </a>
+            ) : (
+              <img
+                loading="lazy"
+                src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
+                alt="mobile-1"
+                className={styles.mobileImageLeft}
+              />
+            );
+          })()}
           <div className={styles.mobileIcons}>
             {cover.listIcons.map((it, i) => {
               if (typeof it === "string") {
@@ -645,12 +771,30 @@ const ProjectCategory = ({ cover, categoryIndex }: ProjectCategoryProps) => {
               );
             })}
           </div>
-          <img
-            loading="lazy"
-            src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
-            alt="mobile-2"
-            className={styles.mobileImageRight}
-          />
+          {(() => {
+            const projectIndex = cover.sideImages[2] ? findProjectIndexByImage(cover.sideImages[2]) : null;
+            return projectIndex !== null ? (
+              <a
+                href={`/projects/${cover.slug}?project=${projectIndex}`}
+                onClick={(e) => handleProjectImageClick(e, projectIndex)}
+                style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
+              >
+                <img
+                  loading="lazy"
+                  src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
+                  alt="mobile-2"
+                  className={styles.mobileImageRight}
+                />
+              </a>
+            ) : (
+              <img
+                loading="lazy"
+                src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
+                alt="mobile-2"
+                className={styles.mobileImageRight}
+              />
+            );
+          })()}
           <a 
             href={`/projects/${cover.slug}`} 
             className={styles.mobileCta}

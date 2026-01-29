@@ -75,17 +75,74 @@ const SingleProject = ({
     }, 200);
   }, []);
 
-  // Slider au début
+  // Slider au début - scroller vers le projet sélectionné si initialProjectIndex est défini
   useEffect(() => {
-    if (sliderRef.current) {
+    if (sliderRef.current && initialProjectIndex > 0) {
+      // Attendre que le DOM soit complètement rendu
+      setTimeout(() => {
+        const slider = sliderRef.current;
+        if (!slider) return;
+        
+        // Trouver l'élément correspondant au projet sélectionné
+        const projectCards = slider.querySelectorAll(`.${styles.sliderImage}`);
+        if (projectCards[initialProjectIndex]) {
+          const targetCard = projectCards[initialProjectIndex] as HTMLElement;
+          const cardLeft = targetCard.offsetLeft;
+          const cardWidth = targetCard.offsetWidth;
+          const sliderWidth = slider.offsetWidth;
+          
+          // Centrer la carte dans le viewport du slider
+          const scrollPosition = cardLeft - (sliderWidth / 2) + (cardWidth / 2);
+          
+          slider.scrollTo({
+            left: Math.max(0, scrollPosition),
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    } else if (sliderRef.current) {
+      // Si pas d'index initial, remettre à 0
       sliderRef.current.scrollTo({ left: 0, behavior: 'instant' });
     }
-  }, []);
+  }, [initialProjectIndex]);
 
   // Réinitialiser l'index de l'image quand on change de projet
   useEffect(() => {
     setCurrentImageIndex(0);
     isTransitioningRef.current = false;
+  }, [selectedIndex]);
+
+  // Scroller le slider pour afficher la carte active quand selectedIndex change
+  useEffect(() => {
+    if (sliderRef.current) {
+      setTimeout(() => {
+        const slider = sliderRef.current;
+        if (!slider) return;
+        
+        const projectCards = slider.querySelectorAll(`.${styles.sliderImage}`);
+        if (projectCards[selectedIndex]) {
+          const targetCard = projectCards[selectedIndex] as HTMLElement;
+          const cardLeft = targetCard.offsetLeft;
+          const cardWidth = targetCard.offsetWidth;
+          const sliderWidth = slider.offsetWidth;
+          const sliderScrollLeft = slider.scrollLeft;
+          const sliderScrollRight = sliderScrollLeft + sliderWidth;
+          
+          // Vérifier si la carte est visible
+          const cardRight = cardLeft + cardWidth;
+          const isVisible = cardLeft >= sliderScrollLeft && cardRight <= sliderScrollRight;
+          
+          // Si la carte n'est pas visible, scroller pour la centrer
+          if (!isVisible) {
+            const scrollPosition = cardLeft - (sliderWidth / 2) + (cardWidth / 2);
+            slider.scrollTo({
+              left: Math.max(0, scrollPosition),
+              behavior: 'smooth'
+            });
+          }
+        }
+      }, 100);
+    }
   }, [selectedIndex]);
 
   // Animation lors du changement de projet
@@ -291,6 +348,29 @@ const SingleProject = ({
   const handleImageClick = (index: number) => {
     if (index !== selectedIndex) {
       setSelectedIndex(index);
+      
+      // Scroller pour centrer la carte cliquée
+      if (sliderRef.current) {
+        setTimeout(() => {
+          const slider = sliderRef.current;
+          if (!slider) return;
+          
+          const projectCards = slider.querySelectorAll(`.${styles.sliderImage}`);
+          if (projectCards[index]) {
+            const targetCard = projectCards[index] as HTMLElement;
+            const cardLeft = targetCard.offsetLeft;
+            const cardWidth = targetCard.offsetWidth;
+            const sliderWidth = slider.offsetWidth;
+            
+            const scrollPosition = cardLeft - (sliderWidth / 2) + (cardWidth / 2);
+            
+            slider.scrollTo({
+              left: Math.max(0, scrollPosition),
+              behavior: 'smooth'
+            });
+          }
+        }, 50);
+      }
     }
   };
 

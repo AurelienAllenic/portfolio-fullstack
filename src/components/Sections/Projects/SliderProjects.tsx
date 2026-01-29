@@ -10,6 +10,12 @@ import {
   projects_cover,
   solead_cover,
   iim_cover,
+  openclassrooms1,
+  openclassrooms2,
+  openclassrooms3,
+  projects,
+  solead,
+  iim,
 } from "./Data";
 
 // Optimiser les URLs Cloudinary
@@ -78,6 +84,15 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     openclassrooms3_cover,
     openclassrooms2_cover,
     openclassrooms1_cover,
+  ];
+
+  const projectsData = [
+    projects,
+    solead,
+    iim,
+    openclassrooms3,
+    openclassrooms2,
+    openclassrooms1,
   ];
 
   useEffect(() => {
@@ -1069,6 +1084,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         >
           <ProjectCategory 
             cover={cover} 
+            projects={projectsData[index]}
             categoryIndex={index === currentIndex ? currentIndex : undefined}
           />
         </div>
