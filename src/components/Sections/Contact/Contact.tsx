@@ -4,6 +4,10 @@ import { BsArrowRight } from "react-icons/bs";
 import Footer from "../../General/Footer/Footer";
 import { gsap } from "gsap";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import BlurImage from "../../General/BlurImage";
+
+const CONTACT_BACKGROUND_IMAGE =
+  "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp";
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -108,6 +112,14 @@ const Contact = () => {
   return (
     <>
     <section className={styles.containerContact} id="contact">
+      <div className={styles.contactBackgroundImage} aria-hidden>
+        <BlurImage
+          src={CONTACT_BACKGROUND_IMAGE}
+          alt=""
+          objectFit="cover"
+          loading="eager"
+        />
+      </div>
       <div className={styles.contactInner}>
         {/* Section gauche : Formulaire */}
         <div className={styles.formSection}>

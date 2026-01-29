@@ -15,20 +15,16 @@
 
   
 
-  // ✅ Pseudo-élément pour l'image de fond à droite
-  &::after {
-    content: "";
+  // Image de fond à droite (BlurImage pour effet LQIP)
+  .contactBackgroundImage {
     position: absolute;
     top: 0;
     right: 0;
     width: 50%;
     height: 100%;
-    background-image: url("https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     filter: brightness(0.6);
     z-index: 0;
+    overflow: hidden;
 
     @media (max-width: 900px) {
       width: 100%;

@@ -20,16 +20,12 @@ import {
 import type { ProjectCover, Project } from "./ProjectCategory";
 
 const SingleProjectPage = () => {
-  const { categorySlug } = useParams<{ categorySlug: string }>();
+  const { categorySlug, programmingLanguage } = useParams<{ categorySlug: string; programmingLanguage?: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
   
-  // Récupérer l'index du projet depuis l'URL
-  const projectIndexParam = searchParams.get('project');
-  const initialProjectIndex = projectIndexParam ? parseInt(projectIndexParam, 10) : 0;
-
   const covers: ProjectCover[] = [
     projects_cover,
     solead_cover,
@@ -50,6 +46,47 @@ const SingleProjectPage = () => {
 
   // Trouver l'index de la catégorie par slug
   const categoryIndex = covers.findIndex(cover => cover.slug === categorySlug);
+
+  // Filtrer les projets par langage si programmingLanguage est défini
+  let filteredProjects = projectsData[categoryIndex] || [];
+  if (programmingLanguage && categoryIndex !== -1) {
+    const normalizedLanguage = programmingLanguage.toLowerCase();
+    filteredProjects = filteredProjects.filter(project => 
+      project.technologies.some(tech => {
+        const normalizedTech = tech.toLowerCase();
+        // Gérer les correspondances spéciales
+        if (normalizedLanguage === 'react' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
+        if (normalizedLanguage === 'reactjs' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
+        if (normalizedLanguage === 'node' && (normalizedTech === 'nodejs' || normalizedTech === 'node')) return true;
+        if (normalizedLanguage === 'nodejs' && (normalizedTech === 'nodejs' || normalizedTech === 'node')) return true;
+        if (normalizedLanguage === 'next' && (normalizedTech === 'nextjs' || normalizedTech === 'next')) return true;
+        if (normalizedLanguage === 'nextjs' && (normalizedTech === 'nextjs' || normalizedTech === 'next')) return true;
+        if (normalizedLanguage === 'js' && (normalizedTech === 'javascript' || normalizedTech === 'js')) return true;
+        if (normalizedLanguage === 'javascript' && (normalizedTech === 'javascript' || normalizedTech === 'js')) return true;
+        return normalizedTech === normalizedLanguage;
+      })
+    );
+  }
+
+  // Récupérer l'index du projet depuis l'URL et le convertir pour la liste filtrée
+  const projectIndexParam = searchParams.get('project');
+  let initialProjectIndex = 0;
+  
+  if (projectIndexParam && categoryIndex !== -1) {
+    const originalIndex = parseInt(projectIndexParam, 10);
+    const allProjects = projectsData[categoryIndex] || [];
+    
+    // Si on a un filtre par langage, trouver le projet dans la liste complète puis son index dans la liste filtrée
+    if (programmingLanguage && allProjects[originalIndex]) {
+      const targetProject = allProjects[originalIndex];
+      // Trouver l'index de ce projet dans la liste filtrée
+      const filteredIndex = filteredProjects.findIndex(p => p.id === targetProject.id);
+      initialProjectIndex = filteredIndex !== -1 ? filteredIndex : 0;
+    } else {
+      // Pas de filtre, utiliser l'index directement
+      initialProjectIndex = originalIndex;
+    }
+  }
 
   if (categoryIndex === -1) {
     return (
@@ -120,9 +157,11 @@ const SingleProjectPage = () => {
       />
       <div style={{ opacity: showContent ? 1 : 0 }}>
         <SingleProject
-          projects={projectsData[categoryIndex]}
-          categoryTitle={covers[categoryIndex].title}
-          initialProjectIndex={isNaN(initialProjectIndex) ? 0 : initialProjectIndex}
+          projects={filteredProjects}
+          categoryTitle={programmingLanguage 
+            ? `${covers[categoryIndex].title} - ${programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1)}`
+            : covers[categoryIndex].title}
+          initialProjectIndex={isNaN(initialProjectIndex) || initialProjectIndex >= filteredProjects.length ? 0 : initialProjectIndex}
           onBack={handleBack}
         />
       </div>
