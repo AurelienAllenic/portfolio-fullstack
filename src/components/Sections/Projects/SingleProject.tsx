@@ -5,6 +5,7 @@ import type { Project } from "./ProjectCategory";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import BlurImage from "../../General/BlurImage";
 
 interface SingleProjectProps {
   projects: Project[];
@@ -29,7 +30,9 @@ const SingleProject = ({
   const slideIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTransitioningRef = useRef(false);
   const gifDurationsRef = useRef<Map<string, number>>(new Map());
-  
+  const [loadedGifs, setLoadedGifs] = useState<Record<string, boolean>>({});
+  const markGifLoaded = (key: string) => setLoadedGifs((prev) => ({ ...prev, [key]: true }));
+
   // Détecter si on est en mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -207,57 +210,51 @@ const SingleProject = ({
     }
   };
 
-  // Optimiser les URLs Cloudinary
+  // Optimiser les URLs Cloudinary (extrait le public_id, pas de f_webp pour les GIFs)
   const optimizeImageUrl = (url: string, width?: number, quality: string = "auto"): string => {
     if (!url.includes("cloudinary.com")) return url;
-    
     const parts = url.split("/image/upload/");
     if (parts.length !== 2) return url;
-    
-    const [base, rest] = parts;
-    let params = `f_webp,q_${quality}`;
-    
-    if (width) {
-      params += `,w_${width}`;
-    }
-    
-    return `${base}/image/upload/${params}/${rest}`;
+    const base = parts[0];
+    const rest = parts[1];
+    const lastSlash = rest.lastIndexOf("/");
+    const publicId = lastSlash >= 0 ? rest.slice(lastSlash + 1) : rest;
+    const isGif = publicId.toLowerCase().endsWith(".gif");
+    let params = isGif ? `q_${quality}` : `f_webp,q_${quality}`;
+    if (width) params += `,w_${width}`;
+    return `${base}/image/upload/${params}/${publicId}`;
   };
 
-  // Précharger seulement la première image et calculer les durées des GIFs
+  // Précharger seulement la première image et calculer les durées des GIFs (GIFs exclus : URL d'origine, pas d'optimisation)
   useEffect(() => {
     const preloadImages = async () => {
       if (projectImages.length === 0) return;
       
-      // Précharger seulement la première image immédiatement
       const firstImage = projectImages[0];
-      const optimizedFirstImage = optimizeImageUrl(firstImage, 1200, "85");
+      const firstImageSrc = isGif(firstImage) ? firstImage : optimizeImageUrl(firstImage, 1200, "85");
       
       await new Promise<void>((resolve) => {
         const img = new Image();
         img.onload = () => resolve();
         img.onerror = () => resolve();
-        img.src = optimizedFirstImage;
+        img.src = firstImageSrc;
       });
       
-      // Si c'est un GIF, calculer sa durée
       if (isGif(firstImage)) {
         const duration = await getGifDuration(firstImage);
         gifDurationsRef.current.set(firstImage, duration);
       }
       
-      // Précharger les autres images en arrière-plan avec délai
       if (projectImages.length > 1) {
         setTimeout(() => {
           projectImages.slice(1).forEach(async (src) => {
-            const optimizedSrc = optimizeImageUrl(src, 1200, "85");
+            const preloadSrc = isGif(src) ? src : optimizeImageUrl(src, 1200, "85");
             await new Promise<void>((resolve) => {
               const img = new Image();
               img.onload = () => resolve();
               img.onerror = () => resolve();
-              img.src = optimizedSrc;
+              img.src = preloadSrc;
             });
-            
             if (isGif(src)) {
               const duration = await getGifDuration(src);
               gifDurationsRef.current.set(src, duration);
@@ -482,21 +479,38 @@ const SingleProject = ({
             {projects.map((project, index) => {
               const projectImages = getProjectImages(project);
               const firstImage = projectImages[0] || '';
-              const optimizedThumbnail = optimizeImageUrl(firstImage, isMobile ? 200 : 300, "75");
+              const isFirstGif = isGif(firstImage);
+              const thumbnailSrc = isFirstGif ? firstImage : optimizeImageUrl(firstImage, isMobile ? 200 : 300, "75");
               
               return (
                 <div
                   key={project.id}
                   className={`${styles.sliderImage} ${
                     index === selectedIndex ? styles.sliderImageActive : ""
-                  } ${isGif(firstImage) ? styles.sliderImageGif : ""}`}
+                  } ${isFirstGif ? styles.sliderImageGif : ""}`}
                   onClick={() => handleImageClick(index)}
                 >
-                  <img 
-                    src={optimizedThumbnail} 
-                    alt={project.title}
-                    loading={index < 3 ? "eager" : "lazy"}
-                  />
+                  {isFirstGif ? (
+                    <span
+                      className={`${styles.gifPlaceholder} ${loadedGifs[`slider-${project.id}`] ? styles.gifLoaded : ""}`}
+                      style={{ backgroundImage: `url(${firstImage})` }}
+                    >
+                      <img
+                        src={firstImage}
+                        alt={project.title}
+                        loading={index < 3 ? "eager" : "lazy"}
+                        onLoad={() => markGifLoaded(`slider-${project.id}`)}
+                      />
+                    </span>
+                  ) : (
+                    <BlurImage
+                      src={firstImage}
+                      fullSrc={thumbnailSrc}
+                      alt={project.title}
+                      loading={index < 3 ? "eager" : "lazy"}
+                      objectFit="cover"
+                    />
+                  )}
                 </div>
               );
             })}
@@ -515,30 +529,60 @@ const SingleProject = ({
           {/* Image principale avec transition crossfade */}
           <div className={styles.projectMainImage}>
             {projectImages.map((imgSrc, index) => {
-              const optimizedSrc = optimizeImageUrl(
-                imgSrc, 
-                isMobile ? 800 : 1200, 
-                "85"
-              );
+              const isImgGif = isGif(imgSrc);
+              const displaySrc = isImgGif ? imgSrc : optimizeImageUrl(imgSrc, isMobile ? 800 : 1200, "85");
+              const slideClass = `${styles.slideshowImage} ${index === currentImageIndex ? styles.slideshowImageActive : ""}`;
+              const slideStyle = {
+                position: (index === 0 ? "relative" : "absolute") as const,
+                top: index === 0 ? "auto" : 0,
+                left: index === 0 ? "auto" : 0,
+                width: "100%",
+                height: "100%",
+                maxWidth: "100%",
+                objectFit: "cover" as const,
+              };
               
-              return (
-                <img 
+              return isImgGif ? (
+                <span
                   key={`${selectedProject.id}-${index}`}
-                  src={optimizedSrc} 
-                  alt={`${selectedProject.title} - Image ${index + 1}`}
-                  className={`${styles.slideshowImage} ${
-                    index === currentImageIndex ? styles.slideshowImageActive : ''
-                  }`}
-                  loading={index === 0 ? "eager" : "lazy"}
+                  className={`${styles.gifPlaceholder} ${loadedGifs[`slide-${selectedProject.id}-${index}`] ? styles.gifLoaded : ""}`}
                   style={{
-                    position: index === 0 ? 'relative' : 'absolute',
-                    top: index === 0 ? 'auto' : 0,
-                    left: index === 0 ? 'auto' : 0,
-                    width: '100%',
-                    height: '100%',
-                    maxWidth: '100%',
-                    objectFit: 'cover'
+                    position: index === 0 ? "relative" : "absolute",
+                    top: index === 0 ? "auto" : 0,
+                    left: index === 0 ? "auto" : 0,
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "100%",
+                    backgroundImage: `url(${imgSrc})`,
                   }}
+                >
+                  <img
+                    src={imgSrc}
+                    alt={`${selectedProject.title} - Image ${index + 1}`}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    className={slideClass}
+                    style={slideStyle}
+                    onLoad={() => markGifLoaded(`slide-${selectedProject.id}-${index}`)}
+                  />
+                </span>
+              ) : (
+                <BlurImage
+                  key={`${selectedProject.id}-${index}`}
+                  src={imgSrc}
+                  fullSrc={displaySrc}
+                  alt={`${selectedProject.title} - Image ${index + 1}`}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  objectFit="cover"
+                  wrapperStyle={{
+                    position: index === 0 ? "relative" : "absolute",
+                    top: index === 0 ? "auto" : 0,
+                    left: index === 0 ? "auto" : 0,
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "100%",
+                  }}
+                  imgClassName={slideClass}
+                  imgStyle={slideStyle}
                 />
               );
             })}

@@ -18,21 +18,18 @@ import {
   iim,
 } from "./Data";
 
-// Optimiser les URLs Cloudinary
+// Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
-  
   const parts = url.split("/image/upload/");
   if (parts.length !== 2) return url;
-  
-  const [base, rest] = parts;
+  const base = parts[0];
+  const rest = parts[1];
+  const lastSlash = rest.lastIndexOf("/");
+  const publicId = lastSlash >= 0 ? rest.slice(lastSlash + 1) : rest;
   let params = `f_webp,q_${quality}`;
-  
-  if (width) {
-    params += `,w_${width}`;
-  }
-  
-  return `${base}/image/upload/${params}/${rest}`;
+  if (width) params += `,w_${width}`;
+  return `${base}/image/upload/${params}/${publicId}`;
 };
 
 // Précharger une image

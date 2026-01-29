@@ -2,24 +2,22 @@ import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import BlurImage from "../../General/BlurImage";
 import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
 
-// Optimiser les URLs Cloudinary
+// Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
-  
   const parts = url.split("/image/upload/");
   if (parts.length !== 2) return url;
-  
-  const [base, rest] = parts;
+  const base = parts[0];
+  const rest = parts[1];
+  const lastSlash = rest.lastIndexOf("/");
+  const publicId = lastSlash >= 0 ? rest.slice(lastSlash + 1) : rest;
   let params = `f_webp,q_${quality}`;
-  
-  if (width) {
-    params += `,w_${width}`;
-  }
-  
-  return `${base}/image/upload/${params}/${rest}`;
+  if (width) params += `,w_${width}`;
+  return `${base}/image/upload/${params}/${publicId}`;
 };
 
 // Précharger une image
@@ -636,16 +634,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           </div>
           {(() => {
             const projectIndex = findProjectIndexByImage(cover.mainImage);
+            const mainImgSrc = optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85");
+            const content = <BlurImage src={cover.mainImage} fullSrc={mainImgSrc} alt="main" className={styles.mobileImage} loading="eager" />;
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
                 onClick={(e) => handleProjectImageClick(e, projectIndex)}
                 style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
               >
-                <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+                {content}
               </a>
             ) : (
-              <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" className={styles.mobileImage} />
+              content
             );
           })()}
         </div>
@@ -673,17 +673,19 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
                     onClick={(e) => projectIndex !== null && handleProjectImageClick(e, projectIndex)}
                     style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
                   >
-                    <img 
-                      loading={i < 2 ? "eager" : "lazy"} 
-                      src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
+                    <BlurImage 
+                      src={src} 
+                      fullSrc={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
                       alt={`side-${i + 1}`}
+                      loading={i < 2 ? "eager" : "lazy"}
                     />
                   </a>
                 ) : (
-                  <img 
-                    loading={i < 2 ? "eager" : "lazy"} 
-                    src={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
+                  <BlurImage 
+                    src={src} 
+                    fullSrc={optimizeCloudinaryUrl(src, isMobile ? 400 : 600, "80")} 
                     alt={`side-${i + 1}`}
+                    loading={i < 2 ? "eager" : "lazy"}
                   />
                 )}
               </div>
@@ -782,16 +784,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         <aside className={styles.right}>
           {(() => {
             const projectIndex = findProjectIndexByImage(cover.mainImage);
+            const mainImgSrc = optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85");
+            const content = <BlurImage src={cover.mainImage} fullSrc={mainImgSrc} alt="main" loading="eager" />;
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
                 onClick={(e) => handleProjectImageClick(e, projectIndex)}
                 style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
               >
-                <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+                {content}
               </a>
             ) : (
-              <img loading="eager" src={optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85")} alt="main" />
+              content
             );
           })()}
         </aside>
@@ -799,26 +803,19 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         <div className={styles.mobileBottomSection}>
           {(() => {
             const projectIndex = cover.sideImages[1] ? findProjectIndexByImage(cover.sideImages[1]) : null;
+            const src1 = cover.sideImages[1];
+            const fullSrc1 = src1 ? optimizeCloudinaryUrl(src1, 400, "80") : "";
+            const content1 = src1 ? <BlurImage src={src1} fullSrc={fullSrc1} alt="mobile-1" className={styles.mobileImageLeft} loading="lazy" /> : null;
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
                 onClick={(e) => handleProjectImageClick(e, projectIndex)}
                 style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
               >
-                <img
-                  loading="lazy"
-                  src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
-                  alt="mobile-1"
-                  className={styles.mobileImageLeft}
-                />
+                {content1}
               </a>
             ) : (
-              <img
-                loading="lazy"
-                src={optimizeCloudinaryUrl(cover.sideImages[1], 400, "80")}
-                alt="mobile-1"
-                className={styles.mobileImageLeft}
-              />
+              content1
             );
           })()}
           <div className={styles.mobileIcons}>
@@ -884,26 +881,19 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           </div>
           {(() => {
             const projectIndex = cover.sideImages[2] ? findProjectIndexByImage(cover.sideImages[2]) : null;
+            const src2 = cover.sideImages[2];
+            const fullSrc2 = src2 ? optimizeCloudinaryUrl(src2, 400, "80") : "";
+            const content2 = src2 ? <BlurImage src={src2} fullSrc={fullSrc2} alt="mobile-2" className={styles.mobileImageRight} loading="lazy" /> : null;
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
                 onClick={(e) => handleProjectImageClick(e, projectIndex)}
                 style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
               >
-                <img
-                  loading="lazy"
-                  src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
-                  alt="mobile-2"
-                  className={styles.mobileImageRight}
-                />
+                {content2}
               </a>
             ) : (
-              <img
-                loading="lazy"
-                src={optimizeCloudinaryUrl(cover.sideImages[2], 400, "80")}
-                alt="mobile-2"
-                className={styles.mobileImageRight}
-              />
+              content2
             );
           })()}
           <a 
