@@ -17,7 +17,7 @@
   transform: scale(1.05);
 }
 
-/* Radial identique à HeroBeforeScroll (hero.module.scss) : transparent jusqu'à --gradient-size, puis #050505 (transition douce, pas de bord net) */
+/* Le gradient TRANSPARENT au centre rétrécit, le NOIR envahit progressivement */
 .overlay {
   position: fixed;
   top: 0;
@@ -28,112 +28,55 @@
   pointer-events: none;
   display: block;
 
-  /* --black-edge animé à 0 à la fin pour avoir fond noir plein (sinon cercle qui s'assombrit) */
+  /* TRANSPARENT au centre jusqu'à --gradient-size, puis NOIR IMMÉDIAT */
+  /* gradient-size = 100% : tout transparent, image visible */
+  /* gradient-size = 0% : pas de transparent, tout noir */
   background: radial-gradient(
     circle at center,
-    transparent var(--gradient-size, 0%),
-    #050505 var(--black-edge, 315px)
+    transparent var(--gradient-size, 100%),
+    #050505 var(--gradient-size, 100%)
   );
 
-  @media (max-height: 920px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 35%)
-    );
-  }
   @media (max-width: 1650px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 275px)
+      transparent var(--gradient-size, 100%),
+      #050505 var(--gradient-size, 100%)
     );
   }
   @media (max-width: 900px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 225px)
+      transparent var(--gradient-size, 100%),
+      #050505 var(--gradient-size, 100%)
     );
   }
-  /* Mobile : radial plus doux (transition plus étalée, moins marqué) */
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
-      transparent var(--gradient-size, 0%),
-      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 200px) * 0.85),
-      #050505 var(--black-edge, 200px)
-    );
-  }
-  @media (max-width: 435px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 0%),
-      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 180px) * 0.85),
-      #050505 var(--black-edge, 180px)
-    );
-  }
-  @media (max-width: 375px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 0%),
-      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 150px) * 0.85),
-      #050505 var(--black-edge, 150px)
-    );
-  }
-  @media (max-height: 755px) and (min-width: 768px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 200px)
-    );
-  }
-  @media (max-height: 595px) and (min-width: 768px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 150px)
+      transparent var(--gradient-size, 100%),
+      #050505 var(--gradient-size, 100%)
     );
   }
 }
 
+/* Pourcentage en bas à droite */
 .percentContainer {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 2rem;
+  right: 2rem;
   z-index: 100000;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
 
-  &.visible {
-    opacity: 1;
-  }
-
-  /* Sur mobile, forcer le centrage absolu */
   @media (max-width: 767px) {
-    left: 0;
-    right: 0;
-    width: 100%;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    bottom: 1.5rem;
+    right: 1.5rem;
   }
 }
 
 .percentWrap {
   position: relative;
   display: inline-block;
-  /* Centrage du texte pour assurer l'alignement */
-  text-align: center;
-
-  /* Sur mobile, s'assurer que le wrap ne déborde pas */
-  @media (max-width: 767px) {
-    width: auto;
-    margin: 0;
-  }
 }
 
 /* Traînée de vitesse : plusieurs couches du même chiffre, floues et décalées à gauche (effet motion blur) */
@@ -141,62 +84,45 @@
 .percentTrail2,
 .percentTrail3 {
   position: absolute;
-  left: 0;
   right: 0;
-  top: 0;
-  bottom: 0;
+  bottom: 0%;
   font-family: $font-family-primary;
-  font-size: clamp(2rem, 8vw, 4rem);
+  font-size: clamp(7rem, 7vw, 10rem);
   font-weight: 400;
   color: #fff;
   white-space: nowrap;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.1s ease-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.percentContainer.counting .percentTrail,
-.percentContainer.counting .percentTrail2,
-.percentContainer.counting .percentTrail3 {
-  opacity: 1;
+  opacity: 0.5;
+  @media (max-width: 767px) {
+    font-size: clamp(4.5rem, 7vw, 5rem);
+  }
 }
 
 .percentTrail {
-  filter: blur(6px);
-  transform: translateX(-0.12em);
-}
-.percentContainer.counting .percentTrail {
-  opacity: 0.5;
+  filter: blur(4px);
+  transform: translateX(-0.08em);
+  opacity: 0.4;
 }
 
 .percentTrail2 {
-  filter: blur(12px);
-  transform: translateX(-0.28em);
-}
-.percentContainer.counting .percentTrail2 {
-  opacity: 0.35;
+  filter: blur(8px);
+  transform: translateX(-0.18em);
+  opacity: 0.3;
 }
 
 .percentTrail3 {
-  filter: blur(18px);
-  transform: translateX(-0.45em);
-}
-.percentContainer.counting .percentTrail3 {
-  opacity: 0.2;
+  filter: blur(12px);
+  transform: translateX(-0.3em);
+  opacity: 0.15;
 }
 
 .percent {
   position: relative;
   z-index: 1;
   font-family: $font-family-primary;
-  font-size: clamp(2rem, 8vw, 4rem);
+  font-size: clamp(3rem, 4vw, 2rem);
   font-weight: 400;
   color: #fff;
-  text-align: center;
   white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-  transition: filter 0.2s ease-out, text-shadow 0.2s ease-out;
 }

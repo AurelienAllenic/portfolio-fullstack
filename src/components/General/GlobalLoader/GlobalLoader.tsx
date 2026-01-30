@@ -5,7 +5,7 @@ import styles from "./globalLoader.module.scss";
 interface GlobalLoaderProps {
   /** Appelé quand le loader a fini (radial refermé, écran noir) */
   onComplete?: () => void;
-  /** Durée simulée du chargement en ms (pour le % 0→100) */
+  /** Durée simulée du chargement en ms */
   loadDurationMs?: number;
 }
 
@@ -15,7 +15,6 @@ const GlobalLoader = ({
 }: GlobalLoaderProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [percent, setPercent] = useState(0);
-  const [showPercent, setShowPercent] = useState(false);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
   const onCompleteRef = useRef(onComplete);
   const loadDurationMsRef = useRef(loadDurationMs);
@@ -55,20 +54,11 @@ const GlobalLoader = ({
       },
     });
 
-    // 1) Partir avec le radial "ouvert" (on voit le fond blanc partout, comme HeroBeforeScroll)
+    // Partir avec le transparent au MAX (on voit toute l'image)
     gsap.set(overlay, { display: "block", "--gradient-size": "100%" });
-    setShowPercent(false);
     setPercent(0);
 
-    // 2) Le radial se REFERME pour former un rond au centre (100% → 10%), comme HeroBeforeScroll
-    tl.to(overlay, {
-      "--gradient-size": "10%",
-      duration: 1,
-      ease: "power2.inOut",
-    });
-
-    // 3) Une fois le rond formé : afficher le % au centre
-    tl.add(() => setShowPercent(true));
+    // Animer le pourcentage en parallèle du gradient
     tl.add(() => {
       const start = Date.now();
       const tick = () => {
@@ -78,42 +68,17 @@ const GlobalLoader = ({
         if (p < 100) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
-    });
-    tl.to({}, { duration: durationMs / 1000 }); // attendre la durée du chargement
+    }, 0); // Position 0 = démarre au début de la timeline
 
-    // 4) À 100%, attendre 0,5 s
-    tl.to({}, { duration: 0.5 });
-
-    // 5) Masquer le pourcentage d'abord avec un callback clair
-    tl.call(() => {
-      console.log("Masquage du pourcentage");
-      setShowPercent(false);
-    });
-    
-    // Petite pause pour que le fade out du % soit visible
-    tl.to({}, { duration: 0.4 });
-
-    // 6) Refermer radial progressivement vers 0% - SÉPARÉ en deux étapes
-    tl.call(() => console.log("Début fermeture radial, gradient-size:", overlay.style.getPropertyValue("--gradient-size")));
-    
-    // D'abord réduire gradient-size progressivement
+    // Le transparent RÉTRÉCIT progressivement, le noir envahit (100% → 0%)
     tl.to(overlay, {
       "--gradient-size": "0%",
-      duration: 1,
-      ease: "power2.inOut",
-      onUpdate: function() {
-        if (Math.random() < 0.1) { // Log seulement 10% du temps pour ne pas spammer
-          console.log("gradient-size pendant anim:", this.progress());
-        }
-      }
-    });
-    
-    // PUIS animer black-edge (pas en parallèle) pour éviter les sauts
-    tl.to(overlay, {
-      "--black-edge": "0px",
-      duration: 0.6,
-      ease: "power2.inOut",
-    }, "-=0.4"); // Commence 0.4s avant la fin de l'animation précédente pour un overlap doux
+      duration: durationMs / 1000,
+      ease: "power1.inOut",
+    }, 0); // Position 0 = en parallèle avec le pourcentage
+
+    // Forcer à 0% absolu pour être sûr que tout est noir
+    tl.set(overlay, { "--gradient-size": "0%" });
 
     animationRef.current = tl;
 
@@ -123,18 +88,13 @@ const GlobalLoader = ({
         animationRef.current = null;
       }
     };
-    // Une seule exécution au montage : pas de re-run quand onComplete change (évite la réouverture du radial)
   }, []);
 
   return (
     <>
       <div className={styles.background} aria-hidden />
       <div ref={overlayRef} className={styles.overlay} />
-      <div
-        className={`${styles.percentContainer} ${showPercent ? styles.visible : ""} ${percent < 100 ? styles.counting : ""}`}
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div className={styles.percentContainer} aria-live="polite" aria-atomic="true">
         <div className={styles.percentWrap}>
           {/* Traînée de vitesse : fantômes floutés derrière le chiffre (motion blur) */}
           <span className={styles.percentTrail} aria-hidden>{percent}%</span>
