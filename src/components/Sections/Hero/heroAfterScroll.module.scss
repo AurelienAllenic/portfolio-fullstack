@@ -247,27 +247,6 @@
         }
       }
 
-      .linkToProjects {
-        margin-top: 1rem;
-        padding: 0;
-        background: none;
-        border: none;
-        color: #fff;
-        font-family: inherit;
-        font-size: 1rem;
-        text-decoration: underline;
-        cursor: pointer;
-        opacity: 0.9;
-        transition: opacity 0.2s ease;
-        &:hover {
-          opacity: 1;
-        }
-        @media (max-width: 768px) {
-          margin-top: 0.75rem;
-          font-size: 0.95rem;
-        }
-      }
-
       .mediumSubtitle {
         width: 560px;
         font-size: 31px;
