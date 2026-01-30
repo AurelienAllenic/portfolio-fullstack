@@ -17,7 +17,7 @@
   transform: scale(1.05);
 }
 
-/* Radial identique à HeroBeforeScroll (hero.module.scss) : transparent jusqu’à --gradient-size, puis #050505 (transition douce, pas de bord net) */
+/* Radial identique à HeroBeforeScroll (hero.module.scss) : transparent jusqu'à --gradient-size, puis #050505 (transition douce, pas de bord net) */
 .overlay {
   position: fixed;
   top: 0;
@@ -56,25 +56,29 @@
       #050505 var(--black-edge, 225px)
     );
   }
+  /* Mobile : radial plus doux (transition plus étalée, moins marqué) */
   @media (max-width: 575px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 180px)
+      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 200px) * 0.85),
+      #050505 var(--black-edge, 200px)
     );
   }
   @media (max-width: 435px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 158px)
+      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 180px) * 0.85),
+      #050505 var(--black-edge, 180px)
     );
   }
   @media (max-width: 375px) {
     background: radial-gradient(
       circle at center,
       transparent var(--gradient-size, 0%),
-      #050505 var(--black-edge, 122px)
+      rgba(5, 5, 5, 0.6) calc(var(--black-edge, 150px) * 0.85),
+      #050505 var(--black-edge, 150px)
     );
   }
   @media (max-height: 755px) and (min-width: 768px) {
@@ -106,9 +110,87 @@
   &.visible {
     opacity: 1;
   }
+
+  /* Sur mobile, forcer le centrage absolu */
+  @media (max-width: 767px) {
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.percentWrap {
+  position: relative;
+  display: inline-block;
+  /* Centrage du texte pour assurer l'alignement */
+  text-align: center;
+
+  /* Sur mobile, s'assurer que le wrap ne déborde pas */
+  @media (max-width: 767px) {
+    width: auto;
+    margin: 0;
+  }
+}
+
+/* Traînée de vitesse : plusieurs couches du même chiffre, floues et décalées à gauche (effet motion blur) */
+.percentTrail,
+.percentTrail2,
+.percentTrail3 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-family: $font-family-primary;
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: 400;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.percentContainer.counting .percentTrail,
+.percentContainer.counting .percentTrail2,
+.percentContainer.counting .percentTrail3 {
+  opacity: 1;
+}
+
+.percentTrail {
+  filter: blur(6px);
+  transform: translateX(-0.12em);
+}
+.percentContainer.counting .percentTrail {
+  opacity: 0.5;
+}
+
+.percentTrail2 {
+  filter: blur(12px);
+  transform: translateX(-0.28em);
+}
+.percentContainer.counting .percentTrail2 {
+  opacity: 0.35;
+}
+
+.percentTrail3 {
+  filter: blur(18px);
+  transform: translateX(-0.45em);
+}
+.percentContainer.counting .percentTrail3 {
+  opacity: 0.2;
 }
 
 .percent {
+  position: relative;
+  z-index: 1;
   font-family: $font-family-primary;
   font-size: clamp(2rem, 8vw, 4rem);
   font-weight: 400;
@@ -116,4 +198,5 @@
   text-align: center;
   white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  transition: filter 0.2s ease-out, text-shadow 0.2s ease-out;
 }
