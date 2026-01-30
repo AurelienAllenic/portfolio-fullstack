@@ -31,6 +31,21 @@ const GlobalLoader = ({
     overlay.style.setProperty("--center-x", `${centerX}px`);
     overlay.style.setProperty("--center-y", `${centerY}px`);
 
+    const getBlackEdge = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (h <= 595 && w >= 768) return "150px";
+      if (h <= 755 && w >= 768) return "200px";
+      if (w <= 375) return "122px";
+      if (w <= 435) return "158px";
+      if (w <= 575) return "180px";
+      if (w <= 900) return "225px";
+      if (w <= 1650) return "275px";
+      if (h <= 920) return "35%";
+      return "315px";
+    };
+    overlay.style.setProperty("--black-edge", getBlackEdge());
+
     const durationMs = loadDurationMsRef.current;
     // Taille du rond au centre (petit comme HeroBeforeScroll, ~315px équivalent)
     const CIRCLE_SIZE = "18%";
@@ -71,10 +86,11 @@ const GlobalLoader = ({
     // 4) À 100%, attendre 0,5 s
     tl.to({}, { duration: 0.5 });
 
-    // 5) Le radial se referme totalement (50% → 0%), écran noir
+    // 5) Refermer radial + bord du noir → fond noir plein (pas juste le rond qui s'assombrit)
     tl.add(() => setShowPercent(false));
     tl.to(overlay, {
       "--gradient-size": "0%",
+      "--black-edge": window.innerHeight <= 920 ? "0%" : "0px",
       duration: 1,
       ease: "power2.inOut",
     });

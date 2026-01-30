@@ -1,5 +1,6 @@
 @use "../../abstract/variables.scss" as *;
 
+/* Même image que HeroBeforeScroll, version petite + flou, assombrie comme le hero */
 .background {
   position: fixed;
   top: 0;
@@ -7,9 +8,16 @@
   width: 100vw;
   height: 100vh;
   z-index: 99998;
-  background: #fff;
+  background-color: #0c0c0c;
+  background-image: url("https://res.cloudinary.com/dwpbyyhoq/image/upload/w_500,q_auto,f_auto/background_ll7suh.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(10px) brightness(0.65);
+  transform: scale(1.05);
 }
 
+/* Radial identique à HeroBeforeScroll (hero.module.scss) : transparent jusqu’à --gradient-size, puis #050505 (transition douce, pas de bord net) */
 .overlay {
   position: fixed;
   top: 0;
@@ -20,17 +28,69 @@
   pointer-events: none;
   display: block;
 
-  // Même principe radial que RadialTransitionOverlay : cercle au centre
+  /* --black-edge animé à 0 à la fin pour avoir fond noir plein (sinon cercle qui s'assombrit) */
   background: radial-gradient(
-    circle at var(--center-x, 50vw) var(--center-y, 50vh),
-    transparent calc(var(--gradient-size, 0%) - 2px),
-    rgba(0, 0, 0, 0.3) calc(var(--gradient-size, 0%) - 1px),
-    #000000 var(--gradient-size, 0%)
+    circle at center,
+    transparent var(--gradient-size, 0%),
+    #050505 var(--black-edge, 315px)
   );
 
-  --gradient-size: 100%;
-  --center-x: 50vw;
-  --center-y: 50vh;
+  @media (max-height: 920px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 35%)
+    );
+  }
+  @media (max-width: 1650px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 275px)
+    );
+  }
+  @media (max-width: 900px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 225px)
+    );
+  }
+  @media (max-width: 575px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 180px)
+    );
+  }
+  @media (max-width: 435px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 158px)
+    );
+  }
+  @media (max-width: 375px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 122px)
+    );
+  }
+  @media (max-height: 755px) and (min-width: 768px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 200px)
+    );
+  }
+  @media (max-height: 595px) and (min-width: 768px) {
+    background: radial-gradient(
+      circle at center,
+      transparent var(--gradient-size, 0%),
+      #050505 var(--black-edge, 150px)
+    );
+  }
 }
 
 .percentContainer {
@@ -52,7 +112,8 @@
   font-family: $font-family-primary;
   font-size: clamp(2rem, 8vw, 4rem);
   font-weight: 400;
-  color: #000;
+  color: #fff;
   text-align: center;
   white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
