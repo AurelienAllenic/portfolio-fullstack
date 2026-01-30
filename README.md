@@ -78,21 +78,23 @@ npm run dev
 
 ## 🎨 Maquettes du projet
 
+_Les maquettes sont hébergées sur Cloudinary._
+
 ### Styles généraux
 
-![Styles généraux](./public/assets/maquette/styles.png)
+![Styles généraux](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/styles_ag2ldi)
 
 ### Vue d'ensemble
 
-![Vue d'ensemble](./public/assets/maquette/maquette.png)
+![Vue d'ensemble](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/maquette_ieiuk2)
 
 ### Version Desktop
 
-![Version Desktop](./public/assets/maquette/desktop.png)
+![Version Desktop](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/desktop_riaegm)
 
 ### Version Mobile
 
-![Page 3](./public/assets/maquette/mobile.png)
+![Version Mobile](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/mobile_egpmk3)
 
-📄 [Télécharger la maquette complète (PDF)](./public/assets/maquette.pdf)
+📄 [Télécharger la maquette complète (PDF)](https://res.cloudinary.com/dwpbyyhoq/raw/upload/maquette_compressed_ntkpnn)  
 _💡 Téléchargez le PDF pour accéder aux liens interactifs_
