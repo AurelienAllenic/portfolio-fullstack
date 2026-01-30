@@ -8,9 +8,17 @@ import SliderProjects from "./components/Sections/Projects/SliderProjects";
 import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
 import { NavigationProvider, useNavigation } from "./components/General/Nav/NavigationContext";
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
+import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
+import GlobalLoader from "./components/General/GlobalLoader";
 import LanguageToggle from "./components/General/Language/LanguageToggle";
 
 const SinglePage = () => {
+  // Toujours afficher le loader au premier rendu, puis le masquer via onComplete
+  const [showHomeLoader, setShowHomeLoader] = useState(true);
+  const [showLoaderTransition, setShowLoaderTransition] = useState(
+    () => typeof window !== "undefined" && sessionStorage.getItem("fromLoader") === "true"
+  );
+
   // Vérifier immédiatement si on doit restaurer
   const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';
   const savedCategoryIndex = sessionStorage.getItem('lastProjectCategoryIndex');
@@ -84,9 +92,32 @@ const SinglePage = () => {
     // Garder Projects monté pour que SliderProjects puisse gérer le scroll
   };
 
+  if (showHomeLoader) {
+    return (
+      <GlobalLoader
+        loadDurationMs={1500}
+        onComplete={() => {
+          sessionStorage.setItem("fromLoader", "true");
+          setShowHomeLoader(false);
+          setShowLoaderTransition(true);
+        }}
+      />
+    );
+  }
+
   return (
     <ModalCVProvider>
       <NavigationProvider>
+        {showLoaderTransition && (
+          <RadialTransitionOverlay
+            isActive
+            direction="out"
+            onComplete={() => {
+              sessionStorage.removeItem("fromLoader");
+              setShowLoaderTransition(false);
+            }}
+          />
+        )}
         <SinglePageContent
           showProjects={showProjects}
           returnFromProjects={returnFromProjects}

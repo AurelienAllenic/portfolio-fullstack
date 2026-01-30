@@ -1,0 +1,58 @@
+@use "../../abstract/variables.scss" as *;
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99998;
+  background: #fff;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  pointer-events: none;
+  display: block;
+
+  // Même principe radial que RadialTransitionOverlay : cercle au centre
+  background: radial-gradient(
+    circle at var(--center-x, 50vw) var(--center-y, 50vh),
+    transparent calc(var(--gradient-size, 0%) - 2px),
+    rgba(0, 0, 0, 0.3) calc(var(--gradient-size, 0%) - 1px),
+    #000000 var(--gradient-size, 0%)
+  );
+
+  --gradient-size: 100%;
+  --center-x: 50vw;
+  --center-y: 50vh;
+}
+
+.percentContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+.percent {
+  font-family: $font-family-primary;
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: 400;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+}
