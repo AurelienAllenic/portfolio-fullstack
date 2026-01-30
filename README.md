@@ -96,5 +96,5 @@ _Les maquettes sont hébergées sur Cloudinary._
 
 ![Version Mobile](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/mobile_egpmk3)
 
-📄 [Télécharger la maquette complète (PDF)](https://res.cloudinary.com/dwpbyyhoq/raw/upload/maquette_compressed_ntkpnn.pdf)  
+📄 [Télécharger la maquette complète (PDF)](https://res.cloudinary.com/dwpbyyhoq/image/upload/maquette_compressed_ntkpnn.pdf)  
 _💡 Téléchargez le PDF pour accéder aux liens interactifs_
