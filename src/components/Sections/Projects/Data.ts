@@ -46,7 +46,7 @@ const Paro = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pa
 const Claquettes = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_tcwcpf.webp'
 const Ascent = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent_pyerwc.webp'
 const Linconnu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp'
-const PrreviousAurelien="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_xxjzsw.webp"
+const PreviousAurelien="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_xxjzsw.webp"
 
 const District = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/district_ztpd3h.webp'
 const Alteys = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/alteys_v61q7f.webp'
@@ -133,7 +133,7 @@ export const projects_cover = {
     title: 'Projets personnels',
     slug: 'projets-personnels',
     content: "Ces projets, personnels ou à destination de clients reflètent une diversité dans les thématiques abordées. Un site vitrine avec backoffice complet dans le milieu du rap, un site de claquettes pour un professeur parisien, un site de magie, et un projet placeholder dans le domaine de l'architecture.",
-    sideImages: [Claquettes, Ascent, Linconnu, PrreviousAurelien],
+    sideImages: [Claquettes, Ascent, Linconnu, PreviousAurelien],
     mainImage: Paro,
     listIcons: [SCSS, ReactJs, nodeJs, NextJs]
 }
@@ -515,7 +515,7 @@ export const projects = [
         demo: 'https://paro-musique.com',
         figma:'',
         folder:'',
-        technologies: ['reactjs', 'scss']
+        technologies: ['reactjs', 'scss', 'nodejs']
     },
     {
         id: 2,
@@ -561,8 +561,8 @@ export const projects = [
     },
     {
         id: 5,
-        image: PrreviousAurelien,
-        imageDiaporama: [PrreviousAurelien, AurelienAllenicGif],
+        image: PreviousAurelien,
+        imageDiaporama: [PreviousAurelien, AurelienAllenicGif],
         title: 'Précédente version du site',
         description: "Cette version précédente du site est réalisée en nextjs et inclut des modèles 3d intégrés via Three.js",
         titleEn: 'Previous version of the website',
