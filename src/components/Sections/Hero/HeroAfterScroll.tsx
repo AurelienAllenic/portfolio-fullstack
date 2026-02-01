@@ -65,8 +65,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     );
 
     const [scrollLocked, setScrollLocked] = useState(false);
-    const [allAnimationsComplete, setAllAnimationsComplete] =
-      useState(returnFromProjects || isForced || forceTextIndex !== undefined);
+    const [, setAllAnimationsComplete] =
+  useState(returnFromProjects || isForced || forceTextIndex !== undefined);
     const [direction, setDirection] = useState<"up" | "down">("down");
     const firstRender = useRef(true);
     const hasTriggeredSwipe = useRef(false);
