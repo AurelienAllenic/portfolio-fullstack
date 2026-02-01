@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Nav from "./components/General/Nav/Nav";
 import Contact from "./components/Sections/Contact/Contact";
 import Hero from "./components/Sections/Hero/Hero";
@@ -13,11 +13,14 @@ import GlobalLoader from "./components/General/GlobalLoader";
 import LanguageToggle from "./components/General/Language/LanguageToggle";
 
 const SinglePage = () => {
-  // Toujours afficher le loader au premier rendu, puis le masquer via onComplete
-  const [showHomeLoader, setShowHomeLoader] = useState(true);
-  const [showLoaderTransition, setShowLoaderTransition] = useState(
-    () => typeof window !== "undefined" && sessionStorage.getItem("fromLoader") === "true"
+  // Vérifier si le loader a déjà été montré pendant cette session
+  const hasShownLoader = useRef(
+    typeof window !== "undefined" && 
+    sessionStorage.getItem("loaderShown") === "true"
   );
+
+  const [showHomeLoader, setShowHomeLoader] = useState(!hasShownLoader.current);
+  const [showLoaderTransition, setShowLoaderTransition] = useState(false);
 
   // Vérifier immédiatement si on doit restaurer
   const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';
@@ -31,30 +34,26 @@ const SinglePage = () => {
   const returningFromPolitiqueConfidentialiteToContact = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
   const returningToContact = returningFromCreditsToContact || returningFromMentionsToContact || returningFromPolitiqueConfidentialiteToContact;
   const initialShowContact = returningToContact;
-  const initialShowProjectsForContact = returningToContact; // Projects doit être monté pour Contact
+  const initialShowProjectsForContact = returningToContact;
 
   const [showProjects, setShowProjects] = useState(!!initialShowProjects || initialShowProjectsForContact);
   const [returnFromProjects, setReturnFromProjects] = useState(false);
   const [showContact, setShowContact] = useState(initialShowContact);
   const [forceProjectsIndex, setForceProjectsIndex] = useState<number | undefined>(
-    initialShowContact ? 3 : initialForceIndex // Forcer la dernière catégorie si on va à Contact
+    initialShowContact ? 3 : initialForceIndex
   );
 
   // Nettoyer sessionStorage après la restauration
   useEffect(() => {
     if (shouldRestore && savedCategoryIndex) {
-      
-      // Réinitialiser le scroll immédiatement
       window.scrollTo({ top: 0, behavior: 'instant' });
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
       
-      // Nettoyer après un délai
       setTimeout(() => {
         sessionStorage.removeItem('shouldRestoreScroll');
         sessionStorage.removeItem('lastProjectCategoryIndex');
         setForceProjectsIndex(undefined);
-        // S'assurer que le scroll est toujours à 0
         window.scrollTo({ top: 0, behavior: 'instant' });
         document.body.style.overflow = "";
         document.documentElement.style.overflow = "";
@@ -64,7 +63,6 @@ const SinglePage = () => {
 
   const handleTransitionToProjects = (categoryIndex?: number) => {
     setShowProjects(true);
-    // Seulement réinitialiser forceProjectsIndex si pas de catégorie spécifiée
     if (categoryIndex === undefined) {
       setForceProjectsIndex(undefined);
     }
@@ -74,9 +72,6 @@ const SinglePage = () => {
     setShowProjects(false);
     setReturnFromProjects(true);
     setForceProjectsIndex(undefined);
-
-    // NE PAS réinitialiser returnFromProjects automatiquement
-    // Il sera réinitialisé manuellement par Hero quand nécessaire
   };
 
   const handleTransitionToContact = () => {
@@ -85,18 +80,19 @@ const SinglePage = () => {
 
   const handleCloseContact = () => {
     setShowContact(false);
-    // Réinitialiser forceProjectsIndex pour permettre le scroll libre
     setTimeout(() => {
       setForceProjectsIndex(undefined);
-    }, 600); // Après l'animation de transition
-    // Garder Projects monté pour que SliderProjects puisse gérer le scroll
+    }, 600);
   };
 
+  // UN SEUL bloc if pour le loader
   if (showHomeLoader) {
     return (
       <GlobalLoader
         loadDurationMs={1500}
         onComplete={() => {
+          // Marquer que le loader a été montré
+          sessionStorage.setItem("loaderShown", "true");
           sessionStorage.setItem("fromLoader", "true");
           setShowHomeLoader(false);
           setShowLoaderTransition(true);

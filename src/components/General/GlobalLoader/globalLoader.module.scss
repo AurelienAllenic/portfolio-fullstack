@@ -1,6 +1,6 @@
 @use "../../abstract/variables.scss" as *;
 
-/* Même image que HeroBeforeScroll, version petite + flou, assombrie comme le hero */
+
 .background {
   position: fixed;
   top: 0;
@@ -16,8 +16,6 @@
   filter: blur(10px) brightness(0.65);
   transform: scale(1.05);
 }
-
-/* Le gradient TRANSPARENT au centre rétrécit, le NOIR envahit progressivement */
 .overlay {
   position: fixed;
   top: 0;
@@ -27,10 +25,6 @@
   z-index: 99999;
   pointer-events: none;
   display: block;
-
-  /* TRANSPARENT au centre jusqu'à --gradient-size, puis NOIR IMMÉDIAT */
-  /* gradient-size = 100% : tout transparent, image visible */
-  /* gradient-size = 0% : pas de transparent, tout noir */
   background: radial-gradient(
     circle at center,
     transparent var(--gradient-size, 100%),
@@ -60,7 +54,6 @@
   }
 }
 
-/* Pourcentage en bas à droite */
 .percentContainer {
   position: fixed;
   bottom: 2rem;
@@ -78,8 +71,6 @@
   position: relative;
   display: inline-block;
 }
-
-/* Traînée de vitesse : plusieurs couches du même chiffre, floues et décalées à gauche (effet motion blur) */
 .percentTrail,
 .percentTrail2,
 .percentTrail3 {
@@ -87,7 +78,7 @@
   right: 0;
   bottom: 0%;
   font-family: $font-family-primary;
-  font-size: clamp(7rem, 7vw, 10rem);
+  font-size: clamp(5rem, 7vw, 10rem);
   font-weight: 400;
   color: #fff;
   white-space: nowrap;
@@ -120,9 +111,9 @@
   position: relative;
   z-index: 1;
   font-family: $font-family-primary;
-  font-size: clamp(3rem, 4vw, 2rem);
+  font-size: clamp(2rem, 4vw, 4rem);
   font-weight: 400;
   color: #fff;
   white-space: nowrap;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);  
 }

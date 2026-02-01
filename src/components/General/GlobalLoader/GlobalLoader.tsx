@@ -3,15 +3,13 @@ import { gsap } from "gsap";
 import styles from "./globalLoader.module.scss";
 
 interface GlobalLoaderProps {
-  /** Appelé quand le loader a fini (radial refermé, écran noir) */
   onComplete?: () => void;
-  /** Durée simulée du chargement en ms */
   loadDurationMs?: number;
 }
 
 const GlobalLoader = ({
   onComplete,
-  loadDurationMs = 2000,
+  loadDurationMs = 1500,
 }: GlobalLoaderProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [percent, setPercent] = useState(0);
@@ -54,11 +52,10 @@ const GlobalLoader = ({
       },
     });
 
-    // Partir avec le transparent au MAX (on voit toute l'image)
     gsap.set(overlay, { display: "block", "--gradient-size": "100%" });
     setPercent(0);
 
-    // Animer le pourcentage en parallèle du gradient
+
     tl.add(() => {
       const start = Date.now();
       const tick = () => {
@@ -68,16 +65,14 @@ const GlobalLoader = ({
         if (p < 100) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
-    }, 0); // Position 0 = démarre au début de la timeline
+    }, 0);
 
-    // Le transparent RÉTRÉCIT progressivement, le noir envahit (100% → 0%)
     tl.to(overlay, {
       "--gradient-size": "0%",
       duration: durationMs / 1000,
       ease: "power1.inOut",
-    }, 0); // Position 0 = en parallèle avec le pourcentage
+    }, 0);
 
-    // Forcer à 0% absolu pour être sûr que tout est noir
     tl.set(overlay, { "--gradient-size": "0%" });
 
     animationRef.current = tl;
@@ -96,7 +91,6 @@ const GlobalLoader = ({
       <div ref={overlayRef} className={styles.overlay} />
       <div className={styles.percentContainer} aria-live="polite" aria-atomic="true">
         <div className={styles.percentWrap}>
-          {/* Traînée de vitesse : fantômes floutés derrière le chiffre (motion blur) */}
           <span className={styles.percentTrail} aria-hidden>{percent}%</span>
           <span className={styles.percentTrail2} aria-hidden>{percent}%</span>
           <span className={styles.percentTrail3} aria-hidden>{percent}%</span>
