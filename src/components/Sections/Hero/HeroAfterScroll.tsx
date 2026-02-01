@@ -8,8 +8,8 @@ interface HeroAfterScrollProps {
   onTransitionToProjects?: () => void;
   returnFromProjects?: boolean;
   isForced?: boolean;
-  forceTextIndex?: number; // Pour forcer un textIndex spécifique lors de la navigation
-  onNavigationReset?: boolean; // Signal pour réinitialiser les refs après navigation
+  forceTextIndex?: number;
+  onNavigationReset?: boolean;
 }
 
 type LinkText = {
@@ -351,7 +351,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         wasNavigationReset.current = true;
         
         // Réinitialiser les refs critiques
-        firstRender.current = false; // Important : ne pas rejouer l'animation d'entrée
+        firstRender.current = false;
         hasTriggeredSwipe.current = false;
         setScrollLocked(false);
         
@@ -691,25 +691,24 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           e.preventDefault();
           changeText(textIndex + 1);
         } else if (goingDown && textIndex === texts.length - 1) {
-          if (allAnimationsComplete) {
-            e.preventDefault();
-            setScrollLocked(true);
-            const tl = gsap.timeline({
-              onComplete: () => {
-                onTransitionToProjects?.();
-              },
-            });
-            tl.to(overlayRef.current, {
-              "--gradient-size": "0%",
-              duration: 0.5,
-              ease: "power2.out",
-            });
-            tl.to(
-              contentContainerRef.current,
-              { opacity: 0, duration: 0.5, ease: "power2.out" },
-              "-=0.5"
-            );
-          }
+          // CORRECTION: Supprimer la condition allAnimationsComplete
+          e.preventDefault();
+          setScrollLocked(true);
+          const tl = gsap.timeline({
+            onComplete: () => {
+              onTransitionToProjects?.();
+            },
+          });
+          tl.to(overlayRef.current, {
+            "--gradient-size": "0%",
+            duration: 0.5,
+            ease: "power2.out",
+          });
+          tl.to(
+            contentContainerRef.current,
+            { opacity: 0, duration: 0.5, ease: "power2.out" },
+            "-=0.5"
+          );
         } else if (goingUp) {
           e.preventDefault();
           if (textIndex > 0) {
@@ -734,7 +733,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       textIndex,
       scrollLocked,
       onReturnToHeroBefore,
-      allAnimationsComplete,
       onTransitionToProjects,
     ]);
 
@@ -777,11 +775,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         changeText(textIndex + 1);
         hasTriggeredSwipe.current = true;
         touchStartY.current = e.touches[0].clientY;
-      } else if (
-        deltaY > 30 &&
-        textIndex === texts.length - 1 &&
-        allAnimationsComplete
-      ) {
+      } else if (deltaY > 30 && textIndex === texts.length - 1) {
+        // CORRECTION: Supprimer la condition allAnimationsComplete
         e.preventDefault();
         setScrollLocked(true);
         const tl = gsap.timeline({
@@ -836,7 +831,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       textIndex,
       scrollLocked,
       onReturnToHeroBefore,
-      allAnimationsComplete,
       onTransitionToProjects,
     ]);
 
