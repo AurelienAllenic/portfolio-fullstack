@@ -334,6 +334,7 @@
         width: 80%;
         max-width: 400px;
         isolation: isolate;
+        transform: translateY(-15%);
       }
       @media (max-width: 450px) {
         width: 85%;
@@ -342,10 +343,10 @@
         width: 90%;
       }
       @media (max-height: 590px) {
-        padding-top: 80px;
+        padding-top: 120px;
       }
       @media (max-height: 490px) {
-        padding-top: 0px;
+        padding-top: 70px;
       }
     }
 
