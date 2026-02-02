@@ -76,7 +76,7 @@ const Contact = () => {
       // Supprimer le slash final s'il existe
       apiUrl = apiUrl.replace(/\/$/, '');
       
-      const response = await fetch(`${apiUrl}/aurelien-contact`, {
+      const response = await fetch(`${apiUrl}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

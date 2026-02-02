@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkSession = async () => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
-      const response = await fetch(`${apiUrl}/auth-aurelien/check`, {
+      const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'GET',
         credentials: 'include', // Important pour les cookies de session
       });
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
-      const response = await fetch(`${apiUrl}/auth-aurelien/login`, {
+      const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
-      await fetch(`${apiUrl}/auth-aurelien/logout`, {
+      await fetch(`${apiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });

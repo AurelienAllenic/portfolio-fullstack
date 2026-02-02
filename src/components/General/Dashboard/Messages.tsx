@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './messages.module.scss';
-import { FaTrash, FaEnvelope, FaUser, FaCalendar } from 'react-icons/fa6';
+import { FaTrash, FaEnvelope, FaUser, FaCalendar, FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
 interface Message {
   _id: string;
@@ -14,6 +14,7 @@ const Messages: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null); // ID du message ouvert
 
   const getApiUrl = () => {
     return import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -26,9 +27,7 @@ const Messages: React.FC = () => {
       const apiUrl = getApiUrl().replace(/\/$/, '');
       const response = await fetch(`${apiUrl}/messages`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       });
 
@@ -38,9 +37,11 @@ const Messages: React.FC = () => {
 
       const data = await response.json();
       setMessages(data.data || []);
+      // Optionnel : ouvrir le plus récent par défaut
+      // if (data.data?.length > 0) setExpandedId(data.data[0]._id);
     } catch (err) {
       console.error('Erreur:', err);
-      setError(err instanceof Error ? err.message : 'Erreur lors de la récupération des messages');
+      setError(err instanceof Error ? err.message : 'Erreur lors de la récupération');
     } finally {
       setLoading(false);
     }
@@ -50,28 +51,27 @@ const Messages: React.FC = () => {
     fetchMessages();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
-      return;
-    }
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Empêche d’ouvrir/fermer l’accordéon en cliquant sur delete
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
 
     try {
       setDeletingId(id);
       const apiUrl = getApiUrl().replace(/\/$/, '');
       const response = await fetch(`${apiUrl}/messages/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       });
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la suppression du message');
-      }
+      if (!response.ok) throw new Error('Erreur lors de la suppression');
 
-      // Retirer le message de la liste
       setMessages(messages.filter(msg => msg._id !== id));
+      if (expandedId === id) setExpandedId(null); // Ferme si supprimé
     } catch (err) {
       console.error('Erreur:', err);
       alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
@@ -128,37 +128,60 @@ const Messages: React.FC = () => {
         </div>
       ) : (
         <div className={styles.messagesList}>
-          {messages.map((message) => (
-            <div key={message._id} className={styles.messageCard}>
-              <div className={styles.messageHeader}>
-                <div className={styles.messageInfo}>
-                  <div className={styles.emailRow}>
-                    <FaUser className={styles.icon} />
-                    <span className={styles.email}>{message.email}</span>
+          {messages.map((message) => {
+            const isExpanded = expandedId === message._id;
+
+            return (
+              <div
+                key={message._id}
+                className={`${styles.messageCard} ${isExpanded ? styles.expanded : ''}`}
+              >
+                {/* En-tête cliquable */}
+                <div
+                  className={styles.messageHeader}
+                  onClick={() => toggleExpand(message._id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
+                >
+                  <div className={styles.messageInfo}>
+                    <div className={styles.emailRow}>
+                      <FaUser className={styles.icon} />
+                      <span className={styles.email}>{message.email}</span>
+                    </div>
+                    <div className={styles.dateRow}>
+                      <FaCalendar className={styles.icon} />
+                      <span className={styles.date}>{formatDate(message.createdAt)}</span>
+                    </div>
                   </div>
-                  <div className={styles.dateRow}>
-                    <FaCalendar className={styles.icon} />
-                    <span className={styles.date}>{formatDate(message.createdAt)}</span>
+
+                  <div className={styles.headerActions}>
+                    <button
+                      onClick={(e) => handleDelete(message._id, e)}
+                      className={styles.deleteButton}
+                      disabled={deletingId === message._id}
+                      title="Supprimer le message"
+                    >
+                      {deletingId === message._id ? (
+                        <span className={styles.deleting}>Suppression...</span>
+                      ) : (
+                        <FaTrash />
+                      )}
+                    </button>
+
+                    <span className={styles.toggleIcon}>
+                      {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                    </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDelete(message._id)}
-                  className={styles.deleteButton}
-                  disabled={deletingId === message._id}
-                  title="Supprimer le message"
-                >
-                  {deletingId === message._id ? (
-                    <span className={styles.deleting}>Suppression...</span>
-                  ) : (
-                    <FaTrash />
-                  )}
-                </button>
+
+                {/* Contenu du message – plié/déplié */}
+                <div className={`${styles.messageContent} ${isExpanded ? styles.visible : ''}`}>
+                  <p>{message.message}</p>
+                </div>
               </div>
-              <div className={styles.messageContent}>
-                <p>{message.message}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

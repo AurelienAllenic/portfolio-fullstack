@@ -68,7 +68,7 @@ const Login: React.FC = () => {
   // Connexion Google OAuth
   const handleGoogleLogin = () => {
     const apiUrl = getApiUrl().replace(/\/$/, '');
-    window.location.href = `${apiUrl}/auth-aurelien/google`;
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   // Connexion email/password
