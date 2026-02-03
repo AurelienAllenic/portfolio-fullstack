@@ -6,15 +6,16 @@ import { useNavigation } from "./NavigationContext";
 import ProjectsDropdown from "./ProjectsDropdown";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const Nav = () => {
+  const { trackClick } = useAnalytics();
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
   const { navigateToHero, navigateToContact } = useNavigation();
   const { t } = useLanguage();
   const { error: cvError } = useCv();
 
-  // Categories from Data.ts covers - order matches SliderProjects covers
   const categories = [
     { title: t("projects.category.personnel"), index: 0 },
     { title: t("projects.category.solead"), index: 1 },
@@ -61,12 +62,32 @@ const Nav = () => {
     };
   }, []);
 
+  const handleLogoClick = () => {
+    trackClick('nav_logo');
+    navigateToHero("hero1");
+  };
+
+  const handleAboutClick = () => {
+    trackClick('nav_about');
+    navigateToHero("hero2");
+  };
+
+  const handleContactClick = () => {
+    trackClick('nav_contact');
+    navigateToContact();
+  };
+
+  const handleCVClick = () => {
+    trackClick('nav_cv_open');
+    openModal();
+  };
+
   return (
     <div className={styles.containerNav}>
       <nav className={styles.nav} ref={navRef}>
         <div 
           className={styles.logo}
-          onClick={() => navigateToHero("hero1")}
+          onClick={handleLogoClick}
           style={{ cursor: "pointer" }}
         >
           AURELIEN ALLENIC
@@ -74,7 +95,7 @@ const Nav = () => {
         <ul className={styles.navLinks}>
           <li>
             <div
-              onClick={() => navigateToHero("hero2")}
+              onClick={handleAboutClick}
               style={{ cursor: "pointer" }}
             >
               {t("nav.about")}
@@ -85,7 +106,7 @@ const Nav = () => {
           </li>
           <li>
             <div
-              onClick={() => navigateToContact()}
+              onClick={handleContactClick}
               style={{ cursor: "pointer" }}
             >
               {t("nav.contact")}
@@ -94,7 +115,7 @@ const Nav = () => {
         </ul>
         <div className={styles.socialIcons}>
           {!cvError && (
-            <div onClick={openModal} style={{ cursor: "pointer" }}>
+            <div onClick={handleCVClick} style={{ cursor: "pointer" }}>
               <img
                 src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
                 alt="CV"
@@ -105,6 +126,7 @@ const Nav = () => {
             href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackClick('nav_linkedin')}
           >
             <img
               src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linkedin-logo_tin7ki.webp"
@@ -115,6 +137,7 @@ const Nav = () => {
             href="https://github.com/aurelienallenic"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackClick('nav_github')}
           >
             <img
               src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/Github_logo_kmfq2g.webp"

@@ -11,6 +11,7 @@ import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
 import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
 import GlobalLoader from "./components/General/GlobalLoader";
 import LanguageToggle from "./components/General/Language/LanguageToggle";
+import { useAnalytics } from "./hooks/useAnalytics";
 
 const SinglePage = () => {
   // Vérifier si le loader a déjà été montré pendant cette session
@@ -21,6 +22,17 @@ const SinglePage = () => {
 
   const [showHomeLoader, setShowHomeLoader] = useState(!hasShownLoader.current);
   const [showLoaderTransition, setShowLoaderTransition] = useState(false);
+
+  const { trackEvent } = useAnalytics();
+  const hasTrackedInitialPageView = useRef(false);
+
+  // Track PAGE_VIEW une seule fois après le loader
+  useEffect(() => {
+    if (!showHomeLoader && !showLoaderTransition && !hasTrackedInitialPageView.current) {
+      hasTrackedInitialPageView.current = true;
+      trackEvent('PAGE_VIEW');
+    }
+  }, [showHomeLoader, showLoaderTransition, trackEvent]);
 
   // Vérifier immédiatement si on doit restaurer
   const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';

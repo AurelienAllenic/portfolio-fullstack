@@ -14,12 +14,6 @@ import { CvProvider } from "./components/General/Nav/CvContext";
 import Login from "./components/General/Auth/Login";
 import Dashboard from "./components/General/Dashboard/Dashboard";
 import ProtectedRoute from "./components/General/Auth/ProtectedRoute";
-import { useAnalytics } from "./hooks/useAnalytics";
-
-const AnalyticsTracker: React.FC = () => {
-  useAnalytics(); 
-  return null;
-};
 
 const App: React.FC = () => {
   return (
@@ -27,7 +21,6 @@ const App: React.FC = () => {
       <AuthProvider>
         <CvProvider>
           <BrowserRouter>
-          <AnalyticsTracker />
           <Routes>
             <Route path="/" element={<SinglePage />} />
             <Route path="/projects/:categorySlug/:programmingLanguage" element={<SingleProjectPage />} />

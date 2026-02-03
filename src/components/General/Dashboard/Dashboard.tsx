@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../Auth/AuthContext';
 import styles from './dashboard.module.scss';
 import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
-import { FaArrowRight } from 'react-icons/fa6';
+import { CiLogout } from "react-icons/ci";
 import Messages from './Messages';
 import CvManagement from './CvManagement';
+import Analytics from './Analytics';
 
-type TabType = 'home' | 'messages' | 'cv';
+type TabType = 'home' | 'messages' | 'cv' | 'analytics';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -61,6 +62,12 @@ const Dashboard: React.FC = () => {
             >
               CV
             </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'analytics' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('analytics')}
+            >
+              Analytics
+            </button>
           </div>
 
           <div className={styles.tabContent}>
@@ -89,13 +96,15 @@ const Dashboard: React.FC = () => {
               </>
             ) : activeTab === 'messages' ? (
               <Messages />
-            ) : (
+            ) : activeTab === 'cv' ? (
               <CvManagement />
+            ) : (
+              <Analytics />
             )}
           </div>
 
           <button onClick={handleLogout} className={styles.logoutButton} disabled={isTransitioning}>
-            <FaArrowRight />Se déconnecter
+            <CiLogout />
           </button>
         </div>
       </div>
