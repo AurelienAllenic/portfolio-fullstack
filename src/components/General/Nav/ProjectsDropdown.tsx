@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { useNavigation } from './NavigationContext';
 import styles from './nav.module.scss';
 import { useLanguage } from '../Language/LanguageContext';
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 interface Category {
   title: string;
@@ -19,6 +20,7 @@ const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { navigateToProjects } = useNavigation();
+  const { trackClick } = useAnalytics();
 
   useEffect(() => {
     const content = contentRef.current;
@@ -40,8 +42,9 @@ const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
     }
   }, [isOpen]);
 
-  const handleCategoryClick = (categoryIndex: number) => {
+  const handleCategoryClick = (categoryIndex: number, categoryTitle: string) => {
     navigateToProjects(categoryIndex);
+    trackClick(`nav_${categoryTitle}`)
     setIsOpen(false);
   };
 
@@ -76,7 +79,7 @@ const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
             <div
               key={category.index}
               className={styles.projectsMenuItem}
-              onClick={() => handleCategoryClick(category.index)}
+              onClick={() => handleCategoryClick(category.index, category.title)}
             >
               {category.title}
             </div>

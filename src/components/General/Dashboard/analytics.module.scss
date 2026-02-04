@@ -127,6 +127,13 @@
   margin-bottom: 2rem;
   
   h3 { margin-top: 0; color: #2d3436; }
+  h4, h5{
+    color: #2d3436;
+    text-align: center;
+    margin: 25px 0;
+    font-size: 25px;
+    font-family: $font-family-secondary;
+  }
 }
 
 .clicksList {
