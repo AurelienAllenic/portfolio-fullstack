@@ -62,12 +62,6 @@ const Dashboard: React.FC = () => {
             >
               CV
             </button>
-            <button
-              className={`${styles.tab} ${activeTab === 'analytics' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('analytics')}
-            >
-              Analytics
-            </button>
           </div>
 
           <div className={styles.tabContent}>
@@ -88,18 +82,13 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className={styles.content}>
-                  <p>Vous êtes connecté avec succès !</p>
-                  <p className={styles.subtitle}>
-                    Cette page est protégée et nécessite une authentification.
-                  </p>
+                  <Analytics />
                 </div>
               </>
             ) : activeTab === 'messages' ? (
               <Messages />
-            ) : activeTab === 'cv' ? (
-              <CvManagement />
             ) : (
-              <Analytics />
+              <CvManagement />
             )}
           </div>
 

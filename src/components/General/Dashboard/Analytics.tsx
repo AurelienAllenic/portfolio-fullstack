@@ -32,7 +32,7 @@ const Analytics: React.FC = () => {
       setLoading(true);
       setError(null);
       const apiUrl = getApiUrl();
-      const response = await fetch(`${apiUrl}/analytics/daily?limit=30`, {
+      const response = await fetch(`${apiUrl}/analytics/daily?limit=365`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -61,7 +61,7 @@ const Analytics: React.FC = () => {
       const apiUrl = getApiUrl();
       const today = new Date().toISOString().split('T')[0];
 
-      const response = await fetch(`${apiUrl}/analytics/aggregate?date=${today}`, {
+      const response = await fetch(`${apiUrl}/analytics/aggregate`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -85,10 +85,13 @@ const Analytics: React.FC = () => {
 
   const filteredData = useMemo(() => {
     if (selectedDate === 'all') return dailyStats;
+    if (selectedDate === '30days') {
+      return dailyStats.slice(0, 30);
+    }
     return dailyStats.filter(stat => stat.date === selectedDate);
   }, [dailyStats, selectedDate]);
 
-  // NOUVEAU : Séparer Mobile et Desktop
+  // Séparer Mobile et Desktop
   const { mobileStats, desktopStats } = useMemo(() => {
     const mobile = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
     const desktop = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
@@ -103,14 +106,12 @@ const Analytics: React.FC = () => {
       });
     });
 
-    // Pour pageViews et visitors, on suppose qu'on ne peut pas les séparer facilement
-    // sauf si vous trackez aussi mobile_pageview vs desktop_pageview
     return { mobileStats: mobile, desktopStats: desktop };
   }, [filteredData]);
 
   // Chart comparatif Mobile vs Desktop
   const comparisonChartData = useMemo(() => {
-    return [...dailyStats].reverse().map(stat => {
+    return [...filteredData].reverse().map(stat => {
       const mobileClicks = Object.entries(stat.clicks || {})
         .filter(([label]) => label.toLowerCase().includes('mobile'))
         .reduce((sum, [, count]) => sum + count, 0);
@@ -127,7 +128,7 @@ const Analytics: React.FC = () => {
         Visiteurs: stat.uniqueVisitors
       };
     });
-  }, [dailyStats]);
+  }, [filteredData]);
 
   const totalPageViews = filteredData.reduce((sum, day) => sum + day.pageViews, 0);
   const totalVisitors = filteredData.reduce((sum, day) => sum + day.uniqueVisitors, 0);
@@ -195,7 +196,8 @@ const Analytics: React.FC = () => {
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
           >
-            <option value="all">Historique 30 jours</option>
+            <option value="all">Depuis toujours</option>
+            <option value="30days">30 derniers jours</option>
             {dailyStats.map(stat => (
               <option key={stat._id} value={stat.date}>{stat.date}</option>
             ))}
