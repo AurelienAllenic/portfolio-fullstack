@@ -76,6 +76,14 @@ npm run dev
 
 ---
 
+## 🗄️ Schéma base de données (backend)
+
+Le backend du portfolio utilise une base de données dont le schéma est documenté ci-dessous (référence pour les champs et relations utilisés par l’API).
+
+![Schéma BDD portfolio](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/dbschema-portfolio_hlobxm.png)
+
+---
+
 ## 🎨 Maquettes du projet
 
 _Les maquettes sont hébergées sur Cloudinary._
