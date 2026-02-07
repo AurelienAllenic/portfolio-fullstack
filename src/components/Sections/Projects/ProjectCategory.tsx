@@ -5,6 +5,7 @@ import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import BlurImage from "../../General/BlurImage";
 import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 
 // Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -118,6 +119,8 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  useTrackSectionArrival(`project_category_${cover.slug}`);
 
   // Fonction pour trouver l'index du projet correspondant à une image
   const findProjectIndexByImage = (imageUrl: string): number | null => {

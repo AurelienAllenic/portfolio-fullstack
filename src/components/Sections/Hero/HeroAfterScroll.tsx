@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, useState, useLayoutEffect, useMemo } fro
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
@@ -27,6 +28,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     ref
   ) => {
     const { t } = useLanguage();
+    useTrackSectionArrival('section_about');
     
     const texts: TextContent[] = useMemo(() => [
       t("hero.afterScroll.text1"),
