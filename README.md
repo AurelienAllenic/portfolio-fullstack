@@ -80,7 +80,7 @@ npm run dev
 
 Le backend du portfolio utilise une base de données dont le schéma est documenté ci-dessous (référence pour les champs et relations utilisés par l’API).
 
-![Schéma BDD portfolio](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/db-schema_mm0qfe.webp)
+![Schéma BDD portfolio](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/portolio-bdd_vysivv.webp)
 
 ---
 
