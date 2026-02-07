@@ -74,14 +74,18 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        throw new Error('Erreur lors de la récupération des statistiques journalières');
+        // Si 500 ou autres erreurs, on considère qu'il n'y a pas de données
+        console.warn('Pas de statistiques journalières disponibles');
+        setDailyStats([]);
+        return;
       }
 
       const data = await response.json();
       setDailyStats(data || []);
     } catch (err) {
       console.error('Erreur fetch daily stats:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setDailyStats([]);
+      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -89,8 +93,9 @@ const Analytics: React.FC = () => {
     try {
       setError(null);
       const apiUrl = getApiUrl();
-      // pas de filtre d’année côté backend → on récupère tout
-      const response = await fetch(`${apiUrl}/analytics/monthly?year=${new Date().getFullYear()}`, {
+      // Le backend exige le paramètre year, on envoie l'année courante
+      const currentYear = new Date().getFullYear();
+      const response = await fetch(`${apiUrl}/analytics/monthly?year=${currentYear}`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -98,14 +103,18 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        throw new Error('Erreur lors de la récupération des statistiques mensuelles');
+        // Si 400/500 ou autres erreurs, on considère qu'il n'y a pas de données
+        console.warn('Pas de statistiques mensuelles disponibles');
+        setMonthlyStats([]);
+        return;
       }
 
       const data = await response.json();
       setMonthlyStats(data || []);
     } catch (err) {
       console.error('Erreur fetch monthly stats:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setMonthlyStats([]);
+      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -121,14 +130,18 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        throw new Error('Erreur lors de la récupération des statistiques annuelles');
+        // Si 500 ou autres erreurs, on considère qu'il n'y a pas de données
+        console.warn('Pas de statistiques annuelles disponibles');
+        setYearlyStats([]);
+        return;
       }
 
       const data = await response.json();
       setYearlyStats(data || []);
     } catch (err) {
       console.error('Erreur fetch yearly stats:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setYearlyStats([]);
+      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -151,7 +164,7 @@ const Analytics: React.FC = () => {
       const result = await response.json();
       setSuccessMessage(`✅ Succès pour le ${result.result?.date || today}`);
 
-      // on recharge les données
+      // On recharge les données sans toucher aux filtres
       await Promise.all([
         fetchDailyStats(),
         fetchMonthlyStats(),
@@ -441,71 +454,85 @@ const Analytics: React.FC = () => {
       {error && <div className={styles.error}>⚠️ {error}</div>}
       {successMessage && <div className={styles.success}>{successMessage}</div>}
 
-      {/* CHART COMPARATIF MOBILE VS DESKTOP */}
-      <div className={styles.chartSection}>
-        <h3>
-          Comparaison Mobile vs Desktop{' '}
-          {period === 'daily' && '(journalier)'}
-          {period === 'monthly' && '(mensuel)'}
-          {period === 'yearly' && '(annuel)'}
-        </h3>
-        <div style={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer>
-            <BarChart data={comparisonChartData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-              <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
-              <YAxis fontSize={11} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '10px',
-                  border: 'none',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                }}
-              />
-              <Legend iconType="circle" />
-              <Bar dataKey="Mobile" fill="#ff6b6b" />
-              <Bar dataKey="Desktop" fill="#4ecdc4" />
-            </BarChart>
-          </ResponsiveContainer>
+      {/* Message si aucune donnée */}
+      {currentData.length === 0 && (
+        <div className={styles.chartSection}>
+          <p style={{ textAlign: 'center', color: '#b2bec3', padding: '40px' }}>
+            Aucune donnée disponible pour la période sélectionnée. 
+            Générez un rapport pour commencer à voir vos statistiques.
+          </p>
         </div>
-      </div>
+      )}
+
+      {/* CHART COMPARATIF MOBILE VS DESKTOP */}
+      {comparisonChartData.length > 0 && (
+        <div className={styles.chartSection}>
+          <h3>
+            Comparaison Mobile vs Desktop{' '}
+            {period === 'daily' && '(journalier)'}
+            {period === 'monthly' && '(mensuel)'}
+            {period === 'yearly' && '(annuel)'}
+          </h3>
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
+              <BarChart data={comparisonChartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
+                <YAxis fontSize={11} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '10px',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                />
+                <Legend iconType="circle" />
+                <Bar dataKey="Mobile" fill="#ff6b6b" />
+                <Bar dataKey="Desktop" fill="#4ecdc4" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* CHART GLOBAL */}
-      <div className={styles.chartSection}>
-        <h3>Activité des Visiteurs</h3>
-        <div style={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer>
-            <LineChart data={comparisonChartData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-              <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
-              <YAxis fontSize={11} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '10px',
-                  border: 'none',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                }}
-              />
-              <Legend iconType="circle" />
-              <Line
-                type="monotone"
-                dataKey="Vues"
-                stroke="#007bff"
-                strokeWidth={3}
-                dot={false}
-                activeDot={{ r: 6 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="Visiteurs"
-                stroke="#00b894"
-                strokeWidth={3}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+      {comparisonChartData.length > 0 && (
+        <div className={styles.chartSection}>
+          <h3>Activité des Visiteurs</h3>
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer>
+              <LineChart data={comparisonChartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
+                <YAxis fontSize={11} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '10px',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
+                />
+                <Legend iconType="circle" />
+                <Line
+                  type="monotone"
+                  dataKey="Vues"
+                  stroke="#007bff"
+                  strokeWidth={3}
+                  dot={false}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Visiteurs"
+                  stroke="#00b894"
+                  strokeWidth={3}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
