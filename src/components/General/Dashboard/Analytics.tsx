@@ -5,6 +5,14 @@ import {
 } from 'recharts';
 import styles from './analytics.module.scss';
 
+interface DailyStatSub {
+  date: string;           // "YYYY-MM-DD"
+  pageViews: number;
+  clicks: Record<string, number>;
+  uniqueVisitors: number;
+  visitorIds?: string[];
+}
+
 interface DailyStat {
   _id: string;
   date: string; // "YYYY-MM-DD"
@@ -20,6 +28,8 @@ interface MonthlyStat {
   pageViews: number;
   clicks: Record<string, number>;
   uniqueVisitors: number;
+  visitorIds?: string[];
+  dailyStats: DailyStatSub[];
 }
 
 interface YearlyStat {
@@ -52,10 +62,14 @@ const Analytics: React.FC = () => {
 
   const [period, setPeriod] = useState<Period>('daily');
 
-  // filtres
-  const [selectedDate, setSelectedDate] = useState<string>('all');   // daily
-  const [selectedMonth, setSelectedMonth] = useState<string>('all'); // "YYYY-MM" ou "all"
-  const [selectedYear, setSelectedYear] = useState<string>('all');   // "YYYY" ou "all"
+  const [selectedDate, setSelectedDate] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
+
+  // Tous les accordéons fermés par défaut
+  const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
+  const [openMobile, setOpenMobile] = useState(false);
+  const [openDesktop, setOpenDesktop] = useState(false);
 
   const getApiUrl = () => {
     const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -74,8 +88,6 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        // Si 500 ou autres erreurs, on considère qu'il n'y a pas de données
-        console.warn('Pas de statistiques journalières disponibles');
         setDailyStats([]);
         return;
       }
@@ -83,9 +95,7 @@ const Analytics: React.FC = () => {
       const data = await response.json();
       setDailyStats(data || []);
     } catch (err) {
-      console.error('Erreur fetch daily stats:', err);
       setDailyStats([]);
-      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -93,7 +103,6 @@ const Analytics: React.FC = () => {
     try {
       setError(null);
       const apiUrl = getApiUrl();
-      // Le backend exige le paramètre year, on envoie l'année courante
       const currentYear = new Date().getFullYear();
       const response = await fetch(`${apiUrl}/analytics/monthly?year=${currentYear}`, {
         method: 'GET',
@@ -103,18 +112,14 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        // Si 400/500 ou autres erreurs, on considère qu'il n'y a pas de données
-        console.warn('Pas de statistiques mensuelles disponibles');
         setMonthlyStats([]);
         return;
       }
 
-      const data = await response.json();
+      const data: MonthlyStat[] = await response.json();
       setMonthlyStats(data || []);
     } catch (err) {
-      console.error('Erreur fetch monthly stats:', err);
       setMonthlyStats([]);
-      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -130,8 +135,6 @@ const Analytics: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) throw new Error('Non authentifié.');
-        // Si 500 ou autres erreurs, on considère qu'il n'y a pas de données
-        console.warn('Pas de statistiques annuelles disponibles');
         setYearlyStats([]);
         return;
       }
@@ -139,9 +142,7 @@ const Analytics: React.FC = () => {
       const data = await response.json();
       setYearlyStats(data || []);
     } catch (err) {
-      console.error('Erreur fetch yearly stats:', err);
       setYearlyStats([]);
-      // On ne set pas l'erreur pour ne pas bloquer l'interface
     }
   };
 
@@ -151,7 +152,6 @@ const Analytics: React.FC = () => {
       setSuccessMessage(null);
       setError(null);
       const apiUrl = getApiUrl();
-      const today = new Date().toISOString().split('T')[0];
 
       const response = await fetch(`${apiUrl}/analytics/aggregate`, {
         method: 'POST',
@@ -162,9 +162,8 @@ const Analytics: React.FC = () => {
       if (!response.ok) throw new Error("Erreur lors de l'agrégation");
 
       const result = await response.json();
-      setSuccessMessage(`✅ Succès pour le ${result.result?.date || today}`);
+      setSuccessMessage(`✅ Succès pour le ${result.result?.date || 'jour'}`);
 
-      // On recharge les données sans toucher aux filtres
       await Promise.all([
         fetchDailyStats(),
         fetchMonthlyStats(),
@@ -194,21 +193,16 @@ const Analytics: React.FC = () => {
     loadAll();
   }, []);
 
-  // daily : all / 30 jours / date précise
   const filteredDailyData = useMemo(() => {
     if (selectedDate === 'all') return dailyStats;
-    if (selectedDate === '30days') {
-      return dailyStats.slice(0, 30);
-    }
+    if (selectedDate === '30days') return dailyStats.slice(0, 30);
     return dailyStats.filter((stat) => stat.date === selectedDate);
   }, [dailyStats, selectedDate]);
 
-  // listes des mois / années disponibles en base
   const availableMonths = useMemo(() => {
     const set = new Set<string>();
     monthlyStats.forEach((m) => {
-      const key = `${m.year}-${String(m.month).padStart(2, '0')}`; // "YYYY-MM"
-      set.add(key);
+      set.add(`${m.year}-${String(m.month).padStart(2, '0')}`);
     });
     return Array.from(set).sort();
   }, [monthlyStats]);
@@ -222,8 +216,7 @@ const Analytics: React.FC = () => {
   const filteredMonthlyStats = useMemo(() => {
     if (selectedMonth === 'all') return monthlyStats;
     return monthlyStats.filter((m) => {
-      const key = `${m.year}-${String(m.month).padStart(2, '0')}`;
-      return key === selectedMonth;
+      return `${m.year}-${String(m.month).padStart(2, '0')}` === selectedMonth;
     });
   }, [monthlyStats, selectedMonth]);
 
@@ -232,54 +225,44 @@ const Analytics: React.FC = () => {
     return yearlyStats.filter((y) => String(y.year) === selectedYear);
   }, [yearlyStats, selectedYear]);
 
-  // données normalisées selon la période
   const currentData: NormalizedStat[] = useMemo(() => {
     if (period === 'daily') {
-      return filteredDailyData.map((d) => ({
+      return filteredDailyData.map(d => ({
         _id: d._id,
-        date: d.date, // "YYYY-MM-DD"
+        date: d.date,
         pageViews: d.pageViews,
         clicks: d.clicks,
         uniqueVisitors: d.uniqueVisitors,
       }));
     }
-
     if (period === 'monthly') {
-      return filteredMonthlyStats
-        .slice()
-        .sort((a, b) => (a.year === b.year ? a.month - b.month : a.year - b.year))
-        .map((m) => ({
-          _id: m._id,
-          date: `${m.year}-${String(m.month).padStart(2, '0')}`, // "YYYY-MM"
-          pageViews: m.pageViews,
-          clicks: m.clicks,
-          uniqueVisitors: m.uniqueVisitors,
-        }));
-    }
-
-    return filteredYearlyStats
-      .slice()
-      .sort((a, b) => a.year - b.year)
-      .map((y) => ({
-        _id: y._id,
-        date: String(y.year), // "YYYY"
-        pageViews: y.pageViews,
-        clicks: y.clicks,
-        uniqueVisitors: y.uniqueVisitors,
+      return filteredMonthlyStats.map(m => ({
+        _id: m._id,
+        date: `${m.year}-${String(m.month).padStart(2, '0')}`,
+        pageViews: m.pageViews,
+        clicks: m.clicks,
+        uniqueVisitors: m.uniqueVisitors,
       }));
+    }
+    return filteredYearlyStats.map(y => ({
+      _id: y._id,
+      date: String(y.year),
+      pageViews: y.pageViews,
+      clicks: y.clicks,
+      uniqueVisitors: y.uniqueVisitors,
+    }));
   }, [period, filteredDailyData, filteredMonthlyStats, filteredYearlyStats]);
 
-  // Mobile vs Desktop
   const { mobileStats, desktopStats } = useMemo(() => {
     const mobile = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
     const desktop = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
 
-    currentData.forEach((item) => {
+    currentData.forEach(item => {
       Object.entries(item.clicks || {}).forEach(([label, count]) => {
         if (label.toLowerCase().includes('mobile')) {
-          mobile.clicks[label] = (mobile.clicks[label] || 0) + count;
+          mobile.clicks[label] = (mobile.clicks[label] || 0) + (count as number);
         } else {
-          desktop.clicks[label] = (desktop.clicks[label] || 0) + count;
+          desktop.clicks[label] = (desktop.clicks[label] || 0) + (count as number);
         }
       });
     });
@@ -287,16 +270,15 @@ const Analytics: React.FC = () => {
     return { mobileStats: mobile, desktopStats: desktop };
   }, [currentData]);
 
-  // données pour les charts
   const comparisonChartData = useMemo(() => {
-    return [...currentData].reverse().map((stat) => {
+    return [...currentData].reverse().map(stat => {
       const mobileClicks = Object.entries(stat.clicks || {})
         .filter(([label]) => label.toLowerCase().includes('mobile'))
-        .reduce((sum, [, count]) => sum + count, 0);
+        .reduce((sum, [, count]) => sum + (count as number), 0);
 
       const desktopClicks = Object.entries(stat.clicks || {})
         .filter(([label]) => !label.toLowerCase().includes('mobile'))
-        .reduce((sum, [, count]) => sum + count, 0);
+        .reduce((sum, [, count]) => sum + (count as number), 0);
 
       return {
         name: stat.date,
@@ -310,54 +292,37 @@ const Analytics: React.FC = () => {
 
   const totalPageViews = currentData.reduce((sum, item) => sum + item.pageViews, 0);
   const totalVisitors = currentData.reduce((sum, item) => sum + item.uniqueVisitors, 0);
-  const avgVisitorsPerItem =
-    currentData.length > 0 ? Math.round(totalVisitors / currentData.length) : 0;
+  const avgVisitorsPerItem = currentData.length > 0 ? Math.round(totalVisitors / currentData.length) : 0;
 
-  // groupage des clics mobile
   const groupedMobileClicks = useMemo(() => {
     const grouped: Record<string, Record<string, number>> = {};
-
     Object.entries(mobileStats.clicks).forEach(([label, count]) => {
       if (label.includes('_')) {
         const [prefix, ...rest] = label.split('_');
-        const actionName = rest.join('_');
-
-        if (!grouped[prefix]) {
-          grouped[prefix] = {};
-        }
-        grouped[prefix][actionName] = count;
+        const action = rest.join('_');
+        if (!grouped[prefix]) grouped[prefix] = {};
+        grouped[prefix][action] = count;
       } else {
-        if (!grouped['autres']) {
-          grouped['autres'] = {};
-        }
+        if (!grouped['autres']) grouped['autres'] = {};
         grouped['autres'][label] = count;
       }
     });
-
     return grouped;
   }, [mobileStats]);
 
-  // groupage des clics desktop
   const groupedDesktopClicks = useMemo(() => {
     const grouped: Record<string, Record<string, number>> = {};
-
     Object.entries(desktopStats.clicks).forEach(([label, count]) => {
       if (label.includes('_')) {
         const [prefix, ...rest] = label.split('_');
-        const actionName = rest.join('_');
-
-        if (!grouped[prefix]) {
-          grouped[prefix] = {};
-        }
-        grouped[prefix][actionName] = count;
+        const action = rest.join('_');
+        if (!grouped[prefix]) grouped[prefix] = {};
+        grouped[prefix][action] = count;
       } else {
-        if (!grouped['autres']) {
-          grouped['autres'] = {};
-        }
+        if (!grouped['autres']) grouped['autres'] = {};
         grouped['autres'][label] = count;
       }
     });
-
     return grouped;
   }, [desktopStats]);
 
@@ -369,7 +334,6 @@ const Analytics: React.FC = () => {
         <h2>Statistiques Analytics</h2>
 
         <div className={styles.controls}>
-          {/* Tabs de période */}
           <div className={styles.periodTabs}>
             <button
               type="button"
@@ -394,16 +358,15 @@ const Analytics: React.FC = () => {
             </button>
           </div>
 
-          {/* Filtres selon la période */}
           {period === 'daily' && (
             <select
               className={styles.dateSelector}
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={e => setSelectedDate(e.target.value)}
             >
               <option value="all">Depuis toujours</option>
               <option value="30days">30 derniers jours</option>
-              {dailyStats.map((stat) => (
+              {dailyStats.map(stat => (
                 <option key={stat._id} value={stat.date}>
                   {stat.date}
                 </option>
@@ -415,10 +378,10 @@ const Analytics: React.FC = () => {
             <select
               className={styles.dateSelector}
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              onChange={e => setSelectedMonth(e.target.value)}
             >
               <option value="all">Tous les mois disponibles</option>
-              {availableMonths.map((m) => (
+              {availableMonths.map(m => (
                 <option key={m} value={m}>
                   {m}
                 </option>
@@ -430,10 +393,10 @@ const Analytics: React.FC = () => {
             <select
               className={styles.dateSelector}
               value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+              onChange={e => setSelectedYear(e.target.value)}
             >
               <option value="all">Toutes les années disponibles</option>
-              {availableYears.map((y) => (
+              {availableYears.map(y => (
                 <option key={y} value={y}>
                   {y}
                 </option>
@@ -454,39 +417,25 @@ const Analytics: React.FC = () => {
       {error && <div className={styles.error}>⚠️ {error}</div>}
       {successMessage && <div className={styles.success}>{successMessage}</div>}
 
-      {/* Message si aucune donnée */}
       {currentData.length === 0 && (
         <div className={styles.chartSection}>
           <p style={{ textAlign: 'center', color: '#b2bec3', padding: '40px' }}>
-            Aucune donnée disponible pour la période sélectionnée. 
-            Générez un rapport pour commencer à voir vos statistiques.
+            Aucune donnée disponible pour la période sélectionnée.
           </p>
         </div>
       )}
 
-      {/* CHART COMPARATIF MOBILE VS DESKTOP */}
       {comparisonChartData.length > 0 && (
         <div className={styles.chartSection}>
-          <h3>
-            Comparaison Mobile vs Desktop{' '}
-            {period === 'daily' && '(journalier)'}
-            {period === 'monthly' && '(mensuel)'}
-            {period === 'yearly' && '(annuel)'}
-          </h3>
+          <h3>Comparaison Mobile vs Desktop</h3>
           <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
               <BarChart data={comparisonChartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
                 <YAxis fontSize={11} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: '10px',
-                    border: 'none',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }}
-                />
-                <Legend iconType="circle" />
+                <Tooltip />
+                <Legend />
                 <Bar dataKey="Mobile" fill="#ff6b6b" />
                 <Bar dataKey="Desktop" fill="#4ecdc4" />
               </BarChart>
@@ -495,7 +444,6 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-      {/* CHART GLOBAL */}
       {comparisonChartData.length > 0 && (
         <div className={styles.chartSection}>
           <h3>Activité des Visiteurs</h3>
@@ -505,29 +453,10 @@ const Analytics: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis dataKey="name" fontSize={11} axisLine={false} tickLine={false} />
                 <YAxis fontSize={11} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: '10px',
-                    border: 'none',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }}
-                />
-                <Legend iconType="circle" />
-                <Line
-                  type="monotone"
-                  dataKey="Vues"
-                  stroke="#007bff"
-                  strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 6 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Visiteurs"
-                  stroke="#00b894"
-                  strokeWidth={3}
-                  dot={false}
-                />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="Vues" stroke="#007bff" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="Visiteurs" stroke="#00b894" strokeWidth={3} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -556,68 +485,99 @@ const Analytics: React.FC = () => {
         </div>
       </div>
 
-      {/* SECTION MOBILE ET DESKTOP CÔTE À CÔTE */}
-      <div className={styles.platformComparison}>
-        {/* MOBILE */}
-        <div className={styles.platformSection}>
-          <h3 className={styles.platformTitle}>📱 Mobile</h3>
-          <div className={styles.topClicks}>
-            <h4>Actions Mobile</h4>
-            <div className={styles.clicksList}>
-              {Object.keys(groupedMobileClicks).length > 0 ? (
-                Object.entries(groupedMobileClicks).map(([category, actions]) => (
-                  <div key={category} className={styles.clickCategory}>
-                    <h5 className={styles.categoryTitle}>{category}</h5>
-                    {Object.entries(actions)
-                      .sort(([, a], [, b]) => b - a)
-                      .map(([action, count]) => (
-                        <div key={`${category}-${action}`} className={styles.clickItem}>
-                          <span className={styles.clickLabel}>{action}</span>
-                          <span className={styles.clickCount}>{count}</span>
-                        </div>
-                      ))}
-                  </div>
-                ))
-              ) : (
-                <span className={styles.noClicks}>Aucune donnée mobile</span>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* Détail mensuel – tous fermés par défaut */}
+      {period === 'monthly' && filteredMonthlyStats.length > 0 && (
+        <div className={styles.monthlyDetailSection}>
+          <h3>Détail par jour {selectedMonth !== 'all' ? `— ${selectedMonth}` : ''}</h3>
 
-        {/* DESKTOP */}
-        <div className={styles.platformSection}>
-          <h3 className={styles.platformTitle}>💻 Desktop</h3>
-          <div className={styles.topClicks}>
-            <h4>Actions Desktop</h4>
-            <div className={styles.clicksList}>
-              {Object.keys(groupedDesktopClicks).length > 0 ? (
-                Object.entries(groupedDesktopClicks).map(([category, actions]) => (
-                  <div key={category} className={styles.clickCategory}>
-                    <h5 className={styles.categoryTitle}>{category}</h5>
-                    {Object.entries(actions)
-                      .sort(([, a], [, b]) => b - a)
-                      .map(([action, count]) => (
-                        <div key={`${category}-${action}`} className={styles.clickItem}>
-                          <span className={styles.clickLabel}>{action}</span>
-                          <span className={styles.clickCount}>{count}</span>
-                        </div>
-                      ))}
-                  </div>
-                ))
-              ) : (
-                <span className={styles.noClicks}>Aucune donnée desktop</span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+          {filteredMonthlyStats.map(month => {
+            const monthKey = `${month.year}-${String(month.month).padStart(2, '0')}`;
+            const isOpen = openMonths.has(monthKey);
 
-      {/* Tableau générique selon la période */}
+            if (selectedMonth !== 'all' && selectedMonth !== monthKey) return null;
+
+            return (
+              <div key={month._id} className={styles.monthDetail}>
+                <div
+                  className={styles.accordionHeader}
+                  onClick={() => {
+                    const newSet = new Set(openMonths);
+                    if (isOpen) newSet.delete(monthKey);
+                    else newSet.add(monthKey);
+                    setOpenMonths(newSet);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                >
+                  <h4>
+                    {month.year} — Mois {month.month}
+                    <small> (total : {month.pageViews} vues • {month.uniqueVisitors} uniques)</small>
+                  </h4>
+                  <span className={styles.toggleIcon}>{isOpen ? '▲' : '▼'}</span>
+                </div>
+
+                <div className={styles.accordionContent} aria-hidden={!isOpen}>
+                  {month.dailyStats?.length > 0 ? (
+                    <div className={styles.dailyTable}>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Jour</th>
+                            <th>Vues</th>
+                            <th>Visiteurs</th>
+                            <th>Clics (top)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {month.dailyStats
+                            .sort((a, b) => a.date.localeCompare(b.date))
+                            .map(day => (
+                              <tr key={day.date}>
+                                <td>{day.date}</td>
+                                <td>{day.pageViews}</td>
+                                <td>{day.uniqueVisitors}</td>
+                                <td>
+                                  {Object.keys(day.clicks || {}).length > 0 ? (
+                                    <ul className={styles.miniClicks}>
+                                      {Object.entries(day.clicks)
+                                        .sort(([,a], [,b]) => (b as number) - (a as number))
+                                        .slice(0, 3)
+                                        .map(([label, count]) => (
+                                          <li key={label}>
+                                            {label}: {count}
+                                          </li>
+                                        ))}
+                                      {Object.keys(day.clicks).length > 3 && (
+                                        <li>+{Object.keys(day.clicks).length - 3} autres</li>
+                                      )}
+                                    </ul>
+                                  ) : (
+                                    <span className={styles.noData}>-</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p style={{ color: '#e74c3c', padding: '12px' }}>
+                      Aucun détail journalier pour ce mois
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Tableau des totaux */}
       <div className={styles.dailyTable}>
         <h3>
           {period === 'daily' && 'Historique Journalier'}
-          {period === 'monthly' && 'Historique Mensuel'}
+          {period === 'monthly' && 'Historique Mensuel (totaux)'}
           {period === 'yearly' && 'Historique Annuel'}
         </h3>
         <div className={styles.tableWrapper}>
@@ -630,17 +590,100 @@ const Analytics: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item) => (
+              {currentData.map(item => (
                 <tr key={item._id}>
-                  <td>
-                    <strong>{item.date}</strong>
-                  </td>
+                  <td><strong>{item.date}</strong></td>
                   <td>{item.pageViews}</td>
                   <td>{item.uniqueVisitors}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Mobile / Desktop – tous fermés par défaut */}
+      <div className={styles.platformComparison}>
+        {/* Mobile */}
+        <div className={styles.platformSection}>
+          <div
+            className={styles.accordionHeader}
+            onClick={() => setOpenMobile(!openMobile)}
+            role="button"
+            tabIndex={0}
+            aria-expanded={openMobile}
+          >
+            <h3 className={styles.platformTitle}>
+              📱 Mobile ({Object.values(mobileStats.clicks).reduce((a, b) => a + b, 0)})
+            </h3>
+            <span className={styles.toggleIcon}>{openMobile ? '▲' : '▼'}</span>
+          </div>
+
+          <div className={styles.accordionContent} aria-hidden={!openMobile}>
+            <div className={styles.topClicks}>
+              <h4>Actions Mobile</h4>
+              <div className={styles.clicksList}>
+                {Object.keys(groupedMobileClicks).length > 0 ? (
+                  Object.entries(groupedMobileClicks).map(([category, actions]) => (
+                    <div key={category} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{category}</h5>
+                      {Object.entries(actions)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
+                        .map(([action, count]) => (
+                          <div key={action} className={styles.clickItem}>
+                            <span className={styles.clickLabel}>{action}</span>
+                            <span className={styles.clickCount}>{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  ))
+                ) : (
+                  <span className={styles.noClicks}>Aucune donnée mobile</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop */}
+        <div className={styles.platformSection}>
+          <div
+            className={styles.accordionHeader}
+            onClick={() => setOpenDesktop(!openDesktop)}
+            role="button"
+            tabIndex={0}
+            aria-expanded={openDesktop}
+          >
+            <h3 className={styles.platformTitle}>
+              💻 Desktop ({Object.values(desktopStats.clicks).reduce((a, b) => a + b, 0)})
+            </h3>
+            <span className={styles.toggleIcon}>{openDesktop ? '▲' : '▼'}</span>
+          </div>
+
+          <div className={styles.accordionContent} aria-hidden={!openDesktop}>
+            <div className={styles.topClicks}>
+              <h4>Actions Desktop</h4>
+              <div className={styles.clicksList}>
+                {Object.keys(groupedDesktopClicks).length > 0 ? (
+                  Object.entries(groupedDesktopClicks).map(([category, actions]) => (
+                    <div key={category} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{category}</h5>
+                      {Object.entries(actions)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
+                        .map(([action, count]) => (
+                          <div key={action} className={styles.clickItem}>
+                            <span className={styles.clickLabel}>{action}</span>
+                            <span className={styles.clickCount}>{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  ))
+                ) : (
+                  <span className={styles.noClicks}>Aucune donnée desktop</span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
