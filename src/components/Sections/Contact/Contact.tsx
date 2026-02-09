@@ -130,7 +130,7 @@ const Contact = () => {
         body: JSON.stringify({
           email: formData.email,
           message: fullMessage,
-          ...(captchaToken && { captchaToken }),
+          ...(captchaToken && { "g-recaptcha-response": captchaToken }),
         }),
       });
 

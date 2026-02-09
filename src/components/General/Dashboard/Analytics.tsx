@@ -407,8 +407,8 @@ const Analytics: React.FC = () => {
   }, [currentData]);
 
   const languagePieData = useMemo(() => [
-    { name: 'Français', value: languageStats.FR, fill: '#3498db' },
-    { name: 'English', value: languageStats.EN, fill: '#e74c3c' },
+    { name: 'Fr', value: languageStats.FR, fill: '#3498db' },
+    { name: 'En', value: languageStats.EN, fill: '#e74c3c' },
   ].filter(d => d.value > 0), [languageStats]);
 
   const totalClicks = languageStats.FR + languageStats.EN;

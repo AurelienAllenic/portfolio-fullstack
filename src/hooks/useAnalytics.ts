@@ -1,7 +1,7 @@
 import { useLanguage } from '../components/General/Language/LanguageContext';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/';
-const TRACK_ENDPOINT = `${BASE_URL}track`;
+const TRACK_ENDPOINT = `${BASE_URL}/track`;
 
 /** Même breakpoint que useTrackSectionArrival pour cohérence mobile/desktop */
 const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
@@ -42,7 +42,6 @@ export const useAnalytics = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      console.log('✅ Event tracked:', type, label);
     } catch (err) {
       console.error("Tracking error:", err);
     }
@@ -61,7 +60,6 @@ export const useAnalytics = () => {
     const isMobile = typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches;
     const langSuffix = language === 'fr' ? '_LANG_FR' : '_LANG_EN';
     const finalLabel = `${isMobile ? `${label}${mobileSuffix}` : `${label}${desktopSuffix}`}${langSuffix}`;
-    console.log('🖱️ trackClick called:', finalLabel);
     trackEvent('CLICK', finalLabel, extraData);
   };
 
