@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './footer.module.scss';
 import RadialTransitionOverlay from '../Nav/RadialTransitionOverlay';
 import { useLanguage } from '../Language/LanguageContext';
+import { useAnalytics } from '../../../hooks/useAnalytics';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,6 +15,8 @@ const Footer = () => {
   const creditsLinkRef = useRef<HTMLAnchorElement>(null);
   const mentionsLinkRef = useRef<HTMLAnchorElement>(null);
   const politiqueConfidentialiteLinkRef = useRef<HTMLAnchorElement>(null);
+
+  const { trackClick } = useAnalytics();
 
   const handleCreditsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -53,17 +56,19 @@ const Footer = () => {
 
   const handleCreditsTransitionComplete = () => {
     // Naviguer après l'animation
+    trackClick('footer_credits_click');
     navigate('/credits');
   };
 
   const handleMentionsTransitionComplete = () => {
     // Naviguer après l'animation
+    trackClick('footer_mentions_click');
     navigate('/mentions-legales');
   };
 
   const handlePolitiqueConfidentialiteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
+    trackClick('footer_privacy_click');
     // Calculer la position du bouton pour centrer le gradient
     const buttonRect = politiqueConfidentialiteLinkRef.current?.getBoundingClientRect();
     if (buttonRect) {
