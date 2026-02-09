@@ -1,10 +1,13 @@
 import styles from "./hero.module.scss";
 import { useState, useEffect } from "react";
 import { useLanguage } from "../../General/Language/LanguageContext";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 
 const HeroBeforeScroll = () => {
   const [isMobile, setIsMobile] = useState(false);
   const { t, language } = useLanguage();
+
+  useTrackSectionArrival('section_hero');
 
   useEffect(() => {
     const checkIsMobile = () => {

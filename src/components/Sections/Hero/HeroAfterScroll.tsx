@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useRef, useState, useLayoutEffect, useMemo } fro
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
 import { useLanguage } from "../../General/Language/LanguageContext";
-import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
@@ -28,7 +28,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     ref
   ) => {
     const { t } = useLanguage();
-    useTrackSectionArrival('section_about');
     
     const texts: TextContent[] = useMemo(() => [
       t("hero.afterScroll.text1"),
@@ -77,6 +76,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconsWrapperRef = useRef<HTMLDivElement | null>(null);
     const scrollAnimationRef = useRef<gsap.core.Timeline | null>(null);
     const [isMobile, setIsMobile] = useState(false);
+
+    const { trackClick } = useAnalytics();
+
+    // Envoyer un événement "section arrival" à chaque changement de texte
+    useEffect(() => {
+      const sectionName = `section_about_${textIndex + 1}`;
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const label = isMobile ? `${sectionName}_mobile` : sectionName;
+      trackClick(label);
+    }, [textIndex, trackClick]);
 
     // Détecter si on est en mobile
     useEffect(() => {
