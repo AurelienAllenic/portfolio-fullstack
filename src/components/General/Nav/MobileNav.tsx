@@ -19,6 +19,7 @@ import {
   solead,
   iim,
 } from "../../Sections/Projects/Data";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 // Images pour chaque section (en dehors du composant pour éviter les re-créations)
 const IMAGES = {
@@ -37,6 +38,8 @@ const MobileNav = () => {
   const { navigateToHero, navigateToProjects, navigateToContact, heroState } = useNavigation();
   const { t } = useLanguage();
   const { error: cvError } = useCv();
+
+  const { trackClick } = useAnalytics();
   
   // Catégories traduites — ordre identique à SliderProjects covers
   const PROJECT_CATEGORIES = useMemo(() => [
@@ -89,9 +92,13 @@ const MobileNav = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleNavigate = (destination: "hero" | "projects" | "contact", imageUrl: string) => {
+  const handleNavigate = (
+    trackingEvent: string,
+    destination: "hero" | "projects" | "contact",
+    imageUrl: string
+  ) => {
     if (isAnimating) return; // Empêcher les clics multiples pendant l'animation
-    
+    trackClick(trackingEvent);
     // VERROUILLER l'image actuelle immédiatement pour empêcher les onMouseEnter de la changer
     lockedImageRef.current = hoveredImage;
     const currentImage = lockedImageRef.current;
@@ -194,7 +201,7 @@ const MobileNav = () => {
   // Fonction pour passer du menu principal aux catégories de projets
   const showProjectsMenu = () => {
     if (isAnimating) return;
-    
+    trackClick('nav_projects');
     lockedImageRef.current = hoveredImage;
     const currentImage = lockedImageRef.current;
     
@@ -294,7 +301,7 @@ const MobileNav = () => {
   // Fonction pour gérer le clic sur une catégorie de projet
   const handleCategoryClick = (category: typeof PROJECT_CATEGORIES[0]) => {
     if (isAnimating) return;
-    
+    trackClick(`nav_projects_category_${category.index}`);
     lockedImageRef.current = hoveredImage;
     const currentImage = lockedImageRef.current;
     
@@ -489,10 +496,10 @@ const MobileNav = () => {
         <div 
           className={styles.left}
           onClick={() => {
+            trackClick('nav_logo');
             if (isOpen) {
               // Si le menu est ouvert, gérer comme les autres items
               if (isAnimating) return;
-              
               // VERROUILLER l'image actuelle
               lockedImageRef.current = hoveredImage;
               const currentImage = lockedImageRef.current;
@@ -558,7 +565,7 @@ const MobileNav = () => {
                 }, 300);
               }
             } else {
-              // Si le menu est fermé, navigation normale
+              // Si le menu est fermé, navigation normale (trackClick déjà appelé en tête)
               navigateToHero("hero1");
             }
           }}
@@ -569,7 +576,13 @@ const MobileNav = () => {
         <div className={styles.right}>
           <div className={styles.socialIcons}>
             {!cvError && (
-              <div onClick={openModal} style={{ cursor: "pointer" }}>
+              <div
+                onClick={() => {
+                  trackClick('nav_cv_open');
+                  openModal();
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <img
                   src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cv_sjsdbv.webp"
                   alt="CV"
@@ -580,6 +593,7 @@ const MobileNav = () => {
               href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackClick('nav_linkedin')}
             >
               <img
                 src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linkedin-logo_tin7ki.webp"
@@ -590,6 +604,7 @@ const MobileNav = () => {
               href="https://github.com/aurelienallenic"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackClick('nav_github')}
             >
               <img
                 src="https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/Github_logo_kmfq2g.webp"
@@ -599,7 +614,10 @@ const MobileNav = () => {
           </div>
           <div
             className={`${styles.burger} ${isOpen ? styles.open : ""}`}
-            onClick={toggleMenu}
+            onClick={() => {
+              trackClick('nav_burger');
+              toggleMenu();
+            }}
           >
             <div className={styles.bar}></div>
             <div className={styles.bar}></div>
@@ -634,7 +652,7 @@ const MobileNav = () => {
             <>
               <div 
                 className={styles.menuItem}
-                onClick={() => handleNavigate("hero", IMAGES.hero2)}
+                onClick={() => handleNavigate('nav_about', "hero", IMAGES.hero2)}
               >
                 {t("nav.about")}
               </div>
@@ -648,7 +666,7 @@ const MobileNav = () => {
               <div className={styles.separator}>-</div>
               <div 
                 className={styles.menuItem}
-                onClick={() => handleNavigate("contact", IMAGES.contact)}
+                onClick={() => handleNavigate('nav_contact', "contact", IMAGES.contact)}
               >
                 {t("nav.contact")}
               </div>

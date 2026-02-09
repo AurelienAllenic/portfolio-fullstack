@@ -12,7 +12,7 @@ const Nav = () => {
   const { trackClick } = useAnalytics();
   const navRef = useRef<HTMLDivElement>(null);
   const { openModal } = useModalCV();
-  const { navigateToHero, navigateToContact } = useNavigation();
+  const { navigateToHero, navigateToContact, navigateToProjects } = useNavigation();
   const { t } = useLanguage();
   const { error: cvError } = useCv();
 
@@ -62,19 +62,19 @@ const Nav = () => {
     };
   }, []);
 
-  const handleLogoClick = () => {
-    trackClick('nav_logo');
-    navigateToHero("hero1");
-  };
-
-  const handleAboutClick = () => {
-    trackClick('nav_about');
-    navigateToHero("hero2");
-  };
-
-  const handleContactClick = () => {
-    trackClick('nav_contact');
-    navigateToContact();
+  const handleTrackerClick = (
+    trackingEvent: string,
+    navigateToFunction: "navigateToHero" | "navigateToContact" | "navigateToProjects",
+    navigateToDestination?: string | number
+  ) => {
+    trackClick(trackingEvent);
+    if (navigateToFunction === "navigateToHero" && navigateToDestination) {
+      navigateToHero(navigateToDestination as "hero1" | "hero2");
+    } else if (navigateToFunction === "navigateToContact") {
+      navigateToContact();
+    } else if (navigateToFunction === "navigateToProjects" && navigateToDestination !== undefined) {
+      navigateToProjects(Number(navigateToDestination));
+    }
   };
 
   const handleCVClick = () => {
@@ -87,7 +87,7 @@ const Nav = () => {
       <nav className={styles.nav} ref={navRef}>
         <div 
           className={styles.logo}
-          onClick={handleLogoClick}
+          onClick={() => handleTrackerClick('nav_logo', 'navigateToHero', 'hero1')}
           style={{ cursor: "pointer" }}
         >
           AURELIEN ALLENIC
@@ -95,7 +95,7 @@ const Nav = () => {
         <ul className={styles.navLinks}>
           <li>
             <div
-              onClick={handleAboutClick}
+              onClick={() => handleTrackerClick('nav_about', 'navigateToHero', 'hero2')}
               style={{ cursor: "pointer" }}
             >
               {t("nav.about")}
@@ -106,7 +106,7 @@ const Nav = () => {
           </li>
           <li>
             <div
-              onClick={handleContactClick}
+              onClick={() => handleTrackerClick('nav_contact', 'navigateToContact')}
               style={{ cursor: "pointer" }}
             >
               {t("nav.contact")}
