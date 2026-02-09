@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useLanguage } from "./LanguageContext";
 import RadialTransitionOverlay from "../Nav/RadialTransitionOverlay";
 import styles from "./languageToggle.module.scss";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 type TransitionState = "idle" | "closing" | "opening";
 
@@ -11,7 +12,11 @@ const LanguageToggle = () => {
   const [direction, setDirection] = useState<"in" | "out">("in");
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const { trackClick } = useAnalytics();
+
   const handleToggle = () => {
+    const targetLang = language === "fr" ? "en" : "fr";
+    trackClick(`language_toggle_${targetLang}`);
     if (transitionState !== "idle") return;
 
     // Sauvegarder la position du bouton pour le gradient

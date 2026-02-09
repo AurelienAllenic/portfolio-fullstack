@@ -2,6 +2,7 @@ import { useEffect, useRef, useMemo } from "react";
 import styles from "./modalCV.module.scss";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 interface ModalCVProps {
   isOpen: boolean;
@@ -13,6 +14,8 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
   const { getCvImageUrl, getCvPdfUrl } = useCv();
   const modalRef = useRef<HTMLDivElement>(null);
   const cvImageRef = useRef<HTMLDivElement>(null);
+
+  const { trackClick } = useAnalytics();
   
   // URLs du CV selon la langue depuis le backend
   const { cvImageUrl, cvPdfUrl } = useMemo(() => {
@@ -99,6 +102,7 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
 
   const handleCVClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    trackClick('modal_cv_download')
     window.open(cvPdfUrl, '_blank', 'noopener,noreferrer');
   };
 
