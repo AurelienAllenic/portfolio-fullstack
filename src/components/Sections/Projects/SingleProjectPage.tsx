@@ -18,6 +18,7 @@ import {
   iim_cover,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 
 const SingleProjectPage = () => {
   const { categorySlug, programmingLanguage } = useParams<{ categorySlug: string; programmingLanguage?: string }>();
@@ -25,6 +26,8 @@ const SingleProjectPage = () => {
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
+
+  useTrackSectionArrival('page_projects');
   
   const covers: ProjectCover[] = [
     projects_cover,

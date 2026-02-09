@@ -6,6 +6,17 @@ import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
+import { useAnalytics } from "../../../hooks/useAnalytics";
+
+/** Slug pour les labels analytics (nom du projet / bouton) */
+const slugifyProjectName = (name: string): string =>
+  name
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '') || 'project';
 
 interface SingleProjectProps {
   projects: Project[];
@@ -21,6 +32,7 @@ const SingleProject = ({
   onBack 
 }: SingleProjectProps) => {
   const { language } = useLanguage();
+  const { trackClick } = useAnalytics();
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -114,6 +126,15 @@ const SingleProject = ({
     setCurrentImageIndex(0);
     isTransitioningRef.current = false;
   }, [selectedIndex]);
+
+  // Tracker le visionnage d'un projet (affichage ou changement de projet)
+  useEffect(() => {
+    const project = projects[selectedIndex];
+    if (project) {
+      const name = language === 'fr' ? project.title : (project.titleEn || project.title);
+      trackClick(`page-projet_${slugifyProjectName(name)}`);
+    }
+  }, [selectedIndex, language, projects, trackClick]);
 
   // Scroller le slider pour afficher la carte active quand selectedIndex change
   useEffect(() => {
@@ -344,6 +365,11 @@ const SingleProject = ({
 
   const handleImageClick = (index: number) => {
     if (index !== selectedIndex) {
+      const project = projects[index];
+      if (project) {
+        const name = language === 'fr' ? project.title : (project.titleEn || project.title);
+        trackClick(`page-projet_${slugifyProjectName(name)}_selection`);
+      }
       setSelectedIndex(index);
       
       // Scroller pour centrer la carte cliquée
@@ -616,6 +642,7 @@ const SingleProject = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectButton}
+                  onClick={() => trackClick(`page-projet_${slugifyProjectName(projectTitle)}_github`)}
                 >
                   GitHub
                 </a>
@@ -626,6 +653,7 @@ const SingleProject = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectButton}
+                  onClick={() => trackClick(`page-projet_${slugifyProjectName(projectTitle)}_live-demo`)}
                 >
                   Live Demo
                 </a>
@@ -636,6 +664,7 @@ const SingleProject = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectButton}
+                  onClick={() => trackClick(`page-projet_${slugifyProjectName(projectTitle)}_figma`)}
                 >
                   Figma
                 </a>
@@ -649,6 +678,7 @@ const SingleProject = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.projectButton}
+                      onClick={() => trackClick(`page-projet_${slugifyProjectName(projectTitle)}_${slugifyProjectName(item.title)}`)}
                     >
                       {item.title}
                     </a>
