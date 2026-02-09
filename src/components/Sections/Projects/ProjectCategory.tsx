@@ -6,6 +6,7 @@ import BlurImage from "../../General/BlurImage";
 import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 // Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -112,13 +113,25 @@ const getTechSlug = (url: string): string => {
   return '';
 };
 
+/** Slug pour les labels analytics (nom du projet → nom-du-projet) */
+const slugifyProjectName = (name: string): string =>
+  name
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '') || 'project';
+
 const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  const { trackClick } = useAnalytics();
 
   useTrackSectionArrival(`project_category_${cover.slug}`);
 
@@ -235,7 +248,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
   const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
+    trackClick(`${cover.slug}_voir_les_projets`);
     // Sauvegarder l'index de la catégorie et l'URL
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
@@ -249,7 +262,11 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
   const handleProjectImageClick = (e: React.MouseEvent<HTMLAnchorElement>, projectIndex: number) => {
     e.preventDefault();
-    
+    const project = projects?.[projectIndex];
+    const projectName = project
+      ? (language === 'fr' ? project.title : project.titleEn)
+      : `project-${projectIndex}`;
+    trackClick(`${cover.slug}_${slugifyProjectName(projectName)}`);
     // Sauvegarder l'index de la catégorie et l'URL avec l'index du projet
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
@@ -264,12 +281,12 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
   const handleTechIconClick = (e: React.MouseEvent<HTMLAnchorElement>, techUrl: string) => {
     e.preventDefault();
-    
+    const techSlug = getTechSlug(techUrl);
+    if (techSlug) trackClick(`${cover.slug}_${techSlug}`);
     // Sauvegarder l'index de la catégorie
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
-      const techSlug = getTechSlug(techUrl);
       const techUrl_path = `/projects/${cover.slug}/${techSlug}`;
       pendingUrlRef.current = techUrl_path;
       
