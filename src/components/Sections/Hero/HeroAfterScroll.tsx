@@ -405,9 +405,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [returnFromProjects]);
 
     useEffect(() => {
-      // Réinitialiser les refs quand les icônes changent
-      iconContainers.current = [];
-      
+      // Ne pas vider iconContainers : les refs sont remplies par le rendu ; si on les vide ici,
+      // les timeouts ne trouvent plus les éléments et la classe .appeared n'est jamais ajoutée (tooltips desktop cassés).
       const iconCount = isMobile ? allIconsMobile.length : allIconsDesktop.length;
       
       const timeouts: number[] = [];
