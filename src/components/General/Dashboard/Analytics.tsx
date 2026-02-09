@@ -1,9 +1,33 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend, BarChart, Bar
+  Tooltip, ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell
 } from 'recharts';
 import styles from './analytics.module.scss';
+
+/** Normalise un label (sans _mobile, _LANG_FR, _LANG_EN) et retourne la zone d’affichage */
+function getZoneFromLabel(label: string): string {
+  let base = label
+    .replace(/_LANG_FR$/, '')
+    .replace(/_LANG_EN$/, '')
+    .replace(/_mobile$/, '');
+  if (base.startsWith('nav_')) return 'Nav';
+  if (base.startsWith('footer_')) return 'Footer';
+  if (base.startsWith('section_hero')) return 'Hero';
+  if (base.startsWith('section_about')) return 'À propos';
+  if (base.startsWith('section_contact')) return 'Contact';
+  if (base.startsWith('project_category_') || base.startsWith('page_projects') || base.startsWith('page_projet') || base.startsWith('page-projet')) return 'Projets';
+  if (base.startsWith('modal_cv')) return 'CV';
+  if (base.startsWith('language_toggle')) return 'Langue';
+  return 'Autres';
+}
+
+/** Retourne si le label est en français ou anglais */
+function getLangFromLabel(label: string): 'FR' | 'EN' | null {
+  if (label.endsWith('_LANG_FR')) return 'FR';
+  if (label.endsWith('_LANG_EN')) return 'EN';
+  return null;
+}
 
 interface DailyStatSub {
   date: string;           // "YYYY-MM-DD"
@@ -326,6 +350,69 @@ const Analytics: React.FC = () => {
     return grouped;
   }, [desktopStats]);
 
+  /** Répartition des clics par langue (FR / EN) sur toute la période */
+  const languageStats = useMemo(() => {
+    let fr = 0;
+    let en = 0;
+    currentData.forEach(item => {
+      Object.entries(item.clicks || {}).forEach(([label, count]) => {
+        const lang = getLangFromLabel(label);
+        const n = count as number;
+        if (lang === 'FR') fr += n;
+        else if (lang === 'EN') en += n;
+      });
+    });
+    return { FR: fr, EN: en };
+  }, [currentData]);
+
+  /** Données pour le graphique "Ce qui est le plus utilisé" (par zone) */
+  const zoneChartData = useMemo(() => {
+    const byZone: Record<string, number> = {};
+    currentData.forEach(item => {
+      Object.entries(item.clicks || {}).forEach(([label, count]) => {
+        const zone = getZoneFromLabel(label);
+        byZone[zone] = (byZone[zone] || 0) + (count as number);
+      });
+    });
+    return Object.entries(byZone)
+      .map(([name, total]) => ({ name, total, fill: undefined as string | undefined }))
+      .sort((a, b) => b.total - a.total);
+  }, [currentData]);
+
+  const ZONE_COLORS = ['#4ecdc4', '#ff6b6b', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#a29bfe', '#fd79a8'];
+  const zoneChartDataWithColors = useMemo(() => {
+    return zoneChartData.map((d, i) => ({ ...d, fill: ZONE_COLORS[i % ZONE_COLORS.length] }));
+  }, [zoneChartData]);
+
+  /** Pour les accordéons Mobile/Desktop : totaux par langue */
+  const { mobileByLang, desktopByLang } = useMemo(() => {
+    const mobile = { FR: 0, EN: 0 };
+    const desktop = { FR: 0, EN: 0 };
+    currentData.forEach(item => {
+      Object.entries(item.clicks || {}).forEach(([label, count]) => {
+        const lang = getLangFromLabel(label);
+        const n = count as number;
+        if (lang === 'FR' || lang === 'EN') {
+          if (label.toLowerCase().includes('_mobile')) {
+            if (lang === 'FR') mobile.FR += n;
+            else mobile.EN += n;
+          } else {
+            if (lang === 'FR') desktop.FR += n;
+            else desktop.EN += n;
+          }
+        }
+      });
+    });
+    return { mobileByLang: mobile, desktopByLang: desktop };
+  }, [currentData]);
+
+  const languagePieData = useMemo(() => [
+    { name: 'Français', value: languageStats.FR, fill: '#3498db' },
+    { name: 'English', value: languageStats.EN, fill: '#e74c3c' },
+  ].filter(d => d.value > 0), [languageStats]);
+
+  const totalClicks = languageStats.FR + languageStats.EN;
+
   if (loading) return <div className={styles.loading}>Chargement...</div>;
 
   return (
@@ -463,6 +550,77 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
+      {/* Ce qui est le plus utilisé : clics par zone (Nav, Hero, Sections, Footer, etc.) */}
+      {zoneChartDataWithColors.length > 0 && (
+        <div className={styles.chartSection}>
+          <h3>Actions les plus utilisées (par zone)</h3>
+          <p className={styles.chartDescription}>
+            Répartition des clics sur le site : navigation, sections, footer, etc.
+          </p>
+          <div style={{ width: '100%', height: 320 }}>
+            <ResponsiveContainer>
+              <BarChart data={zoneChartDataWithColors} layout="vertical" margin={{ left: 80 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
+                <XAxis type="number" fontSize={11} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={75} fontSize={11} axisLine={false} tickLine={false} />
+                <Tooltip formatter={(value: number | undefined) => (value != null ? [value, 'clics'] : [])} />
+                <Bar dataKey="total" name="Clics" radius={[0, 4, 4, 0]}>
+                  {zoneChartDataWithColors.map((entry) => (
+                    <Cell key={entry.name} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Répartition par langue (FR / EN) */}
+      {(languageStats.FR > 0 || languageStats.EN > 0) && (
+        <div className={styles.chartSection}>
+          <h3>Répartition par langue</h3>
+          <p className={styles.chartDescription}>
+            Clics selon la langue du site au moment de l’action (français ou anglais).
+          </p>
+          <div className={styles.languageStatsRow}>
+            <div className={styles.langCard}>
+              <span className={styles.langLabel}>Français</span>
+              <span className={styles.langNumber}>{languageStats.FR.toLocaleString()}</span>
+              <span className={styles.langSublabel}>clics</span>
+            </div>
+            <div className={styles.langCard}>
+              <span className={styles.langLabel}>English</span>
+              <span className={styles.langNumber}>{languageStats.EN.toLocaleString()}</span>
+              <span className={styles.langSublabel}>clics</span>
+            </div>
+            {languagePieData.length > 0 && (
+              <div className={styles.langPieWrap}>
+                <ResponsiveContainer width="100%" height={160}>
+                  <PieChart>
+                    <Pie
+                      data={languagePieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={70}
+                      paddingAngle={2}
+                      label={({ name, value }) => `${name}: ${value}`}
+                    >
+                      {languagePieData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: number | undefined) => (value != null ? [value, 'clics'] : [])} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <h3>Pages Vues</h3>
@@ -482,6 +640,11 @@ const Analytics: React.FC = () => {
             {period === 'monthly' && 'Visiteurs / mois'}
             {period === 'yearly' && 'Visiteurs / an'}
           </span>
+        </div>
+        <div className={styles.statCard}>
+          <h3>Total clics (actions)</h3>
+          <p className={styles.statNumber}>{totalClicks.toLocaleString()}</p>
+          <span className={styles.statLabel}>Nav, sections, footer, etc.</span>
         </div>
       </div>
 
@@ -620,6 +783,9 @@ const Analytics: React.FC = () => {
           </div>
 
           <div className={styles.accordionContent} aria-hidden={!openMobile}>
+            <div className={styles.langBreakdown}>
+              Français : <strong>{mobileByLang.FR}</strong> clics — English : <strong>{mobileByLang.EN}</strong> clics
+            </div>
             <div className={styles.topClicks}>
               <h4>Actions Mobile</h4>
               <div className={styles.clicksList}>
@@ -661,6 +827,9 @@ const Analytics: React.FC = () => {
           </div>
 
           <div className={styles.accordionContent} aria-hidden={!openDesktop}>
+            <div className={styles.langBreakdown}>
+              Français : <strong>{desktopByLang.FR}</strong> clics — English : <strong>{desktopByLang.EN}</strong> clics
+            </div>
             <div className={styles.topClicks}>
               <h4>Actions Desktop</h4>
               <div className={styles.clicksList}>
