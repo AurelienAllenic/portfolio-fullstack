@@ -74,6 +74,20 @@ npm run dev
 - **Performance** : score Lighthouse > 90
 - **Accessibilité** : WCAG 2.1 AA
 
+### Protection anti-spam du formulaire de contact
+
+Le formulaire de contact est protégé contre les envois automatisés (spam / bots) grâce à **Google reCAPTCHA v3** :
+
+- **reCAPTCHA v3** (invisible) → pas de case à cocher, pas d’interaction visible pour l’utilisateur  
+- Score calculé automatiquement par Google (0.0 = très probablement un bot → 1.0 = humain)  
+- Seuil minimum configuré à 0.5 (ajustable)  
+- Si le score est trop bas → l’envoi est bloqué côté serveur  
+- Le token est généré côté frontend et vérifié côté backend via l’API Google  
+- Clé publique : stockée dans `.env` (`VITE_RECAPTCHA_SITE_KEY`)  
+- Clé secrète : stockée côté serveur (`RECAPTCHA_SECRET_KEY`)  
+
+→ Résultat : réduction drastique du spam sans dégrader l’expérience utilisateur.
+
 ---
 
 ## 🗄️ Schéma base de données (backend)
