@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import styles from "./contact.module.scss";
 import { BsArrowRight } from "react-icons/bs";
 import Footer from "../../General/Footer/Footer";
@@ -9,6 +9,39 @@ import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 
 const CONTACT_BACKGROUND_IMAGE =
   "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp";
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+
+/** Charge le script reCAPTCHA v3 (uniquement après consentement pour conformité cookies). */
+function loadRecaptchaScript(siteKey: string): Promise<void> {
+  if (document.querySelector('script[src*="recaptcha/api.js"]')) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("reCAPTCHA script failed to load"));
+    document.head.appendChild(script);
+  });
+}
+
+/** Retourne un token reCAPTCHA v3 pour l'action "contact". */
+async function getRecaptchaToken(siteKey: string): Promise<string> {
+  await loadRecaptchaScript(siteKey);
+  return new Promise((resolve, reject) => {
+    if (!window.grecaptcha) {
+      reject(new Error("reCAPTCHA not available"));
+      return;
+    }
+    window.grecaptcha.ready(() => {
+      window.grecaptcha!.execute(siteKey, { action: "contact" })
+        .then(resolve)
+        .catch(reject);
+    });
+  });
+}
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -21,7 +54,17 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const recaptchaScriptLoaded = useRef(false);
   useTrackSectionArrival('section_contact');
+
+  // Charger reCAPTCHA uniquement après consentement (cookies après accord)
+  useEffect(() => {
+    if (!formData.consent || !RECAPTCHA_SITE_KEY || recaptchaScriptLoaded.current) return;
+    recaptchaScriptLoaded.current = true;
+    loadRecaptchaScript(RECAPTCHA_SITE_KEY).catch(() => {
+      recaptchaScriptLoaded.current = false;
+    });
+  }, [formData.consent]);
 
   // Cacher le footer immédiatement quand Contact est monté pour éviter qu'il apparaisse visible
   // Utiliser useLayoutEffect pour que cela se produise de manière synchrone avant le rendu
@@ -70,14 +113,15 @@ const Contact = () => {
     setErrorMessage('');
 
     try {
-      // Construire le message avec le nom
       const fullMessage = `De: ${formData.name}\n\n${formData.message}`;
-      
-      // URL de l'API backend (à configurer dans .env)
       let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      // Supprimer le slash final s'il existe
       apiUrl = apiUrl.replace(/\/$/, '');
-      
+
+      let captchaToken: string | undefined;
+      if (RECAPTCHA_SITE_KEY && formData.consent) {
+        captchaToken = await getRecaptchaToken(RECAPTCHA_SITE_KEY);
+      }
+
       const response = await fetch(`${apiUrl}/contact`, {
         method: 'POST',
         headers: {
@@ -86,6 +130,7 @@ const Contact = () => {
         body: JSON.stringify({
           email: formData.email,
           message: fullMessage,
+          ...(captchaToken && { captchaToken }),
         }),
       });
 
