@@ -1,3 +1,5 @@
+import { useLanguage } from '../components/General/Language/LanguageContext';
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/';
 const TRACK_ENDPOINT = `${BASE_URL}track`;
 
@@ -19,6 +21,8 @@ export interface TrackClickOptions {
 }
 
 export const useAnalytics = () => {
+  const { language } = useLanguage();
+
   const trackEvent = async (
     type: 'PAGE_VIEW' | 'CLICK' | 'SECTION_VIEW' | 'DURATION',
     label?: string,
@@ -45,8 +49,8 @@ export const useAnalytics = () => {
   };
 
   /**
-   * Envoie un événement CLICK avec le label suffixé selon mobile/desktop
-   * (même logique que useTrackSectionArrival : desktop = label + desktopSuffix, mobile = label + mobileSuffix).
+   * Envoie un événement CLICK avec le label suffixé selon mobile/desktop et langue courante.
+   * Format final : label + (desktopSuffix | mobileSuffix) + _LANG_FR | _LANG_EN.
    */
   const trackClick = (
     label: string,
@@ -55,7 +59,8 @@ export const useAnalytics = () => {
   ) => {
     const { desktopSuffix = '', mobileSuffix = '_mobile' } = options;
     const isMobile = typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches;
-    const finalLabel = isMobile ? `${label}${mobileSuffix}` : `${label}${desktopSuffix}`;
+    const langSuffix = language === 'fr' ? '_LANG_FR' : '_LANG_EN';
+    const finalLabel = `${isMobile ? `${label}${mobileSuffix}` : `${label}${desktopSuffix}`}${langSuffix}`;
     console.log('🖱️ trackClick called:', finalLabel);
     trackEvent('CLICK', finalLabel, extraData);
   };
