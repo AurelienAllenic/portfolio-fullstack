@@ -108,7 +108,7 @@ _Les maquettes sont hébergées sur Cloudinary._
 
 ### Vue d'ensemble
 
-![Vue d'ensemble](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/maquette_ieiuk2)
+![Vue d'ensemble](https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/portfolio-general-view_uzhwsh)
 
 ### Version Desktop
 
