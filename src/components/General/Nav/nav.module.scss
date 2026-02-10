@@ -56,6 +56,9 @@
 .navLinks li {
   margin-left: 0 !important;
   cursor: pointer;
+  &:hover{
+    color: #ccc;
+  }
   @media (min-width: 901px) {
     margin-left: 20px;
   }
