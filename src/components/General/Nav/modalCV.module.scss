@@ -55,11 +55,15 @@
     color: #cccccc;
   }
 
-  @media (max-width: 768px) {
-    top: -35px;
-    font-size: 2.5rem;
-    width: 40px;
-    height: 40px;
+  top: -35px;
+  font-size: 2.5rem;
+  width: 40px;
+  height: 40px;
+  @media (min-width: 769px) {
+    top: -40px;
+    font-size: 3rem;
+    width: 50px;
+    height: 50px;
   }
 }
 
@@ -104,14 +108,16 @@
   white-space: nowrap;
   font-family: $font-family-primary;
 
-  @media (max-width: 768px) {
-    padding: 12px 24px;
-    font-size: 20px;
-  }
-  @media (max-width: 445px) {
+  padding: 12px 24px;
+  font-size: 16px;
+  @media (min-width: 371px) {
     font-size: 18px;
   }
-  @media (max-width: 370px) {
-    font-size: 16px;
+  @media (min-width: 446px) {
+    font-size: 20px;
+  }
+  @media (min-width: 769px) {
+    padding: 15px 30px;
+    font-size: 22px;
   }
 }

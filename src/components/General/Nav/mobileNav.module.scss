@@ -6,14 +6,19 @@
   align-items: center;
   position: fixed;
   top: 0px;
-  padding: 1rem;
+  padding: 20px 25px 0 25px;
   color: white;
   z-index: 100;
   width: 100%;
-  padding: 35px 50px 0 50px;
+  @media (min-width: 476px) {
+    padding: 35px 50px 0 50px;
+  }
 
   .left {
-    font-size: 15px;
+    font-size: 14px;
+    @media (min-width: 476px) {
+      font-size: 15px;
+    }
     font-family: $font-family-secondary;
     color: white;
     z-index: 100;
@@ -47,9 +52,13 @@
     }
 
     .burger {
-      width: 20px;
-      height: 15px;
+      width: 15px;
+      height: 10px;
       position: relative;
+      @media (min-width: 476px) {
+        width: 20px;
+        height: 15px;
+      }
       bottom: 1.5px;
       cursor: pointer;
       z-index: 100;
@@ -183,10 +192,13 @@
   .menuContent {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.5rem;
     padding: 1rem;
     position: relative;
     z-index: 3;
+    @media (min-width: 476px) {
+      gap: 1.5rem;
+    }
     @media(max-height: 870px){
       gap: 0.5rem;
     }
@@ -195,11 +207,14 @@
     }
     .separator {
       font-family: $font-family-secondary;
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: white;
       text-align: center;
       user-select: none;
       -webkit-user-select: none;
+      @media (min-width: 476px) {
+        font-size: 2.5rem;
+      }
       @media(max-height: 870px){
         font-size: 20px;
       }
@@ -210,7 +225,10 @@
 
     .menuItem {
       font-family: $font-family-secondary;
-      font-size: 2.5rem;
+      font-size: 2rem;
+      @media (min-width: 476px) {
+        font-size: 2.5rem;
+      }
       color: white;
       cursor: pointer;
       text-align: center;
@@ -263,43 +281,10 @@
   }
 }
 
-@media (max-width: 475px) {
-  .containerMobileNav {
-    padding: 20px 25px 0 25px;
-  }
-  .containerMobileNav {
-    .left {
-      font-size: 14px;
-    }
-  }
-  .burger {
-    width: 15px;
-    height: 10px;
-  }
-
-  .menuOverlay {
-    .centerImage {
-      width: 100vw;
-      height: 100vw;
-      max-width: 100vh;
-      max-height: 100vh;
-    }
-    
-    .menuContent {
-      gap: 0.5rem;
-
-      .separator {
-        font-size: 2rem;
-      }
-
-      .menuItem {
-        font-size: 2rem;
-      }
-    }
-
-    .closeButton {
-      font-size: 1.5rem;
-    }
+.menuOverlay .closeButton {
+  font-size: 1.5rem;
+  @media (min-width: 476px) {
+    font-size: 2rem;
   }
 }
 

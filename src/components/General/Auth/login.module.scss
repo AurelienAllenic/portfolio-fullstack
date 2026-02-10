@@ -28,7 +28,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
   color: white;
   transition: opacity 0.3s ease;
   position: absolute;
@@ -40,16 +40,19 @@
   max-width: 450px;
   background : rgba(0, 0, 0, 0.5);
   border-radius: 10px;
+  @media (min-width: 769px) {
+    padding: 2rem;
+  }
 }
 .title {
   font-family: $font-family-secondary;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: $font-weight-semibold;
   margin-bottom: 2rem;
   text-align: center;
   color: white;
   letter-spacing: 0.1rem;
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     font-size: 3rem;
   }
 }
@@ -212,12 +215,4 @@
 }
 .googleIcon {
   font-size: 1.5rem;
-}
-@media (max-width: 768px) {
-  .loginCard {
-    padding: 1.5rem;
-  }
-  .title {
-    font-size: 2rem;
-  }
 }

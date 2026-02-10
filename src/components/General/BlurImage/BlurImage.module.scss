@@ -5,8 +5,9 @@
   height: 100%;
   overflow: hidden;
   background: #000;
-  @media(max-width: 767px){
-    min-width: 175px;
+  min-width: 175px;
+  @media (min-width: 768px) {
+    min-width: auto;
   }
   &[data-object-fit="cover"] .img {
     object-fit: cover;

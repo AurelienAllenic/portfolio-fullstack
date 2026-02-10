@@ -29,37 +29,16 @@
     transparent var(--gradient-size, 100%),
     #050505 var(--gradient-size, 100%)
   );
-  @media (max-width: 1650px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 100%),
-      #050505 var(--gradient-size, 100%)
-    );
-  }
-  @media (max-width: 900px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 100%),
-      #050505 var(--gradient-size, 100%)
-    );
-  }
-  @media (max-width: 575px) {
-    background: radial-gradient(
-      circle at center,
-      transparent var(--gradient-size, 100%),
-      #050505 var(--gradient-size, 100%)
-    );
-  }
 }
 .percentContainer {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 100000;
   pointer-events: none;
-  @media (max-width: 767px) {
-    bottom: 1.5rem;
-    right: 1.5rem;
+  @media (min-width: 768px) {
+    bottom: 2rem;
+    right: 2rem;
   }
 }
 .percentWrap {
@@ -79,8 +58,9 @@
   white-space: nowrap;
   pointer-events: none;
   opacity: 0.5;
-  @media (max-width: 767px) {
-    font-size: clamp(4.5rem, 7vw, 5rem);
+  font-size: clamp(4.5rem, 7vw, 5rem);
+  @media (min-width: 768px) {
+    font-size: clamp(5rem, 7vw, 10rem);
   }
 }
 .percentTrail {

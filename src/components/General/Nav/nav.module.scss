@@ -8,8 +8,9 @@
   top: 0;
   height: 100px;
   z-index: 100;
-  @media (max-width: 768px) {
-    display: none !important;
+  display: none !important;
+  @media (min-width: 769px) {
+    display: block !important;
   }
 }
 
@@ -23,15 +24,15 @@
 }
 
 .logo {
-  font-size: 1.85rem;
-  @media (max-width: 1350px) {
-    font-size: 1.5rem;
-  }
-  @media (max-width: 1050px) {
+  font-size: 1rem !important;
+  @media (min-width: 901px) {
     font-size: 1.2rem;
   }
-  @media (max-width: 900px) {
-    font-size: 1rem !important;
+  @media (min-width: 1051px) {
+    font-size: 1.5rem;
+  }
+  @media (min-width: 1351px) {
+    font-size: 1.85rem;
   }
 }
 
@@ -41,35 +42,35 @@
   letter-spacing: 0.08rem;
   margin: 0;
   padding: 0;
-  gap: 50px;
+  gap: 20px;
   font-size: 1.5rem;
   position: relative;
-  @media (max-width: 1350px) {
+  @media (min-width: 901px) {
     gap: 25px;
   }
-  @media (max-width: 900px) {
-    gap: 20px;
+  @media (min-width: 1351px) {
+    gap: 50px;
   }
 }
 
 .navLinks li {
-  margin-left: 20px;
+  margin-left: 0 !important;
   cursor: pointer;
-  @media (max-width: 900px) {
-    margin-left: 0 !important;
+  @media (min-width: 901px) {
+    margin-left: 20px;
   }
 }
 
 .navLinks a {
   color: #ffffff;
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1rem;
   transition: color 0.3s;
-  @media (max-width: 1350px) {
+  @media (min-width: 1051px) {
     font-size: 1.2rem;
   }
-  @media (max-width: 1050px) {
-    font-size: 1rem;
+  @media (min-width: 1351px) {
+    font-size: 1.5rem;
   }
 }
 
@@ -80,6 +81,7 @@
 .socialIcons {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .socialIcons a, .socialIcons div {
@@ -87,24 +89,35 @@
   color: #ffffff;
   font-size: 1.2em;
   transition: all 0.3s ease-in-out;
+  flex-shrink: 0;
   :hover {
     transform: scale(1.1);
     transition: all 0.3s ease-in-out;
   }
   img {
-    width: 45px;
-    height: 45px;
-    @media (max-width: 1350px) {
-      width: 35px;
-      height: 35px;
-    }
-    @media (max-width: 1050px) {
+    width: 25px !important;
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
+    object-fit: contain;
+    display: block;
+    @media (min-width: 901px) {
       width: 30px !important;
       height: 30px;
+      min-width: 30px;
+      min-height: 30px;
     }
-    @media (max-width: 900px) {
-      width: 25px !important;
-      height: 25px;
+    @media (min-width: 1051px) {
+      width: 35px;
+      height: 35px;
+      min-width: 35px;
+      min-height: 35px;
+    }
+    @media (min-width: 1351px) {
+      width: 45px;
+      height: 45px;
+      min-width: 45px;
+      min-height: 45px;
     }
   }
 }

@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1.5rem;
   color: white;
   transition: opacity 0.3s ease;
   position: absolute;
@@ -41,16 +41,19 @@
   max-width: 1000px;
   overflow-y: auto;
   max-height: 100vh;
+  @media (min-width: 769px) {
+    padding: 2rem;
+  }
 }
 .title {
   font-family: $font-family-secondary;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: $font-weight-semibold;
   margin-bottom: 1.5rem;
   text-align: center;
   color: white;
   letter-spacing: 0.1rem;
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     font-size: 3rem;
   }
 }
@@ -95,23 +98,29 @@
 }
 .userInfo {
   display: flex;
+  flex-direction: column;
+  text-align: center;
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 2rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   width: 100%;
-  @media (max-width: 768px) {
-    flex-direction: column;
-    text-align: center;
+  @media (min-width: 769px) {
+    flex-direction: row;
+    text-align: left;
   }
 }
 .avatar {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid rgba(255, 255, 255, 0.3);
+  @media (min-width: 769px) {
+    width: 80px;
+    height: 80px;
+  }
 }
 .userDetails {
   flex: 1;
@@ -190,19 +199,3 @@
   }
 }
 
-@media (max-width: 768px) {
-  .dashboardCard {
-    padding: 1.5rem;
-  }
-  .title {
-    font-size: 2rem;
-  }
-  .userInfo {
-    flex-direction: column;
-    text-align: center;
-  }
-  .avatar {
-    width: 60px;
-    height: 60px;
-  }
-}

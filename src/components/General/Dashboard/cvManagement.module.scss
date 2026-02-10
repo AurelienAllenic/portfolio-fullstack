@@ -4,29 +4,33 @@
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem;
+  @media (min-width: 769px) {
+    padding: 1rem;
+  }
 }
 .header {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
+  gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+  @media (min-width: 769px) {
+    flex-direction: row;
+    align-items: center;
   }
 }
 .title {
   font-family: $font-family-secondary;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: $font-weight-semibold;
   color: white;
   margin: 0;
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
+  @media (min-width: 769px) {
+    font-size: 2rem;
   }
 }
 .deleteButton {
@@ -168,9 +172,12 @@
 }
 .previewGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-top: 1rem;
+  @media (min-width: 769px) {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
 }
 .previewItem {
   display: flex;
@@ -209,11 +216,3 @@
   }
 }
 
-@media (max-width: 768px) {
-  .cvManagementContainer {
-    padding: 0.5rem;
-  }
-  .previewGrid {
-    grid-template-columns: 1fr;
-  }
-}

@@ -4,27 +4,37 @@
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem;
+  @media (min-width: 769px) {
+    padding: 1rem;
+  }
 }
 .header {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
+  gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  @media (min-width: 769px) {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 .title {
   font-family: $font-family-secondary;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: $font-weight-semibold;
   color: white;
   margin: 0;
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
+  @media (min-width: 769px) {
+    font-size: 2rem;
   }
 }
 .refreshButton {
+  width: 100%;
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -34,6 +44,9 @@
   font-family: $font-family-text;
   cursor: pointer;
   transition: all 0.3s ease;
+  @media (min-width: 769px) {
+    width: auto;
+  }
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
@@ -105,8 +118,11 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1rem;
   transition: all 0.3s ease;
+  @media (min-width: 769px) {
+    padding: 1.5rem;
+  }
   &:hover {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(0, 0, 0, 0.2);
@@ -114,10 +130,14 @@
 }
 .messageHeader {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
   gap: 1rem;
+  @media (min-width: 769px) {
+    flex-direction: row;
+  }
 }
 .messageInfo {
   display: flex;
@@ -148,6 +168,7 @@
   font-size: 0.85rem;
 }
 .deleteButton {
+  align-self: flex-end;
   padding: 0.5rem;
   background: rgba(220, 53, 69, 0.2);
   color: white;
@@ -161,6 +182,9 @@
   min-width: 40px;
   height: 40px;
   flex-shrink: 0;
+  @media (min-width: 769px) {
+    align-self: auto;
+  }
   &:hover:not(:disabled) {
     background: rgba(220, 53, 69, 0.3);
     border-color: rgba(220, 53, 69, 0.7);
@@ -186,28 +210,6 @@
   }
 }
 
-@media (max-width: 768px) {
-  .messagesContainer {
-    padding: 0.5rem;
-  }
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .refreshButton {
-    width: 100%;
-  }
-  .messageCard {
-    padding: 1rem;
-  }
-  .messageHeader {
-    flex-direction: column;
-  }
-  .deleteButton {
-    align-self: flex-end;
-  }
-}
 
 .messageCard {
   cursor: pointer;
