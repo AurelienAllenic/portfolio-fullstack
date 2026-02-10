@@ -29,6 +29,15 @@ const SingleProjectPage = () => {
 
   useTrackSectionArrival('page_projects');
   
+  const categoryKeyMap: Record<string, string> = {
+    "formation-web": "web",
+    "formation-react": "react",
+    "formation-python": "python",
+    "projets-personnels": "personnel",
+    "projets-solead": "solead",
+    "mastere-iim": "iim",
+  };
+
   const covers: ProjectCover[] = [
     projects_cover,
     solead_cover,
@@ -161,9 +170,8 @@ const SingleProjectPage = () => {
       <div style={{ opacity: showContent ? 1 : 0 }}>
         <SingleProject
           projects={filteredProjects}
-          categoryTitle={programmingLanguage 
-            ? `${covers[categoryIndex].title} - ${programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1)}`
-            : covers[categoryIndex].title}
+          categoryKey={categoryKeyMap[categorySlug ?? ""] ?? "web"}
+          programmingLanguage={programmingLanguage}
           initialProjectIndex={isNaN(initialProjectIndex) || initialProjectIndex >= filteredProjects.length ? 0 : initialProjectIndex}
           onBack={handleBack}
         />

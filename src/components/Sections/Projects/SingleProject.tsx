@@ -20,18 +20,23 @@ const slugifyProjectName = (name: string): string =>
 
 interface SingleProjectProps {
   projects: Project[];
-  categoryTitle: string;
+  categoryKey: string;
+  programmingLanguage?: string;
   initialProjectIndex?: number;
   onBack?: () => void;
 }
 
 const SingleProject = ({ 
   projects, 
-  categoryTitle, 
+  categoryKey, 
+  programmingLanguage,
   initialProjectIndex = 0,
   onBack 
 }: SingleProjectProps) => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
+  const categoryLabel = programmingLanguage
+    ? `${t(`projects.category.${categoryKey}`)} - ${programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1)}`
+    : t(`projects.category.${categoryKey}`);
   const { trackClick } = useAnalytics();
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);
@@ -688,7 +693,7 @@ const SingleProject = ({
             </div>
           </div>
 
-          <div className={styles.categoryLabel}>{categoryTitle}</div>
+          <div className={styles.categoryLabel}>{categoryLabel}</div>
         </div>
 
         <button onClick={onBack} className={styles.backButton}>
