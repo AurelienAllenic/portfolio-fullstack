@@ -8,7 +8,6 @@ import { useLanguage } from "../../General/Language/LanguageContext";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
-// Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
   const parts = url.split("/image/upload/");
@@ -22,7 +21,6 @@ const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "a
   return `${base}/image/upload/${params}/${publicId}`;
 };
 
-// Précharger une image
 const preloadImage = (src: string): Promise<void> => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -52,9 +50,9 @@ export interface ProjectFolderItem {
 
 export interface Project {
   id: number;
-  image?: string; // Image unique (optionnel si imageDiaporama ou images est fourni)
-  imageDiaporama?: string[]; // Tableau d'images pour le diaporama (prioritaire)
-  images?: string[]; // Tableau d'images pour le diaporama (alternative)
+  image?: string;
+  imageDiaporama?: string[];
+  images?: string[];
   title: string;
   description: string;
   titleEn: string;
@@ -86,16 +84,12 @@ const getTechName = (url: string): string => {
   return 'Technologie';
 };
 
-// Extraire le slug du langage depuis l'URL de l'icône (pour la route)
 const getTechSlug = (url: string): string => {
-  // Extraire le nom de fichier depuis l'URL Cloudinary
   const match = url.match(/\/([^/]+)_[^_]+\.webp$/);
   if (match) {
     let name = match[1];
-    // Enlever les suffixes comme "-icon"
     name = name.replace(/-icon$/, '');
-    
-    // Normaliser les noms pour correspondre aux technologies dans les projets
+
     if (name === 'nodejs' || name === 'node') return 'nodejs';
     if (name === 'reactjs' || name === 'react') return 'reactjs';
     if (name === 'nextjs' || name === 'next') return 'nextjs';
@@ -113,7 +107,6 @@ const getTechSlug = (url: string): string => {
   return '';
 };
 
-/** Slug pour les labels analytics (nom du projet → nom-du-projet) */
 const slugifyProjectName = (name: string): string =>
   name
     .toLowerCase()
@@ -135,37 +128,30 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
   useTrackSectionArrival(`project_category_${cover.slug}`);
 
-  // Fonction pour trouver l'index du projet correspondant à une image
   const findProjectIndexByImage = (imageUrl: string): number | null => {
     if (!projects || projects.length === 0) return null;
-    
-    // Extraire le nom de fichier de base (sans transformations Cloudinary)
+
     const extractBaseFilename = (url: string): string => {
-      // Extraire la partie après "/image/upload/"
       const uploadMatch = url.match(/\/image\/upload\/[^/]+\/(.+)$/);
       if (uploadMatch) {
         return uploadMatch[1].split('?')[0];
       }
-      // Fallback: prendre la dernière partie de l'URL
       const parts = url.split('/');
       return parts[parts.length - 1].split('?')[0];
     };
     
     const baseFilename = extractBaseFilename(imageUrl);
-    
-    // Chercher dans les projets
+
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
-      
-      // Vérifier l'image principale
+
       if (project.image) {
         const projectBaseFilename = extractBaseFilename(project.image);
         if (projectBaseFilename === baseFilename) {
           return i;
         }
       }
-      
-      // Vérifier les images du diaporama
+
       if (project.imageDiaporama && project.imageDiaporama.length > 0) {
         for (const diapoImage of project.imageDiaporama) {
           const diapoBaseFilename = extractBaseFilename(diapoImage);
@@ -174,8 +160,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           }
         }
       }
-      
-      // Vérifier le tableau images
+
       if (project.images && project.images.length > 0) {
         for (const img of project.images) {
           const imgBaseFilename = extractBaseFilename(img);
@@ -188,8 +173,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     
     return null;
   };
-  
-  // Détecter si on est en mobile
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -198,8 +182,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // Mapping des slugs vers les clés de traduction
+
   const categoryKeyMap: Record<string, string> = {
     'formation-web': 'web',
     'formation-react': 'react',
@@ -212,8 +195,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
   const categoryKey = categoryKeyMap[cover.slug] || 'web';
   const categoryTitle = useMemo(() => t(`projects.category.${categoryKey}`), [t, categoryKey]);
   const categoryDescription = useMemo(() => t(`projects.category.${categoryKey}.description`), [t, categoryKey]);
-  
-  // Séparer le titre en deux parties (premier mot et le reste)
+
   const titleParts = useMemo(() => {
     const parts = categoryTitle.split(" ");
     return {
@@ -222,16 +204,13 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     };
   }, [categoryTitle]);
 
-  // Précharger seulement les images critiques au montage
   useEffect(() => {
     const preloadImages = async () => {
       try {
         const mainImageWidth = isMobile ? 600 : 800;
-        
-        // Précharger seulement l'image principale
+
         await preloadImage(optimizeCloudinaryUrl(cover.mainImage, mainImageWidth, "85"));
-        
-        // Précharger seulement les 2 premières images du mosaic avec délai
+
         setTimeout(() => {
           cover.sideImages.slice(0, 2).forEach(src => {
             const mosaicWidth = isMobile ? 400 : 600;
@@ -242,20 +221,16 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         console.warn("Erreur au préchargement des images:", err);
       }
     };
-    
     preloadImages();
   }, [cover]);
 
   const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     trackClick(`${cover.slug}_voir_les_projets`);
-    // Sauvegarder l'index de la catégorie et l'URL
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       pendingUrlRef.current = e.currentTarget.href;
-      
-      // Déclencher l'animation
       setIsTransitioning(true);
     }
   };
@@ -267,14 +242,11 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       ? (language === 'fr' ? project.title : project.titleEn)
       : `project-${projectIndex}`;
     trackClick(`${cover.slug}_${slugifyProjectName(projectName)}`);
-    // Sauvegarder l'index de la catégorie et l'URL avec l'index du projet
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       const projectUrl = `/projects/${cover.slug}?project=${projectIndex}`;
       pendingUrlRef.current = projectUrl;
-      
-      // Déclencher l'animation
       setIsTransitioning(true);
     }
   };
@@ -283,20 +255,16 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     e.preventDefault();
     const techSlug = getTechSlug(techUrl);
     if (techSlug) trackClick(`${cover.slug}_${techSlug}`);
-    // Sauvegarder l'index de la catégorie
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
       const techUrl_path = `/projects/${cover.slug}/${techSlug}`;
       pendingUrlRef.current = techUrl_path;
-      
-      // Déclencher l'animation
       setIsTransitioning(true);
     }
   };
 
   const handleTransitionComplete = () => {
-    // Naviguer après l'animation
     if (pendingUrlRef.current) {
       window.location.href = pendingUrlRef.current;
     }
@@ -423,9 +391,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       const mobileImageLeft = container.querySelector(`.${styles.mobileImageLeft}`);
       const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
       const mobileCta = container.querySelector(`.${styles.mobileCta}`);
-
-      // Sur mobile les .mosaicItem sont en display:none mais toujours dans le DOM (4 éléments).
-      // Si jamais on a 0 ou peu d'items, on lance quand même l'animation pour le reste (images droite, mobile, etc.)
       const mosaicArray = Array.from(mosaicItems);
       const hasEnoughMosaic = mosaicArray.length >= 2;
 
@@ -635,7 +600,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       }
     }
 
-    // Fallback : forcer l'affichage des images (mosaic + cover) après 0,8 s si l'animation n'a pas suffi
     const fallbackTimer = setTimeout(() => {
       const el = containerRef.current;
       if (!el) return;
@@ -671,7 +635,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       />
       <section ref={containerRef} className={styles.cover}>
       <div className={styles.coverInner}>
-        {/* Mobile: Ligne 1 - Titre + Image */}
         <div className={styles.mobileHeaderRow}>
           <div className={styles.mobileTitle}>
             <h2 className={styles.mobileTitleMain}>

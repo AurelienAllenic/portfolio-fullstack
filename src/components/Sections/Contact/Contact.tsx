@@ -12,7 +12,6 @@ const CONTACT_BACKGROUND_IMAGE =
 
 const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
-/** Charge le script reCAPTCHA v3 (uniquement après consentement pour conformité cookies). */
 function loadRecaptchaScript(siteKey: string): Promise<void> {
   if (document.querySelector('script[src*="recaptcha/api.js"]')) {
     return Promise.resolve();
@@ -27,7 +26,6 @@ function loadRecaptchaScript(siteKey: string): Promise<void> {
   });
 }
 
-/** Retourne un token reCAPTCHA v3 pour l'action "contact". */
 async function getRecaptchaToken(siteKey: string): Promise<string> {
   await loadRecaptchaScript(siteKey);
   return new Promise((resolve, reject) => {
@@ -57,7 +55,7 @@ const Contact = () => {
   const recaptchaScriptLoaded = useRef(false);
   useTrackSectionArrival('section_contact');
 
-  // Charger reCAPTCHA uniquement après consentement (cookies après accord)
+  // Load reCAPTCHA only after consent (cookies after agreement)
   useEffect(() => {
     if (!formData.consent || !RECAPTCHA_SITE_KEY || recaptchaScriptLoaded.current) return;
     recaptchaScriptLoaded.current = true;
@@ -66,21 +64,16 @@ const Contact = () => {
     });
   }, [formData.consent]);
 
-  // Cacher le footer immédiatement quand Contact est monté pour éviter qu'il apparaisse visible
-  // Utiliser useLayoutEffect pour que cela se produise de manière synchrone avant le rendu
   useLayoutEffect(() => {
     const footerElement = document.querySelector('#footer') as HTMLElement;
     if (footerElement) {
-      // Cacher immédiatement le footer pour éviter qu'il apparaisse visible
       gsap.set(footerElement, { 
         opacity: 0,
-        visibility: "visible" // Garder visible pour le layout
+        visibility: "visible"
       });
-      
-      // Fallback : s'assurer que le footer devient visible si GSAP ne l'a pas animé
+
       const timeoutId = setTimeout(() => {
         const footerOpacity = gsap.getProperty(footerElement, "opacity");
-        // Seulement animer si toujours à 0 (GSAP n'a pas animé)
         if (footerOpacity === 0 || footerOpacity === null) {
           gsap.to(footerElement, {
             opacity: 1,
@@ -88,7 +81,7 @@ const Contact = () => {
             ease: "power2.out",
           });
         }
-      }, 800); // Délai pour laisser GSAP faire son travail
+      }, 800);
       
       return () => clearTimeout(timeoutId);
     }
@@ -142,8 +135,7 @@ const Contact = () => {
 
       setSubmitStatus('success');
       setFormData({ name: "", email: "", message: "", consent: false });
-      
-      // Réinitialiser le message après 5s
+
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } catch (error) {
       console.error('Erreur:', error);
@@ -153,8 +145,6 @@ const Contact = () => {
       setIsSubmitting(false);
     }
   };
-
-  // L'animation est entièrement gérée par SliderProjects, pas besoin de logique ici
 
   return (
     <>
@@ -168,7 +158,7 @@ const Contact = () => {
         />
       </div>
       <div className={styles.contactInner}>
-        {/* Section gauche : Formulaire */}
+        {/* Left section: Form */}
         <div className={styles.formSection}>
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
@@ -256,7 +246,7 @@ const Contact = () => {
           </form>
         </div>
 
-        {/* Section droite : Titre et description */}
+        {/* Right section: Title and description */}
         <div className={styles.infoSection}>
           <div className={styles.infoContent}>
             <h2 className={styles.infoTitle}>

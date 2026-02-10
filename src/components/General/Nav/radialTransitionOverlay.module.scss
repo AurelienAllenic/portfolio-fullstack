@@ -9,16 +9,12 @@
   z-index: 99999;
   pointer-events: none;
   display: none;
-  
-  // Radial gradient qui se ferme/ouvre, centré dynamiquement
   background: radial-gradient(
     circle at var(--center-x, 50vw) var(--center-y, 50vh),
     transparent calc(var(--gradient-size, 100%) - 2px),
     rgba(0, 0, 0, 0.3) calc(var(--gradient-size, 100%) - 1px),
     #000000 var(--gradient-size, 100%)
   );
-  
-  // Initialiser les variables
   --gradient-size: 100%;
   --center-x: 50vw;
   --center-y: 50vh;

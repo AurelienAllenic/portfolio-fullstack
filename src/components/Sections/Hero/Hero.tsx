@@ -1,4 +1,3 @@
-// Hero.tsx
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.scss";
 import { gsap } from "gsap";
@@ -10,8 +9,8 @@ interface HeroProps {
   returnFromProjects?: boolean;
   onResetReturnFromProjects?: () => void;
   forceHeroState?: "hero1" | "hero2";
-  forceTextIndex?: number; // Pour forcer un textIndex dans HeroAfterScroll
-  onNavigationReset?: boolean; // Signal de réinitialisation après navigation
+  forceTextIndex?: number;
+  onNavigationReset?: boolean;
 }
 
 const Hero: React.FC<HeroProps> = ({
@@ -37,16 +36,13 @@ const Hero: React.FC<HeroProps> = ({
   const lastForceHeroStateRef = useRef<"hero1" | "hero2" | undefined>(undefined);
   const currentGradientStateRef = useRef<"hero1" | "hero2" | "transition">(gradientState);
 
-  // Mettre à jour le ref quand gradientState change
   useEffect(() => {
     currentGradientStateRef.current = gradientState;
   }, [gradientState]);
 
-  // Mettre à jour l'état si forceHeroState change
   useEffect(() => {
     if (forceHeroState === undefined) {
       isForcedNavigationRef.current = false;
-      // Réinitialiser lastForceHeroStateRef quand forceHeroState devient undefined
       lastForceHeroStateRef.current = undefined;
       return;
     }
@@ -55,26 +51,18 @@ const Hero: React.FC<HeroProps> = ({
     const container = containerRef.current;
     
     if (!overlay || !container) return;
-    
-    // Toujours forcer le changement si forceHeroState est défini et différent de la dernière valeur
-    // OU si gradientState ne correspond pas à forceHeroState (arrivé via scroll)
-    // Cela garantit que même si on est arrivé via scroll, le clic sur la nav force le changement
+
     const currentGradient = currentGradientStateRef.current;
     const forceChanged = lastForceHeroStateRef.current !== forceHeroState;
-    
-    // Vérifier si l'état actuel ne correspond pas à forceHeroState
-    // Si on est dans hero2 (via scroll) et qu'on clique sur "Aurélien Allenic" (hero1), on doit forcer
+
     const stateMismatch = (forceHeroState === "hero1" && (currentGradient === "hero2" || currentGradient === "transition")) ||
                           (forceHeroState === "hero2" && currentGradient !== "hero2");
-    
-    // Toujours forcer le changement si forceHeroState a changé OU si l'état actuel ne correspond pas
-    // IMPORTANT: On force toujours si stateMismatch est true, même si forceChanged est false
+
     if (forceChanged || stateMismatch) {
       isForcedNavigationRef.current = true;
       lastForceHeroStateRef.current = forceHeroState;
       
       if (forceHeroState === "hero1") {
-        // Forcer le changement immédiatement
         setGradientState("hero1");
         gsap.set(overlay, { "--gradient-size": "0%" });
         
@@ -93,14 +81,11 @@ const Hero: React.FC<HeroProps> = ({
           isForcedNavigationRef.current = false;
         }, 100);
       } else if (forceHeroState === "hero2") {
-        // Forcer le changement immédiatement
         setGradientState("hero2");
         gsap.set(overlay, { "--gradient-size": "100%" });
         
         if (tlRef.current) {
-          // Jouer la timeline jusqu'à la fin pour déclencher toutes les animations
           tlRef.current.progress(1, false);
-          // Déclencher manuellement le onComplete pour simuler le scroll
           if (tlRef.current.progress() === 1) {
             const isDesktop = window.matchMedia("(min-width: 768px)").matches;
             
@@ -156,10 +141,8 @@ const Hero: React.FC<HeroProps> = ({
         }
         
         if (hero2Ref.current) {
-          // Rendre hero2 visible IMMÉDIATEMENT
           gsap.set(hero2Ref.current, { opacity: 1 });
-          
-          // S'assurer que le contentContainer est visible
+
           const contentContainer = hero2Ref.current.querySelector('[class*="contentContainer"]') as HTMLElement;
           if (contentContainer) {
             gsap.set(contentContainer, { opacity: 1 });
@@ -171,17 +154,13 @@ const Hero: React.FC<HeroProps> = ({
         }, 100);
       }
     }
-    
-    // Toujours mettre à jour lastForceHeroStateRef après avoir traité le changement
-    // pour éviter les problèmes de synchronisation
+
     lastForceHeroStateRef.current = forceHeroState;
   }, [forceHeroState]);
 
   const handleReturnToHeroBefore = () => {
     const overlay = overlayRef.current;
     const hero2 = hero2Ref.current;
-
-    // Bloquer temporairement le onReverseComplete
     isForcedNavigationRef.current = true;
 
     if (hero2) {
@@ -211,14 +190,12 @@ const Hero: React.FC<HeroProps> = ({
 
       if (hero2) gsap.set(hero2, { opacity: 1 });
 
-      // Forcer le gradient à rester à 0% (pas d'animation vers 30%)
       if (overlay) {
         gsap.set(overlay, { "--gradient-size": "0%" });
       }
 
       document.body.style.overflow = "auto";
-      
-      // Débloquer après un délai
+
       setTimeout(() => {
         isForcedNavigationRef.current = false;
       }, 100);
@@ -254,7 +231,6 @@ const Hero: React.FC<HeroProps> = ({
 
         const progress = tl.progress();
 
-        // Ne pas mettre à jour gradientState si c'est une navigation forcée
         if (!isForcedNavigationRef.current) {
           if (val > 0 && val < 50) {
             setGradientState("transition");
@@ -336,7 +312,6 @@ const Hero: React.FC<HeroProps> = ({
         }
       },
       onReverseComplete: () => {
-        // Ne pas exécuter si c'est une navigation forcée
         if (isForcedNavigationRef.current) {
           return;
         }
@@ -472,7 +447,6 @@ const Hero: React.FC<HeroProps> = ({
     }
 
     const handleWheel = (e: WheelEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
@@ -494,7 +468,6 @@ const Hero: React.FC<HeroProps> = ({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }

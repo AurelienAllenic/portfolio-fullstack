@@ -42,7 +42,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     };
 
     const handleWheel = (e: WheelEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
@@ -80,7 +79,6 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }

@@ -17,12 +17,10 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
 
   const { trackClick } = useAnalytics();
   
-  // URLs du CV selon la langue depuis le backend
   const { cvImageUrl, cvPdfUrl } = useMemo(() => {
     const imageUrl = getCvImageUrl(language);
     const pdfUrl = getCvPdfUrl(language);
-    
-    // Fallback vers les URLs par défaut si le backend ne retourne pas de données
+
     if (!imageUrl || !pdfUrl) {
       if (language === "fr") {
         return {
@@ -139,4 +137,3 @@ const ModalCV = ({ isOpen, onClose }: ModalCVProps) => {
 };
 
 export default ModalCV;
-

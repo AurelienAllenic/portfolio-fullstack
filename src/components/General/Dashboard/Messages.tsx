@@ -14,7 +14,7 @@ const Messages: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null); // ID du message ouvert
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const getApiUrl = () => {
     return import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -37,8 +37,6 @@ const Messages: React.FC = () => {
 
       const data = await response.json();
       setMessages(data.data || []);
-      // Optionnel : ouvrir le plus récent par défaut
-      // if (data.data?.length > 0) setExpandedId(data.data[0]._id);
     } catch (err) {
       console.error('Erreur:', err);
       setError(err instanceof Error ? err.message : 'Erreur lors de la récupération');
@@ -56,7 +54,7 @@ const Messages: React.FC = () => {
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Empêche d’ouvrir/fermer l’accordéon en cliquant sur delete
+    e.stopPropagation();
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
 
     try {
@@ -71,7 +69,7 @@ const Messages: React.FC = () => {
       if (!response.ok) throw new Error('Erreur lors de la suppression');
 
       setMessages(messages.filter(msg => msg._id !== id));
-      if (expandedId === id) setExpandedId(null); // Ferme si supprimé
+      if (expandedId === id) setExpandedId(null);
     } catch (err) {
       console.error('Erreur:', err);
       alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
@@ -136,7 +134,6 @@ const Messages: React.FC = () => {
                 key={message._id}
                 className={`${styles.messageCard} ${isExpanded ? styles.expanded : ''}`}
               >
-                {/* En-tête cliquable */}
                 <div
                   className={styles.messageHeader}
                   onClick={() => toggleExpand(message._id)}
@@ -175,7 +172,6 @@ const Messages: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Contenu du message – plié/déplié */}
                 <div className={`${styles.messageContent} ${isExpanded ? styles.visible : ''}`}>
                   <p>{message.message}</p>
                 </div>

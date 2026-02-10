@@ -455,7 +455,6 @@
           @media (max-width: 768px) {
             z-index: 10000;
             position: absolute;
-            // Désactiver les transitions CSS en mobile pour laisser GSAP gérer l'animation automatique
             transition: none !important;
             will-change: opacity, transform;
           }

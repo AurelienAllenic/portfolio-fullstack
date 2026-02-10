@@ -14,7 +14,6 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
 
   useEffect(() => {
     if (!isActive || !overlayRef.current) {
-      // Réinitialiser quand inactif
       if (overlayRef.current) {
         gsap.set(overlayRef.current, { "--gradient-size": "100%" });
       }
@@ -23,13 +22,10 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
     }
 
     const overlay = overlayRef.current;
-
-    // Ne pas rejouer la même animation
     if (currentDirectionRef.current === direction) return;
     currentDirectionRef.current = direction;
 
     if (direction === "close") {
-      // Fermer le gradient radial jusqu'à 0 (écran noir)
       gsap.fromTo(
         overlay,
         { "--gradient-size": "100%" },
@@ -43,7 +39,6 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
         }
       );
     } else if (direction === "open") {
-      // Ouvrir le gradient radial pour révéler (de 0% à 100%)
       gsap.fromTo(
         overlay,
         { "--gradient-size": "0%" },
@@ -62,4 +57,3 @@ const TransitionOverlay = ({ isActive, onComplete, direction }: TransitionOverla
 };
 
 export default TransitionOverlay;
-

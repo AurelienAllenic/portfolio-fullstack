@@ -18,15 +18,12 @@ const Credits = () => {
   const politiqueLinkRef = useRef<HTMLAnchorElement>(null);
   const targetPath = useRef<string>("");
 
-  // Animation du radial gradient à l'entrée (comme NotFound)
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
 
-    // Initialiser le gradient à 0% (tout noir)
     gsap.set(overlay, { "--gradient-size": "0%" });
-    
-    // Animer le gradient pour révéler l'image (0% → 100%)
+
     gsap.to(overlay, {
       "--gradient-size": "100%",
       duration: 1.2,
@@ -37,29 +34,24 @@ const Credits = () => {
     });
   }, []);
 
-  // Gérer le retour au site avec animation de fermeture
   const handleBackToSite = () => {
     setIsTransitioningBack(true);
   };
 
   const handleTransitionBackComplete = () => {
-    // Marquer qu'on vient de Credits et qu'on veut aller à Contact
     sessionStorage.setItem('returningFromCreditsToContact', 'true');
     navigate("/");
   };
 
-  // Gérer les clics sur les liens internes
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
     e.preventDefault();
     
-    // Calculer la position du lien pour centrer le gradient
     const linkRef = path === '/mentions-legales' ? mentionsLinkRef : politiqueLinkRef;
     const linkRect = linkRef.current?.getBoundingClientRect();
     if (linkRect) {
       const centerX = linkRect.left + linkRect.width / 2;
       const centerY = linkRect.top + linkRect.height / 2;
       
-      // Stocker la position pour RadialTransitionOverlay
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
@@ -351,12 +343,10 @@ const Credits = () => {
                 <h2 className={styles.categoryTitle}>{category.category}</h2>
                 <ul className={styles.projectsList}>
                   {category.projects.map((project: any, projectIndex) => {
-                    // Déterminer l'URL de l'image et le nom du site
                     let imageUrl: string | null = null;
                     let buttonText = t("credits.credits.seeImage");
                     
                     if ('demoUrl' in project && project.demoUrl) {
-                      // Pour les projets Solead, utiliser le lien demo
                       imageUrl = project.demoUrl;
                       buttonText = t("credits.credits.seeDemo");
                     } else if ('pexelsUrl' in project && project.pexelsUrl) {

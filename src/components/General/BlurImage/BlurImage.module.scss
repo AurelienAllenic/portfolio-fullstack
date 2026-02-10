@@ -46,7 +46,6 @@
   }
 }
 
-// Quand l'image est chargée, on peut masquer le placeholder
 .wrapper:has(.imgLoaded) .placeholder {
   opacity: 0;
 }

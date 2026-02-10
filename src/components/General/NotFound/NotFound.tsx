@@ -11,15 +11,12 @@ const NotFound = () => {
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Animation du radial gradient à l'entrée (comme HeroBeforeScroll)
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
 
-    // Initialiser le gradient à 0% (tout noir)
     gsap.set(overlay, { "--gradient-size": "0%" });
-    
-    // Animer le gradient pour révéler l'image (0% → 100%)
+
     gsap.to(overlay, {
       "--gradient-size": "100%",
       duration: 1.2,
@@ -30,13 +27,11 @@ const NotFound = () => {
     });
   }, []);
 
-  // Gérer le retour au site avec animation de fermeture
   const handleBackToSite = () => {
     setIsTransitioningBack(true);
   };
 
   const handleTransitionBackComplete = () => {
-    // Marquer qu'on vient de NotFound pour l'animation d'ouverture sur la page principale
     sessionStorage.setItem('returningFromNotFound', 'true');
     navigate("/");
   };

@@ -12,10 +12,6 @@
   color: #fff;
   position: relative;
   z-index: 10;
-
-  
-
-  // Image de fond à droite (BlurImage pour effet LQIP)
   .contactBackgroundImage {
     position: absolute;
     top: 0;
@@ -53,7 +49,7 @@
   align-items: center;
   max-width: 1400px;
   position: relative;
-  z-index: 1; // ✅ Le contenu passe devant l'image
+  z-index: 1;
 
   @media (max-width: 1200px) {
     gap: 40px;
@@ -64,8 +60,6 @@
     gap: 40px;
   }
 }
-
-/* Section gauche : Formulaire */
 .formSection {
   display: flex;
   flex-direction: column;
@@ -277,7 +271,6 @@
   }
 }
 
-/* Section droite : Titre et description */
 .infoSection {
   position: relative;
   height: 100%;
@@ -285,7 +278,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2; // ✅ Le texte passe devant l'image
+  z-index: 2;
 
   @media (max-width: 900px) {
     order: 1;

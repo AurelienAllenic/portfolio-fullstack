@@ -27,14 +27,12 @@ const ProjectsDropdown = ({ categories }: ProjectsDropdownProps) => {
     if (!content) return;
 
     if (isOpen) {
-      // Ouvrir avec animation
       gsap.fromTo(
         content,
         { opacity: 0, y: -10 },
         { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
       );
     } else {
-      // Fermer avec animation
       gsap.to(
         content,
         { opacity: 0, y: -10, duration: 0.2, ease: 'power2.in' }

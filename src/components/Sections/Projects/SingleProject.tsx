@@ -50,7 +50,6 @@ const SingleProject = ({
   const [loadedGifs, setLoadedGifs] = useState<Record<string, boolean>>({});
   const markGifLoaded = (key: string) => setLoadedGifs((prev) => ({ ...prev, [key]: true }));
 
-  // Détecter si on est en mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -63,8 +62,7 @@ const SingleProject = ({
   const selectedProject = projects[selectedIndex];
   const projectTitle = language === "en" && selectedProject.titleEn ? selectedProject.titleEn : selectedProject.title;
   const projectDescription = language === "en" && selectedProject.descriptionEn ? selectedProject.descriptionEn : selectedProject.description;
-  
-  // Obtenir les images du projet
+
   const getProjectImages = (project: Project): string[] => {
     if (project.imageDiaporama && project.imageDiaporama.length > 0) {
       return project.imageDiaporama;
@@ -80,7 +78,6 @@ const SingleProject = ({
   
   const projectImages = getProjectImages(selectedProject);
 
-  // Animation d'entrée avec overlay
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -95,23 +92,19 @@ const SingleProject = ({
     }, 200);
   }, []);
 
-  // Slider au début - scroller vers le projet sélectionné si initialProjectIndex est défini
   useEffect(() => {
     if (sliderRef.current && initialProjectIndex > 0) {
-      // Attendre que le DOM soit complètement rendu
       setTimeout(() => {
         const slider = sliderRef.current;
         if (!slider) return;
-        
-        // Trouver l'élément correspondant au projet sélectionné
+
         const projectCards = slider.querySelectorAll(`.${styles.sliderImage}`);
         if (projectCards[initialProjectIndex]) {
           const targetCard = projectCards[initialProjectIndex] as HTMLElement;
           const cardLeft = targetCard.offsetLeft;
           const cardWidth = targetCard.offsetWidth;
           const sliderWidth = slider.offsetWidth;
-          
-          // Centrer la carte dans le viewport du slider
+
           const scrollPosition = cardLeft - (sliderWidth / 2) + (cardWidth / 2);
           
           slider.scrollTo({
@@ -121,18 +114,15 @@ const SingleProject = ({
         }
       }, 100);
     } else if (sliderRef.current) {
-      // Si pas d'index initial, remettre à 0
       sliderRef.current.scrollTo({ left: 0, behavior: 'instant' });
     }
   }, [initialProjectIndex]);
 
-  // Réinitialiser l'index de l'image quand on change de projet
   useEffect(() => {
     setCurrentImageIndex(0);
     isTransitioningRef.current = false;
   }, [selectedIndex]);
 
-  // Tracker le visionnage d'un projet (affichage ou changement de projet)
   useEffect(() => {
     const project = projects[selectedIndex];
     if (project) {
@@ -141,7 +131,6 @@ const SingleProject = ({
     }
   }, [selectedIndex, language, projects, trackClick]);
 
-  // Scroller le slider pour afficher la carte active quand selectedIndex change
   useEffect(() => {
     if (sliderRef.current) {
       setTimeout(() => {
@@ -156,12 +145,10 @@ const SingleProject = ({
           const sliderWidth = slider.offsetWidth;
           const sliderScrollLeft = slider.scrollLeft;
           const sliderScrollRight = sliderScrollLeft + sliderWidth;
-          
-          // Vérifier si la carte est visible
+
           const cardRight = cardLeft + cardWidth;
           const isVisible = cardLeft >= sliderScrollLeft && cardRight <= sliderScrollRight;
-          
-          // Si la carte n'est pas visible, scroller pour la centrer
+
           if (!isVisible) {
             const scrollPosition = cardLeft - (sliderWidth / 2) + (cardWidth / 2);
             slider.scrollTo({
@@ -174,7 +161,6 @@ const SingleProject = ({
     }
   }, [selectedIndex]);
 
-  // Animation lors du changement de projet
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -198,12 +184,10 @@ const SingleProject = ({
     );
   }, [selectedIndex]);
 
-  // Fonction pour vérifier si une image est un GIF
   const isGif = (url: string): boolean => {
     return url.toLowerCase().endsWith('.gif') || url.toLowerCase().includes('.gif');
   };
 
-  // Fonction pour obtenir la durée d'un GIF en analysant ses frames
   const getGifDuration = async (url: string): Promise<number> => {
     try {
       const response = await fetch(url);
@@ -213,30 +197,22 @@ const SingleProject = ({
       
       let totalDuration = 0;
       let index = 0;
-      
-      // Parcourir le fichier GIF pour trouver les blocs Graphics Control Extension (GCE)
+
       while (index < bytes.length - 4) {
-        // Recherche du bloc GCE (0x21 0xF9)
         if (bytes[index] === 0x21 && bytes[index + 1] === 0xF9) {
-          // Le délai est stocké aux octets +4 et +5 (little-endian, en centièmes de seconde)
           const delayTime = (bytes[index + 4] | (bytes[index + 5] << 8));
-          // Convertir en millisecondes (centièmes de sec → ms)
-          const frameDelay = delayTime * 10 || 100; // Si 0, utiliser 100ms par défaut
+          const frameDelay = delayTime * 10 || 100;
           totalDuration += frameDelay;
         }
         index++;
       }
-      
-      // Si la durée totale est trop courte ou nulle, utiliser une valeur par défaut
       return totalDuration > 500 ? totalDuration : 3000;
     } catch (error) {
       console.warn('Impossible de lire la durée du GIF:', error);
-      // Durée par défaut pour les GIFs si l'analyse échoue
       return 3000;
     }
   };
 
-  // Optimiser les URLs Cloudinary (extrait le public_id, pas de f_webp pour les GIFs)
   const optimizeImageUrl = (url: string, width?: number, quality: string = "auto"): string => {
     if (!url.includes("cloudinary.com")) return url;
     const parts = url.split("/image/upload/");
@@ -251,7 +227,6 @@ const SingleProject = ({
     return `${base}/image/upload/${params}/${publicId}`;
   };
 
-  // Précharger seulement la première image et calculer les durées des GIFs (GIFs exclus : URL d'origine, pas d'optimisation)
   useEffect(() => {
     const preloadImages = async () => {
       if (projectImages.length === 0) return;
@@ -293,36 +268,27 @@ const SingleProject = ({
     preloadImages();
   }, [selectedIndex, projectImages]);
 
-  // Gestion du diaporama automatique avec respect de la durée des GIFs
   useEffect(() => {
-    // Nettoyer l'intervalle précédent
     if (slideIntervalRef.current) {
       clearTimeout(slideIntervalRef.current);
       slideIntervalRef.current = null;
     }
 
-    // Pas de diaporama si une seule image
     if (projectImages.length <= 1) {
       return;
     }
 
     const currentImageUrl = projectImages[currentImageIndex];
     const isCurrentImageGif = isGif(currentImageUrl);
-
-    // Déterminer la durée d'affichage AVANT de manipuler le GIF
     let displayDuration: number;
     
     if (isCurrentImageGif) {
-      // Pour un GIF : afficher pendant 5 secondes
       displayDuration = 6000;
     } else {
-      // Pour une image statique : 2.5 secondes
       displayDuration = 2500;
     }
 
-    // Si c'est un GIF, le forcer à redémarrer APRÈS avoir récupéré sa durée
     if (isCurrentImageGif) {
-      // Utiliser requestAnimationFrame pour s'assurer que le DOM est à jour
       requestAnimationFrame(() => {
         const container = containerRef.current;
         if (container) {
@@ -331,10 +297,7 @@ const SingleProject = ({
           ) as HTMLImageElement;
           
           if (activeImg) {
-            // Extraire l'URL de base sans le timestamp
             const baseUrl = currentImageUrl.split('?')[0];
-            
-            // Forcer le rechargement du GIF
             activeImg.src = '';
             setTimeout(() => {
               activeImg.src = baseUrl + '?t=' + Date.now();
@@ -344,22 +307,18 @@ const SingleProject = ({
       });
     }
 
-    // Programmer la transition vers l'image suivante
     slideIntervalRef.current = setTimeout(() => {
       if (!isTransitioningRef.current) {
         isTransitioningRef.current = true;
-        
-        // Passer à l'image suivante
+
         setCurrentImageIndex((prev) => (prev + 1) % projectImages.length);
-        
-        // Réinitialiser le flag de transition après l'animation CSS
+
         setTimeout(() => {
           isTransitioningRef.current = false;
         }, 600);
       }
     }, displayDuration);
 
-    // Nettoyage
     return () => {
       if (slideIntervalRef.current) {
         clearTimeout(slideIntervalRef.current);
@@ -376,8 +335,7 @@ const SingleProject = ({
         trackClick(`page-projet_${slugifyProjectName(name)}_selection`);
       }
       setSelectedIndex(index);
-      
-      // Scroller pour centrer la carte cliquée
+
       if (sliderRef.current) {
         setTimeout(() => {
           const slider = sliderRef.current;
@@ -497,7 +455,7 @@ const SingleProject = ({
         onComplete={() => setShowOverlay(false)}
       />
       <div ref={containerRef} className={styles.containerSingleProject}>
-        {/* Slider d'images en haut */}
+        {/* Upper slider images */}
         <div className={styles.sliderWrapper}>
           <button 
             className={styles.sliderArrowLeft}
@@ -555,9 +513,9 @@ const SingleProject = ({
           </button>
         </div>
 
-        {/* Contenu du projet sélectionné */}
+        {/* Selected project content */}
         <div className={styles.projectContent}>
-          {/* Image principale avec transition crossfade */}
+          {/* Main image with crossfade transition */}
           <div className={styles.projectMainImage}>
             {projectImages.map((imgSrc, index) => {
               const isImgGif = isGif(imgSrc);
@@ -619,7 +577,7 @@ const SingleProject = ({
             })}
           </div>
 
-          {/* Détails du projet */}
+          {/* Project details */}
           <div className={styles.projectDetails}>
             <h2 className={styles.projectTitle}>{projectTitle}</h2>
             <p className={styles.projectDescription}>{projectDescription}</p>

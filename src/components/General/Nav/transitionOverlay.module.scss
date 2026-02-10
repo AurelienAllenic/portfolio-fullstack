@@ -6,15 +6,11 @@
   height: 100%;
   z-index: 9999;
   pointer-events: none;
-  
-  // Radial gradient qui se ferme/ouvre
   background: radial-gradient(
     circle at center,
     transparent var(--gradient-size, 100%),
     #000000 var(--gradient-size, 100%)
   );
-  
-  // Initialiser à 100% (transparent)
+
   --gradient-size: 100%;
 }
-

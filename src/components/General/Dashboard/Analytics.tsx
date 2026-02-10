@@ -30,7 +30,7 @@ function getLangFromLabel(label: string): 'FR' | 'EN' | null {
 }
 
 interface DailyStatSub {
-  date: string;           // "YYYY-MM-DD"
+  date: string;
   pageViews: number;
   clicks: Record<string, number>;
   uniqueVisitors: number;
@@ -39,7 +39,7 @@ interface DailyStatSub {
 
 interface DailyStat {
   _id: string;
-  date: string; // "YYYY-MM-DD"
+  date: string;
   pageViews: number;
   clicks: Record<string, number>;
   uniqueVisitors: number;
@@ -48,7 +48,7 @@ interface DailyStat {
 interface MonthlyStat {
   _id: string;
   year: number;
-  month: number; // 1-12
+  month: number;
   pageViews: number;
   clicks: Record<string, number>;
   uniqueVisitors: number;
@@ -66,7 +66,7 @@ interface YearlyStat {
 
 interface NormalizedStat {
   _id: string;
-  date: string; // "YYYY-MM-DD" ou "YYYY-MM" ou "YYYY"
+  date: string;
   pageViews: number;
   clicks: Record<string, number>;
   uniqueVisitors: number;
@@ -90,7 +90,6 @@ const Analytics: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
 
-  // Tous les accordéons fermés par défaut
   const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
   const [openMobile, setOpenMobile] = useState(false);
   const [openDesktop, setOpenDesktop] = useState(false);
@@ -350,7 +349,6 @@ const Analytics: React.FC = () => {
     return grouped;
   }, [desktopStats]);
 
-  /** Répartition des clics par langue (FR / EN) sur toute la période */
   const languageStats = useMemo(() => {
     let fr = 0;
     let en = 0;
@@ -365,7 +363,6 @@ const Analytics: React.FC = () => {
     return { FR: fr, EN: en };
   }, [currentData]);
 
-  /** Données pour le graphique "Ce qui est le plus utilisé" (par zone) */
   const zoneChartData = useMemo(() => {
     const byZone: Record<string, number> = {};
     currentData.forEach(item => {
@@ -384,7 +381,6 @@ const Analytics: React.FC = () => {
     return zoneChartData.map((d, i) => ({ ...d, fill: ZONE_COLORS[i % ZONE_COLORS.length] }));
   }, [zoneChartData]);
 
-  /** Pour les accordéons Mobile/Desktop : totaux par langue */
   const { mobileByLang, desktopByLang } = useMemo(() => {
     const mobile = { FR: 0, EN: 0 };
     const desktop = { FR: 0, EN: 0 };
@@ -550,7 +546,6 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-      {/* Ce qui est le plus utilisé : clics par zone (Nav, Hero, Sections, Footer, etc.) */}
       {zoneChartDataWithColors.length > 0 && (
         <div className={styles.chartSection}>
           <h3>Actions les plus utilisées (par zone)</h3>
@@ -575,7 +570,6 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-      {/* Répartition par langue (FR / EN) */}
       {(languageStats.FR > 0 || languageStats.EN > 0) && (
         <div className={styles.chartSection}>
           <h3>Répartition par langue</h3>
@@ -648,7 +642,6 @@ const Analytics: React.FC = () => {
         </div>
       </div>
 
-      {/* Détail mensuel – tous fermés par défaut */}
       {period === 'monthly' && filteredMonthlyStats.length > 0 && (
         <div className={styles.monthlyDetailSection}>
           <h3>Détail par jour {selectedMonth !== 'all' ? `— ${selectedMonth}` : ''}</h3>
@@ -736,7 +729,6 @@ const Analytics: React.FC = () => {
         </div>
       )}
 
-      {/* Tableau des totaux */}
       <div className={styles.dailyTable}>
         <h3>
           {period === 'daily' && 'Historique Journalier'}
@@ -765,9 +757,7 @@ const Analytics: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile / Desktop – tous fermés par défaut */}
       <div className={styles.platformComparison}>
-        {/* Mobile */}
         <div className={styles.platformSection}>
           <div
             className={styles.accordionHeader}
@@ -811,7 +801,6 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop */}
         <div className={styles.platformSection}>
           <div
             className={styles.accordionHeader}

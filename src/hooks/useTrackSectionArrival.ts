@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useAnalytics } from './useAnalytics';
 
 /**
- * Hook pour tracker l'arrivée dans une section une seule fois,
- * avec label différent selon mobile/desktop.
+ * Hook to track the arrival in a section once,
+ * with a different label according to mobile/desktop.
  * 
  * @param sectionName
  * @param desktopSuffix
@@ -29,8 +29,5 @@ export function useTrackSectionArrival(
     trackClick(label);
 
     hasTracked.current = true;
-
-    // Optionnel : réinitialiser au démontage (rarement utile)
-    // return () => { hasTracked.current = false; };
   }, [sectionName, desktopSuffix, mobileSuffix, trackClick]);
 }

@@ -16,9 +16,7 @@ const Dashboard: React.FC = () => {
   const [isOpening, setIsOpening] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('home');
 
-  // Animation d'ouverture au chargement
   useEffect(() => {
-    // L'animation d'ouverture commence immédiatement
     setIsOpening(true);
   }, []);
 
@@ -26,7 +24,6 @@ const Dashboard: React.FC = () => {
     setIsTransitioning(true);
   };
 
-  // Gérer l'ouverture complète
   const handleOpeningComplete = () => {
     setShowContent(true);
     setIsOpening(false);

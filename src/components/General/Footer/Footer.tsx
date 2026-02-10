@@ -20,48 +20,40 @@ const Footer = () => {
 
   const handleCreditsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
-    // Calculer la position du bouton pour centrer le gradient
+
     const buttonRect = creditsLinkRef.current?.getBoundingClientRect();
     if (buttonRect) {
       const centerX = buttonRect.left + buttonRect.width / 2;
       const centerY = buttonRect.top + buttonRect.height / 2;
-      
-      // Stocker la position pour RadialTransitionOverlay
+
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-    
-    // Déclencher l'animation
+
     setIsTransitioningToCredits(true);
   };
 
   const handleMentionsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    
-    // Calculer la position du bouton pour centrer le gradient
+
     const buttonRect = mentionsLinkRef.current?.getBoundingClientRect();
     if (buttonRect) {
       const centerX = buttonRect.left + buttonRect.width / 2;
       const centerY = buttonRect.top + buttonRect.height / 2;
-      
-      // Stocker la position pour RadialTransitionOverlay
+
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-    
-    // Déclencher l'animation
+
     setIsTransitioningToMentions(true);
   };
 
   const handleCreditsTransitionComplete = () => {
-    // Naviguer après l'animation
     trackClick('footer_credits_click');
     navigate('/credits');
   };
 
   const handleMentionsTransitionComplete = () => {
-    // Naviguer après l'animation
     trackClick('footer_mentions_click');
     navigate('/mentions-legales');
   };
@@ -69,23 +61,19 @@ const Footer = () => {
   const handlePolitiqueConfidentialiteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     trackClick('footer_privacy_click');
-    // Calculer la position du bouton pour centrer le gradient
     const buttonRect = politiqueConfidentialiteLinkRef.current?.getBoundingClientRect();
     if (buttonRect) {
       const centerX = buttonRect.left + buttonRect.width / 2;
       const centerY = buttonRect.top + buttonRect.height / 2;
-      
-      // Stocker la position pour RadialTransitionOverlay
+
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-    
-    // Déclencher l'animation
+
     setIsTransitioningToPolitiqueConfidentialite(true);
   };
 
   const handlePolitiqueConfidentialiteTransitionComplete = () => {
-    // Naviguer après l'animation
     navigate('/politique-confidentialite');
   };
 

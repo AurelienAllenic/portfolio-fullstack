@@ -2,8 +2,6 @@ import { useLanguage } from '../components/General/Language/LanguageContext';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/';
 const TRACK_ENDPOINT = `${BASE_URL}/track`;
-
-/** Même breakpoint que useTrackSectionArrival pour cohérence mobile/desktop */
 const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
 
 interface TrackMetadata {
@@ -14,9 +12,7 @@ interface TrackMetadata {
 }
 
 export interface TrackClickOptions {
-  /** Suffixe ajouté au label sur desktop (défaut: '') */
   desktopSuffix?: string;
-  /** Suffixe ajouté au label sur mobile (défaut: '_mobile') */
   mobileSuffix?: string;
 }
 
@@ -48,8 +44,8 @@ export const useAnalytics = () => {
   };
 
   /**
-   * Envoie un événement CLICK avec le label suffixé selon mobile/desktop et langue courante.
-   * Format final : label + (desktopSuffix | mobileSuffix) + _LANG_FR | _LANG_EN.
+   * Send a CLICK event with the label suffixed according to mobile/desktop and current language.
+   * Final format : label + (desktopSuffix | mobileSuffix) + _LANG_FR | _LANG_EN.
    */
   const trackClick = (
     label: string,

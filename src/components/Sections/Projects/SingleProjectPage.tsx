@@ -56,17 +56,13 @@ const SingleProjectPage = () => {
     openclassrooms1,
   ];
 
-  // Trouver l'index de la catégorie par slug
   const categoryIndex = covers.findIndex(cover => cover.slug === categorySlug);
-
-  // Filtrer les projets par langage si programmingLanguage est défini
   let filteredProjects = projectsData[categoryIndex] || [];
   if (programmingLanguage && categoryIndex !== -1) {
     const normalizedLanguage = programmingLanguage.toLowerCase();
     filteredProjects = filteredProjects.filter(project => 
       project.technologies.some(tech => {
         const normalizedTech = tech.toLowerCase();
-        // Gérer les correspondances spéciales
         if (normalizedLanguage === 'react' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
         if (normalizedLanguage === 'reactjs' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
         if (normalizedLanguage === 'node' && (normalizedTech === 'nodejs' || normalizedTech === 'node')) return true;
@@ -80,22 +76,18 @@ const SingleProjectPage = () => {
     );
   }
 
-  // Récupérer l'index du projet depuis l'URL et le convertir pour la liste filtrée
   const projectIndexParam = searchParams.get('project');
   let initialProjectIndex = 0;
   
   if (projectIndexParam && categoryIndex !== -1) {
     const originalIndex = parseInt(projectIndexParam, 10);
     const allProjects = projectsData[categoryIndex] || [];
-    
-    // Si on a un filtre par langage, trouver le projet dans la liste complète puis son index dans la liste filtrée
+
     if (programmingLanguage && allProjects[originalIndex]) {
       const targetProject = allProjects[originalIndex];
-      // Trouver l'index de ce projet dans la liste filtrée
       const filteredIndex = filteredProjects.findIndex(p => p.id === targetProject.id);
       initialProjectIndex = filteredIndex !== -1 ? filteredIndex : 0;
     } else {
-      // Pas de filtre, utiliser l'index directement
       initialProjectIndex = originalIndex;
     }
   }
@@ -116,7 +108,6 @@ const SingleProjectPage = () => {
         <h1>Catégorie introuvable</h1>
         <button 
           onClick={() => {
-            // Fermer l'onglet ou revenir à l'accueil
             window.close();
             setTimeout(() => {
               window.location.href = "/";
@@ -139,20 +130,15 @@ const SingleProjectPage = () => {
   }
 
   const handleBack = () => {
-    // S'assurer que le flag de restauration est bien présent
     sessionStorage.setItem('shouldRestoreScroll', 'true');
-    
-    // Déclencher l'animation
     setIsTransitioningBack(true);
   };
 
   const handleTransitionBackComplete = () => {
-    // Naviguer après l'animation
     navigate("/");
   };
 
   useEffect(() => {
-    // Afficher le contenu après 0.3s
     const timer = setTimeout(() => {
       setShowContent(true);
     }, 300);

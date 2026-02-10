@@ -19,15 +19,12 @@ const PolitiqueConfidentialite = () => {
   const creditsLinkRef = useRef<HTMLAnchorElement>(null);
   const targetPath = useRef<string>("");
 
-  // Animation du radial gradient à l'entrée (comme NotFound)
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
 
-    // Initialiser le gradient à 0% (tout noir)
     gsap.set(overlay, { "--gradient-size": "0%" });
     
-    // Animer le gradient pour révéler l'image (0% → 100%)
     gsap.to(overlay, {
       "--gradient-size": "100%",
       duration: 1.2,
@@ -38,33 +35,27 @@ const PolitiqueConfidentialite = () => {
     });
   }, []);
 
-  // Gérer le retour au site avec animation de fermeture
   const handleBackToSite = () => {
     setIsTransitioningBack(true);
   };
 
   const handleTransitionBackComplete = () => {
-    // Marquer qu'on vient de PolitiqueConfidentialite et qu'on veut aller à Contact
     sessionStorage.setItem('returningFromPolitiqueConfidentialiteToContact', 'true');
     navigate("/");
   };
 
-  // Gérer les clics sur les liens internes
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
     e.preventDefault();
     
-    // Calculer la position du lien pour centrer le gradient
     const linkRef = path === '/mentions-legales' ? mentionsLinkRef : creditsLinkRef;
     const linkRect = linkRef.current?.getBoundingClientRect();
     if (linkRect) {
       const centerX = linkRect.left + linkRect.width / 2;
       const centerY = linkRect.top + linkRect.height / 2;
-      
-      // Stocker la position pour RadialTransitionOverlay
+
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-    
     targetPath.current = path;
     setIsTransitioningToPage(true);
   };
@@ -73,7 +64,7 @@ const PolitiqueConfidentialite = () => {
     navigate(targetPath.current);
   };
 
-  // Email encodé en base64: aurelienallenic.dev@gmail.com
+  // Email base64 encoded
   const encodedEmail = "YXVyZWxpZW5hbGxlbmljLmRldkBnbWFpbC5jb20=";
 
   return (

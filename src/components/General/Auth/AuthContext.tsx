@@ -36,18 +36,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // URL de l'API backend
   const getApiUrl = () => {
     return import.meta.env.VITE_API_URL || 'http://localhost:3000';
   };
 
-  // Vérifier la session au chargement
   const checkSession = async () => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
       const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'GET',
-        credentials: 'include', // Important pour les cookies de session
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -72,7 +70,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Connexion email/password
   const login = async (email: string, password: string) => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
@@ -81,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Important pour les cookies de session
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -101,7 +98,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Déconnexion
   const logout = async () => {
     try {
       const apiUrl = getApiUrl().replace(/\/$/, '');
@@ -117,7 +113,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Vérifier la session au montage du composant
   useEffect(() => {
     checkSession();
   }, []);

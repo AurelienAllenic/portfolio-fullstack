@@ -14,7 +14,7 @@ import LanguageToggle from "./components/General/Language/LanguageToggle";
 import { useAnalytics } from "./hooks/useAnalytics";
 
 const SinglePage = () => {
-  // Vérifier si le loader a déjà été montré pendant cette session
+  // check if loader already shown
   const hasShownLoader = useRef(
     typeof window !== "undefined" && 
     sessionStorage.getItem("loaderShown") === "true"
@@ -26,7 +26,7 @@ const SinglePage = () => {
   const { trackEvent } = useAnalytics();
   const hasTrackedInitialPageView = useRef(false);
 
-  // Track PAGE_VIEW une seule fois après le loader
+  // Track PAGE_VIEW once after loader
   useEffect(() => {
     if (!showHomeLoader && !showLoaderTransition && !hasTrackedInitialPageView.current) {
       hasTrackedInitialPageView.current = true;
@@ -34,13 +34,12 @@ const SinglePage = () => {
     }
   }, [showHomeLoader, showLoaderTransition, trackEvent]);
 
-  // Vérifier immédiatement si on doit restaurer
   const shouldRestore = sessionStorage.getItem('shouldRestoreScroll') === 'true';
   const savedCategoryIndex = sessionStorage.getItem('lastProjectCategoryIndex');
   const initialShowProjects = shouldRestore && savedCategoryIndex;
   const initialForceIndex = initialShowProjects ? parseInt(savedCategoryIndex!) : undefined;
   
-  // Vérifier si on revient de Credits, Mentions ou PolitiqueConfidentialite vers Contact
+  // check if returning from Credits, Mentions or PolitiqueConfidentialite to Contact
   const returningFromCreditsToContact = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
   const returningFromMentionsToContact = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
   const returningFromPolitiqueConfidentialiteToContact = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
@@ -55,7 +54,7 @@ const SinglePage = () => {
     initialShowContact ? 3 : initialForceIndex
   );
 
-  // Nettoyer sessionStorage après la restauration
+  // Clean sessionStorage after restoration
   useEffect(() => {
     if (shouldRestore && savedCategoryIndex) {
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -97,13 +96,11 @@ const SinglePage = () => {
     }, 600);
   };
 
-  // UN SEUL bloc if pour le loader
   if (showHomeLoader) {
     return (
       <GlobalLoader
         loadDurationMs={1500}
         onComplete={() => {
-          // Marquer que le loader a été montré
           sessionStorage.setItem("loaderShown", "true");
           sessionStorage.setItem("fromLoader", "true");
           setShowHomeLoader(false);
@@ -185,28 +182,19 @@ const SinglePageContent = ({
     updateCurrentSection
   } = useNavigation();
 
-  // Vérifier dès l'initialisation si on est en mode restauration
   const isRestoringFromProjects = sessionStorage.getItem('shouldRestoreScroll') === 'true';
   const isReturningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
   const isReturningFromMentions = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
   const isReturningFromPolitiqueConfidentialite = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
   const isReturningToContact = isReturningFromCredits || isReturningFromMentions || isReturningFromPolitiqueConfidentialite;
-
-  // États locaux pour la synchronisation
   const [heroTextIndex, setHeroTextIndex] = useState<number | undefined>(undefined);
   const [heroNavigationReset, setHeroNavigationReset] = useState(false);
-  // Si on revient de Credits ou Mentions, Contact est monté mais doit être invisible jusqu'à l'animation
-  // Si on restaure depuis Projects, on cache d'abord puis on affiche après un délai
   const [showContent, setShowContent] = useState(!isRestoringFromProjects || isReturningToContact);
   const [navOpacity, setNavOpacity] = useState((isRestoringFromProjects && !isReturningToContact) ? 0 : 1);
-  // État pour contrôler la visibilité de Contact lors du retour depuis Credits ou Mentions
   const [isContactVisible, setIsContactVisible] = useState(!isReturningToContact);
 
-  // Gérer la visibilité du contenu lors de la restauration
-  // Note: Si on revient de Credits ou Mentions, showContent est déjà true, donc pas besoin de délai
   useEffect(() => {
     if (isRestoringFromProjects && !isReturningToContact) {
-      // Commencer à afficher la nav plus tôt (après 100ms)
       const navTimer = setTimeout(() => {
         setNavOpacity(1);
       }, 100);
@@ -222,7 +210,6 @@ const SinglePageContent = ({
     }
   }, [isRestoringFromProjects, isReturningToContact]);
 
-  // Synchroniser currentSectionRef avec l'état actuel
   useEffect(() => {
     if (showContact) {
       updateCurrentSection?.("contact");
@@ -235,24 +222,19 @@ const SinglePageContent = ({
 
   useEffect(() => {
     setReturnToHero(() => {
-      // Read the ref value for synchronous access
       const isNavigationClick = shouldResetHeroStatesRef.current;
-      
-      // If this is a navigation click (shouldResetHeroStatesRef is true), reset returnFromProjects
+
       if (isNavigationClick) {
         setReturnFromProjects(false);
       }
-      
-      // Fermer Contact si ouvert
+
       if (showContact) {
         handleCloseContact();
       }
-      
-      // Only call handleReturnToHero if we're on Projects AND it's NOT a navigation click (scroll return)
+
       if (showProjects && !isNavigationClick) {
         handleReturnToHero();
       } else if (showProjects && isNavigationClick) {
-        // Navigation click from Projects - just close Projects without setting returnFromProjects
         setShowProjects(false);
       }
     });
@@ -260,16 +242,13 @@ const SinglePageContent = ({
 
   useEffect(() => {
     setNavigateToProjects((categoryIndex?: number) => {
-      // Fermer Contact si ouvert
       if (showContact) {
         handleCloseContact();
       }
       handleTransitionToProjects(categoryIndex);
-      // Forcer la catégorie spécifiée ou la première si non spécifiée
       if (!showProjects) {
         const indexToUse = categoryIndex !== undefined ? categoryIndex : 0;
         setForceProjectsIndex(indexToUse);
-        // Réinitialiser après un court délai pour éviter les re-applications
         setTimeout(() => {
           setForceProjectsIndex(undefined);
         }, 500);
@@ -278,15 +257,12 @@ const SinglePageContent = ({
     });
   }, [setNavigateToProjects, handleTransitionToProjects, showContact, handleCloseContact, showProjects]);
 
-  // Gérer la réinitialisation des états Hero lors de la navigation
   useEffect(() => {
     if (shouldResetHeroStates) {
-      // Déterminer le textIndex en fonction de heroState
       const targetTextIndex = heroState === "hero2" ? 0 : undefined;
       setHeroTextIndex(targetTextIndex);
       setHeroNavigationReset(true);
-      
-      // Réinitialiser les flags après un court délai
+
       setTimeout(() => {
         setHeroNavigationReset(false);
         setHeroTextIndex(undefined);
@@ -295,14 +271,11 @@ const SinglePageContent = ({
     }
   }, [shouldResetHeroStates, heroState, resetNavigationFlags]);
 
-  // Gérer la réinitialisation des états Projects lors de la navigation
   useEffect(() => {
     if (shouldResetProjectsStates) {
-      // Utiliser l'index sauvegardé, sinon forcer à 0
       const indexToForce = lastProjectsCategoryIndexRef.current !== undefined ? lastProjectsCategoryIndexRef.current : 0;
       setForceProjectsIndex(indexToForce);
-      
-      // Réinitialiser les flags ET le forceIndex après un court délai
+
       setTimeout(() => {
         setForceProjectsIndex(undefined);
         resetNavigationFlags();
@@ -312,29 +285,24 @@ const SinglePageContent = ({
 
   useEffect(() => {
     setNavigateToContact(() => {
-      // D'abord monter Projects si pas déjà monté (pour que SliderProjects puisse gérer le scroll)
       if (!showProjects) {
         setShowProjects(true);
-        // Forcer l'index à la dernière catégorie (3)
         setForceProjectsIndex(3);
-        // Attendre que Projects soit monté avant d'afficher Contact
         setTimeout(() => {
           handleTransitionToContact();
         }, 200);
       } else {
-        // Si Projects est déjà monté, ne PAS forcer l'index (garder la catégorie actuelle)
         handleTransitionToContact();
       }
     });
   }, [setNavigateToContact, handleTransitionToContact, showProjects, setForceProjectsIndex, setShowProjects]);
 
-  // Gérer le retour depuis Credits, Mentions ou PolitiqueConfidentialite vers Contact
+
   useEffect(() => {
     const returningFromCredits = sessionStorage.getItem('returningFromCreditsToContact') === 'true';
     const returningFromMentions = sessionStorage.getItem('returningFromMentionsToContact') === 'true';
     const returningFromPolitiqueConfidentialite = sessionStorage.getItem('returningFromPolitiqueConfidentialiteToContact') === 'true';
     if (returningFromCredits || returningFromMentions || returningFromPolitiqueConfidentialite) {
-      // Nettoyer les flags immédiatement
       if (returningFromCredits) {
         sessionStorage.removeItem('returningFromCreditsToContact');
       }
@@ -344,12 +312,8 @@ const SinglePageContent = ({
       if (returningFromPolitiqueConfidentialite) {
         sessionStorage.removeItem('returningFromPolitiqueConfidentialiteToContact');
       }
-      
-      // Contact est monté mais invisible, on déclenche immédiatement l'animation de navigation
-      // qui va d'abord fermer (écran noir) puis ouvrir (révélation)
-      // L'animation "close" dure 800ms, puis "open" commence et dure 800ms
+
       navigateToContact();
-      // Rendre Contact visible après le début de l'animation d'ouverture (800ms close + petit délai)
       setTimeout(() => {
         setIsContactVisible(true);
       }, 900);
@@ -392,7 +356,7 @@ const SinglePageContent = ({
               onTransitionFromContact={handleCloseContact}
               forceIndex={forceProjectsIndex}
               onForceIndexComplete={() => {
-                // Ne rien faire ici, la réinitialisation est gérée par le setTimeout dans SinglePage
+                // do nothing
               }}
             />
           </div>

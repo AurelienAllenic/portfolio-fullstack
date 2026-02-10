@@ -23,7 +23,7 @@ const ProtectedEmail: React.FC<ProtectedEmailProps> = ({
 
   useEffect(() => {
     try {
-      // Décoder depuis base64
+      // Decode from base64
       const decoded = atob(encodedEmail);
       setEmail(decoded);
     } catch (error) {

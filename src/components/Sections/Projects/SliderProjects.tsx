@@ -18,7 +18,6 @@ import {
   iim,
 } from "./Data";
 
-// Optimiser les URLs Cloudinary (extrait le public_id pour éviter de dupliquer les paramètres)
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
   const parts = url.split("/image/upload/");
@@ -32,7 +31,6 @@ const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "a
   return `${base}/image/upload/${params}/${publicId}`;
 };
 
-// Précharger une image
 const preloadImage = (src: string): Promise<void> => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -63,8 +61,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const isAtBottomRef = useRef(false);
   const isAtTopRef = useRef(false);
   const isTransitioningFromContactRef = useRef(false);
-  
-  // Détecter si on est en mobile
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -96,19 +93,14 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
-  // Précharger seulement la catégorie suivante avec délai
   useEffect(() => {
     const preloadNextCategory = async () => {
       const nextIndex = (currentIndex + 1) % covers.length;
       const nextCover = covers[nextIndex];
-      
-      // Attendre un peu avant de précharger pour ne pas bloquer le chargement initial
+
       setTimeout(() => {
-        // Précharger seulement l'image principale de la catégorie suivante
         const mainImageWidth = isMobile ? 600 : 800;
         preloadImage(optimizeCloudinaryUrl(nextCover.mainImage, mainImageWidth, "85"));
-        
-        // Précharger seulement les 2 premières images du mosaic avec un délai supplémentaire
         setTimeout(() => {
           const mosaicWidth = isMobile ? 400 : 600;
           nextCover.sideImages.slice(0, 2).forEach(src => {
@@ -121,28 +113,19 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     preloadNextCategory();
   }, [currentIndex, covers, isMobile]);
 
-  // Forcer l'index si forceIndex est défini
-  // Mais IGNORER si on est en train de faire une transition depuis Contact
   useEffect(() => {
     if (forceIndex !== undefined && forceIndex !== currentIndex && !isTransitioningFromContactRef.current) {
       setCurrentIndex(forceIndex);
       currentIndexRef.current = forceIndex;
-      
-      // ⚠️ CRITIQUE : Réinitialiser toutes les refs de scroll
       isAtBottomRef.current = false;
-      isAtTopRef.current = true; // On arrive en haut de la catégorie forcée
-      
-      // ⚠️ IMPORTANT : Marquer que ce n'est plus le montage initial
-      // Cela évite que le premier scroll rejoue l'animation d'entrée
+      isAtTopRef.current = true;
       isInitialMount.current = false;
-      
-      // Annuler tout timeout en cours
+
       if (timeoutId.current) {
         clearTimeout(timeoutId.current);
         timeoutId.current = null;
       }
-      
-      // Nettoyer le transform translate(0px, 100px) qui reste dans le style inline
+
       const container = containerRef.current;
       if (container) {
         const allElements = container.querySelectorAll('[data-category-index]');
@@ -150,25 +133,18 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         
         allElements.forEach((element) => {
           const htmlElement = element as HTMLElement;
-          // Tuer toutes les animations GSAP en cours
           gsap.killTweensOf(htmlElement);
           
           if (element === forcedElement) {
-            // Pour l'élément forcé, nettoyer le transform et le rendre visible
             gsap.set(htmlElement, { y: 0, opacity: 1 });
-            // Forcer le transform à none dans le style inline
             htmlElement.style.transform = 'none';
           } else {
-            // Pour les autres éléments, nettoyer le transform et les cacher
             gsap.set(htmlElement, { y: 0, opacity: 0 });
-            // Forcer le transform à none dans le style inline
             htmlElement.style.transform = 'none';
           }
         });
       }
-      
-      // Déverrouiller le scroll IMMÉDIATEMENT et de manière forcée
-      // Réinitialiser le scroll position et l'overflow du body
+
       window.scrollTo({ top: 0, behavior: 'instant' });
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
@@ -179,15 +155,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         document.body.style.overflow = "";
         document.documentElement.style.overflow = "";
         touchStartY.current = null;
-        // S'assurer que le scroll est bien à 0
         window.scrollTo({ top: 0, behavior: 'instant' });
       }, 100);
-      
-      // Notifier IMMÉDIATEMENT que l'index a été forcé pour le réinitialiser
-      // MAIS NE PAS LE FAIRE ICI car ça redéclenche le useEffect parent
-      // if (onForceIndexComplete) {
-      //   onForceIndexComplete();
-      // }
     }
   }, [forceIndex, currentIndex, onForceIndexComplete]);
 
@@ -434,8 +403,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         document.body.style.overflow = "";
         return;
       }
-      
-      // Ne pas chercher le footer ici, on le cherchera plus tard dans l'animation
 
       const computedStyle = window.getComputedStyle(contactElement);
 
@@ -472,23 +439,16 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         });
 
         gsap.set(contactElement, { opacity: 0, y: 100 });
-        
-        // Chercher le footer et l'initialiser complètement invisible
         const footerElement = document.querySelector('#footer') as HTMLElement;
         if (footerElement) {
-          // Utiliser visibility: visible pour garder le layout, mais opacity: 0 pour cacher
           gsap.set(footerElement, { 
             opacity: 0,
-            visibility: "visible" // Garder visible pour le layout
+            visibility: "visible"
           });
         }
 
         const tl = gsap.timeline({
           onComplete: () => {
-            // NE PAS cacher le container #projects - il doit rester visible
-            // pour que la détection de scroll up fonctionne
-            // Le z-index de Contact (20) le place déjà au-dessus
-
             gsap.set(contactElement, {
               position: "relative",
               top: "auto",
@@ -525,19 +485,16 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           duration: 0.6,
           ease: "power2.out",
         }, "-=0.3");
-        
-        // Animer Contact et Footer EXACTEMENT en même temps
+
         tl.to(contactElement, {
           opacity: 1,
           duration: 0.4,
           ease: "power2.out",
           onStart: () => {
             window.scrollTo({ top: 0, behavior: 'instant' });
-            
-            // Animer le footer EXACTEMENT en même temps que Contact
+
             const footerToAnimate = footerElement || document.querySelector('#footer') as HTMLElement;
             if (footerToAnimate) {
-              // D'abord rendre visible, puis animer l'opacity
               gsap.set(footerToAnimate, { 
                 display: "block",
                 visibility: "visible"
@@ -550,9 +507,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
             }
           }
         });
-        
-        // Ne pas animer le footer dans la timeline si on l'anime déjà dans onStart
-        // Cela évite les animations multiples
     };
 
 
@@ -564,8 +518,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   }, [covers.length, onTransitionToContact]);
 
   const transitionFromContact = useCallback(() => {
-    
-    // Marquer qu'on est en transition depuis Contact pour ignorer forceIndex
     isTransitioningFromContactRef.current = true;
     
     if (scrollLockedRef.current) {
@@ -577,11 +529,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     if (!contactElement) {
       return;
     }
-
-    // Faire disparaître le footer IMMÉDIATEMENT AVANT que Contact ne commence à disparaître
     const footerElement = document.querySelector('#footer') as HTMLElement;
     if (footerElement) {
-      // Masquer complètement et immédiatement
       gsap.set(footerElement, { 
         opacity: 0,
         visibility: "hidden",
@@ -590,7 +539,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       });
     }
     const lastCategoryIndex = covers.length - 1;
-    
     const lastCategoryElement = containerRef.current?.querySelector(
       `[data-category-index="${lastCategoryIndex}"]`
     );
@@ -602,16 +550,12 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     setScrollLocked(true);
     scrollLockedRef.current = true;
     document.body.style.overflow = "hidden";
-
-    // IMPORTANT : Mettre à jour l'index AVANT l'animation pour que React mette à jour le DOM
     setCurrentIndex(lastCategoryIndex);
     currentIndexRef.current = lastCategoryIndex;
 
-    // Attendre que React mette à jour le DOM
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        
-        // Re-sélectionner la dernière catégorie après la mise à jour React
+
         const updatedLastCategoryElement = containerRef.current?.querySelector(
           `[data-category-index="${lastCategoryIndex}"]`
         );
@@ -620,24 +564,20 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           return;
         }
 
-        // Forcer la visibilité en utilisant directement le style inline pour override React
         const htmlElement = updatedLastCategoryElement as HTMLElement;
         htmlElement.style.display = "block";
         htmlElement.style.pointerEvents = "auto";
         htmlElement.style.position = "relative";
         htmlElement.style.zIndex = "10";
         htmlElement.style.visibility = "visible";
-        
-        // Ensuite utiliser GSAP pour l'animation
+
         gsap.set(updatedLastCategoryElement, { 
           y: 100,
           opacity: 0
         });
 
-        // Scroller immédiatement vers le haut
         window.scrollTo({ top: 0, behavior: 'instant' });
 
-        // Positionner Contact en fixed en haut
         gsap.set(contactElement, {
           position: "fixed",
           top: "0px",
@@ -646,12 +586,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           zIndex: 20,
         });
 
-        // Animation inverse : Contact disparaît, dernière catégorie apparaît
         const tl = gsap.timeline({
           onComplete: () => {
-
-
-            // S'assurer que le footer reste caché après la transition
             const footerAfterTransition = document.querySelector('#footer') as HTMLElement;
             if (footerAfterTransition) {
               gsap.set(footerAfterTransition, {
@@ -661,8 +597,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
                 pointerEvents: "none"
               });
             }
-
-            // Réinitialiser les styles GSAP pour que le style inline React prenne le dessus
             gsap.set(updatedLastCategoryElement, {
               y: 0,
               opacity: "",
@@ -671,13 +605,9 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
               position: "",
               zIndex: ""
             });
-            
-
-            // Réinitialiser les refs pour permettre la détection du scroll
             isAtBottomRef.current = false;
-            isAtTopRef.current = true; // On est en haut après le retour
+            isAtTopRef.current = true;
 
-            // Mettre Contact en display: none
             gsap.set(contactElement, {
               display: "none",
               position: "relative",
@@ -686,37 +616,29 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
               width: "100%",
             });
 
-
             if (onTransitionFromContact) {
               onTransitionFromContact();
             }
 
-            // S'assurer qu'on est bien en haut
             window.scrollTo({ top: 0, behavior: 'instant' });
 
             requestAnimationFrame(() => {
               setScrollLocked(false);
               scrollLockedRef.current = false;
               document.body.style.overflow = "";
-              
-              // Ne réinitialiser le flag que si forceIndex n'est pas défini ou est égal à la dernière catégorie
-              // Sinon, attendre que forceIndex soit réinitialisé
+
               const checkAndResetFlag = () => {
                 if (forceIndex === undefined || forceIndex === lastCategoryIndex) {
                   isTransitioningFromContactRef.current = false;
                 } else {
-                  // Réessayer après un court délai
                   setTimeout(checkAndResetFlag, 100);
                 }
               };
-              
-              // Attendre un peu avant de vérifier pour laisser le temps à forceIndex d'être réinitialisé
               setTimeout(checkAndResetFlag, 200);
             });
           },
         });
 
-        // Disparition du footer AVANT Contact
         const footerForDisappear = document.querySelector('#footer') as HTMLElement;
         if (footerForDisappear) {
           tl.to(footerForDisappear, {
@@ -725,8 +647,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
             ease: "power2.in",
           });
         }
-        
-        // Disparition de Contact
+
         tl.to(contactElement, {
           y: -100,
           opacity: 0,
@@ -751,19 +672,16 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
-      
-      // ✅ Vérifier si Contact est déjà affiché et visible
+
       const contactElement = document.querySelector('#contact') as HTMLElement;
       const isContactVisible = contactElement && 
         contactElement.offsetParent !== null && 
         window.getComputedStyle(contactElement).display !== 'none';
       
       if (isContactVisible) {
-        // Contact est visible, vérifier si on scroll vers le haut en haut de Contact
         const isAtTop = window.scrollY === 0 || window.scrollY < 50;
         const goingUp = e.deltaY < 0;
 
@@ -776,7 +694,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         return;
       }
 
-      
       if (scrollLockedRef.current || timeoutId.current) {
         e.preventDefault();
         e.stopPropagation();
@@ -815,9 +732,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       const sectionTop = sectionRect.top;
       const sectionBottom = sectionRect.bottom;
       const sectionHeight = sectionRect.height;
-      
       const contentOverflows = sectionHeight > viewportHeight;
-      
       const isMobile = window.innerWidth <= 900;
       
       let isSectionAtBottom = false;
@@ -843,7 +758,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       }
       
       const isSectionAtTop = sectionTop >= -20;
-      
       const canScrollDown = contentOverflows && !isSectionAtBottom;
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
@@ -908,7 +822,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   };
 
   const handleTouchMove = (e: TouchEvent) => {
-    // Vérifier si la modale CV est ouverte
     if (document.body.getAttribute("data-modal-open") === "true") {
       return;
     }
@@ -942,7 +855,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
     const deltaY = touchStartY.current - e.touches[0].clientY;
     const currentIdx = currentIndexRef.current;
-
     const currentElement = containerRef.current?.querySelector(
       `[data-category-index="${currentIdx}"]`
     );
@@ -957,9 +869,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     const sectionTop = sectionRect.top;
     const sectionBottom = sectionRect.bottom;
     const sectionHeight = sectionRect.height;
-    
     const contentOverflows = sectionHeight > viewportHeight;
-    
     const isMobile = window.innerWidth <= 900;
     
     let isSectionAtBottom = false;

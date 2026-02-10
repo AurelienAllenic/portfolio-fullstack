@@ -11,7 +11,6 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Traductions
 const translations: Record<Language, Record<string, string>> = {
   fr: {
     // Navigation
@@ -373,7 +372,7 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  // Récupérer la langue depuis localStorage ou utiliser 'fr' par défaut
+  // language from localStorage or 'fr' by default
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem("language") as Language;
     return saved === "en" || saved === "fr" ? saved : "fr";

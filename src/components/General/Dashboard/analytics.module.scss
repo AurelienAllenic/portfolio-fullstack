@@ -30,7 +30,6 @@
   align-items: center;
 }
 
-// Tabs améliorés + plus compacts
 .periodTabs {
   display: flex;
   border-radius: 10px;
@@ -64,7 +63,6 @@
   font-weight: 600;
 }
 
-// Selects + bouton plus harmonisés
 .dateSelector,
 .aggregateButton {
   min-width: 180px;
@@ -107,7 +105,6 @@
   }
 }
 
-// Sections graphiques + cartes
 .chartSection,
 .statCard,
 .platformSection,
@@ -233,7 +230,6 @@
   }
 }
 
-// Accordéon pour les sections longues (détails mensuels, clics, etc.)
 .accordionHeader {
   display: flex;
   justify-content: space-between;
@@ -272,12 +268,11 @@
   transition: max-height 0.35s ease, padding 0.35s ease;
   
   &[aria-hidden="false"] {
-    max-height: 2000px; // assez grand pour la plupart des cas
+    max-height: 2000px;
     padding: 20px;
   }
 }
 
-// Mobile vs Desktop - accordéon aussi
 .platformComparison {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -342,7 +337,6 @@
   padding: 2rem 0;
 }
 
-// Tables
 .dailyTable {
   color: #000;
   h3 {
@@ -357,7 +351,7 @@
   
   table {
     width: 100%;
-    min-width: 600px; // évite que ça soit trop écrasé sur mobile
+    min-width: 600px;
     
     th {
       background: #f1f5f9;
@@ -381,7 +375,6 @@
   }
 }
 
-// Alertes & loading
 .error, .success {
   padding: 14px 18px;
   border-radius: 10px;
@@ -408,7 +401,7 @@
   font-size: 1.2rem;
 }
 
-// Responsive
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;

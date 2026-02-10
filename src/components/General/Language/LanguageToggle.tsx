@@ -19,7 +19,6 @@ const LanguageToggle = () => {
     trackClick(`language_toggle_${targetLang}`);
     if (transitionState !== "idle") return;
 
-    // Sauvegarder la position du bouton pour le gradient
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -29,18 +28,14 @@ const LanguageToggle = () => {
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
 
-    // Démarrer l'animation de fermeture
     setDirection("in");
     setTransitionState("closing");
   };
 
   const handleCloseComplete = () => {
-    // Changer la langue pendant que c'est noir
     const newLanguage = language === "fr" ? "en" : "fr";
     setLanguage(newLanguage);
 
-    // Passer directement à l'ouverture sans délai visible
-    // Le même overlay reste actif, on change juste la direction
     setDirection("out");
     setTransitionState("opening");
   };

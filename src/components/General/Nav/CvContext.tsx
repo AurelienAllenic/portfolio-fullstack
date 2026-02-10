@@ -48,7 +48,6 @@ export const CvProvider = ({ children }: { children: ReactNode }) => {
         if (data.data) {
           setCvData(data.data);
         } else {
-          // Pas de CV en base, on garde les valeurs par défaut
           setCvData(null);
         }
       } catch (err) {

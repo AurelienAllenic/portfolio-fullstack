@@ -16,7 +16,6 @@ const CvManagement: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // États pour les fichiers sélectionnés
   const [imageWebpFr, setImageWebpFr] = useState<File | null>(null);
   const [imageWebpEn, setImageWebpEn] = useState<File | null>(null);
   const [pdfFr, setPdfFr] = useState<File | null>(null);
@@ -89,16 +88,12 @@ const CvManagement: React.FC = () => {
 
       setSuccess('CV enregistré avec succès !');
       
-      // Réinitialiser les fichiers sélectionnés
       setImageWebpFr(null);
       setImageWebpEn(null);
       setPdfFr(null);
       setPdfEn(null);
       
-      // Recharger les données
       await fetchCv();
-      
-      // Effacer le message de succès après 5 secondes
       setTimeout(() => setSuccess(null), 5000);
     } catch (err) {
       console.error('Erreur:', err);
@@ -130,8 +125,7 @@ const CvManagement: React.FC = () => {
 
       setSuccess('CV supprimé avec succès !');
       setCvData(null);
-      
-      // Réinitialiser les fichiers sélectionnés
+
       setImageWebpFr(null);
       setImageWebpEn(null);
       setPdfFr(null);

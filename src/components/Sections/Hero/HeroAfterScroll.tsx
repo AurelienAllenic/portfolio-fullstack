@@ -76,10 +76,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const iconsWrapperRef = useRef<HTMLDivElement | null>(null);
     const scrollAnimationRef = useRef<gsap.core.Timeline | null>(null);
     const [isMobile, setIsMobile] = useState(false);
-
     const { trackClick } = useAnalytics();
 
-    // Envoyer un événement "section arrival" à chaque changement de texte
     useEffect(() => {
       const sectionName = `section_about_${textIndex + 1}`;
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -87,7 +85,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       trackClick(label);
     }, [textIndex, trackClick]);
 
-    // Détecter si on est en mobile
     useEffect(() => {
       const checkMobile = () => {
         setIsMobile(window.innerWidth <= 768);
@@ -97,7 +94,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Icônes d'IA pour mobile et dernier texte desktop
     const aiIcons = useMemo(() => [
       {
         src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/chatgpt_mefpin.webp",
@@ -125,11 +121,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ], []);
 
-    // Fonction pour obtenir les icônes selon le textIndex (desktop uniquement)
     const getIconsForTextIndex = useMemo(() => {
       return (index: number) => {
         switch (index) {
-          case 0: // Premier texte
+          case 0: // First text
             return [
               {
                 src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
@@ -156,7 +151,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 name: "Prisma",
               },
             ];
-          case 1: // Deuxième texte
+          case 1: // Second text
             return [
               {
                 src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
@@ -183,7 +178,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 name: "Docker",
               },
             ];
-        case 2: // Troisième texte
+        case 2: // Third text
           return [
             {
               src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
@@ -210,7 +205,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               name: "WordPress",
             },
           ];
-          case 3: // Quatrième texte
+          case 3: // Fourth text
             return [
               {
                 src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
@@ -249,7 +244,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 name: "Django",
               },
             ];
-          case 4: // Cinquième texte (IA)
+          case 4: // Fifth text (IA)
             return aiIcons;
           default:
             return [];
@@ -257,7 +252,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       };
     }, [aiIcons]);
 
-    // Pour mobile : toutes les icônes de base + icônes d'IA à la fin
     const allIconsMobile = useMemo(() => [
       {
         src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
@@ -353,29 +347,23 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       },
     ], []);
 
-    // Pour desktop : icônes selon textIndex
     const allIconsDesktop = useMemo(() => getIconsForTextIndex(textIndex), [getIconsForTextIndex, textIndex]);
 
-    // Gérer la réinitialisation lors de la navigation par liens
     useEffect(() => {
       if (onNavigationReset && !wasNavigationReset.current) {
         wasNavigationReset.current = true;
-        
-        // Réinitialiser les refs critiques
+
         firstRender.current = false;
         hasTriggeredSwipe.current = false;
         setScrollLocked(false);
-        
-        // Forcer le textIndex si spécifié
+
         if (forceTextIndex !== undefined) {
           setTextIndex(forceTextIndex);
           setDirection(forceTextIndex === 0 ? "down" : "up");
         }
-        
-        // S'assurer que les animations sont considérées comme complètes
+
         setAllAnimationsComplete(true);
-        
-        // Réinitialiser le flag après un court délai
+
         setTimeout(() => {
           wasNavigationReset.current = false;
         }, 100);
@@ -405,8 +393,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [returnFromProjects]);
 
     useEffect(() => {
-      // Ne pas vider iconContainers : les refs sont remplies par le rendu ; si on les vide ici,
-      // les timeouts ne trouvent plus les éléments et la classe .appeared n'est jamais ajoutée (tooltips desktop cassés).
       const iconCount = isMobile ? allIconsMobile.length : allIconsDesktop.length;
       
       const timeouts: number[] = [];
@@ -449,19 +435,14 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       }
     }, []);
 
-    // Animation de défilement automatique infini avec tooltips
     useEffect(() => {
-      // Nettoyer l'animation précédente si elle existe
       if (scrollAnimationRef.current) {
         scrollAnimationRef.current.kill();
         scrollAnimationRef.current = null;
       }
-
-      // Nettoyer les icônes dupliquées si elles existent
       if (iconsWrapperRef.current) {
         const wrapper = iconsWrapperRef.current;
         const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-        // Supprimer les icônes dupliquées (celles après les originales)
         const expectedCount = allIconsMobile.length;
         if (allIcons.length > expectedCount) {
           const iconsArray = Array.from(allIcons);
@@ -477,8 +458,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (!isMobile || !iconsWrapperRef.current || !contentRightRef.current) {
         return;
       }
-
-      // Attendre un peu que les icônes soient rendues, mais pas trop longtemps
       const checkAndStart = () => {
         const wrapper = iconsWrapperRef.current;
         const container = contentRightRef.current;
@@ -489,15 +468,11 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           setTimeout(checkAndStart, 50);
           return;
         }
-
-        // Vérifier si au moins une icône a une largeur (est rendue)
         const firstIcon = icons[0] as HTMLElement;
         if (firstIcon.offsetWidth === 0) {
           setTimeout(checkAndStart, 50);
           return;
         }
-
-        // Initialiser tous les tooltips à opacity: 0 AVANT de lancer l'animation
         icons.forEach((icon) => {
           const tooltip = icon.querySelector(`.${styles.tooltip}`) as HTMLElement;
           if (tooltip) {
@@ -508,8 +483,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             });
           }
         });
-
-        // Lancer l'animation de scroll immédiatement
         startScrollAnimation();
       };
 
@@ -521,19 +494,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         const icons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
         if (icons.length === 0) return;
 
-        // Calculer la largeur totale nécessaire pour la boucle
         let totalWidth = 0;
         icons.forEach((icon) => {
-          totalWidth += (icon as HTMLElement).offsetWidth + 25; // 25px = gap
+          totalWidth += (icon as HTMLElement).offsetWidth + 25;
         });
 
         if (totalWidth === 0) {
-          // Réessayer après un court délai si les largeurs ne sont pas encore calculées
           setTimeout(startScrollAnimation, 50);
           return;
         }
 
-        // Dupliquer les icônes pour créer une boucle infinie
         const duplicateIcons: HTMLElement[] = [];
         Array.from(icons).forEach((icon) => {
           const clone = icon.cloneNode(true) as HTMLElement;
@@ -541,17 +511,14 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           duplicateIcons.push(clone);
         });
 
-        // Position initiale
         gsap.set(wrapper, { x: 0 });
 
-        // Flag pour activer les tooltips après un délai avec transition progressive
         let tooltipsEnabled = false;
-        let tooltipsOpacityMultiplier = 0; // Multiplicateur pour fade-in progressif
+        let tooltipsOpacityMultiplier = 0;
         const lastIconDelay = 0.5 + (icons.length - 1) * 0.1 + 0.8;
         
         setTimeout(() => {
           tooltipsEnabled = true;
-          // Faire monter progressivement le multiplicateur d'opacité de 0 à 1
           gsap.to({ value: 0 }, {
             value: 1,
             duration: 1.5,
@@ -562,7 +529,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           });
         }, lastIconDelay * 1000);
 
-        // Créer des quickTo pour chaque tooltip pour des animations ultra fluides
         const tooltipAnimators = new Map();
         const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
         allIconsElements.forEach((iconEl) => {
@@ -575,22 +541,18 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           }
         });
 
-        // Animation de défilement infini
         const scrollTimeline = gsap.timeline({ repeat: -1 });
         scrollTimeline.to(wrapper, {
           x: -totalWidth,
-          duration: totalWidth / 30, // Vitesse de défilement (ajustable)
+          duration: totalWidth / 30,
           ease: "none",
           onUpdate: () => {
             const currentX = gsap.getProperty(wrapper, "x") as number;
-            
-            // Réinitialiser la position pour créer la boucle
             if (Math.abs(currentX) >= totalWidth) {
               gsap.set(wrapper, { x: 0 });
               scrollTimeline.progress(0);
             }
 
-            // Animer les tooltips au fur et à mesure SEULEMENT si les icônes sont visibles
             if (tooltipsEnabled) {
               const allIconsElements = wrapper.querySelectorAll(`.${styles.iconContainer}`);
               allIconsElements.forEach((iconEl) => {
@@ -600,16 +562,13 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 const containerCenterX = containerRect.left + containerRect.width / 2;
                 const distanceFromCenter = Math.abs(iconCenterX - containerCenterX);
                 const maxDistance = containerRect.width / 2;
-
-                // Afficher le tooltip si l'icône est proche du centre
                 const tooltip = iconEl.querySelector(`.${styles.tooltip}`) as HTMLElement;
+
                 if (tooltip && tooltipAnimators.has(tooltip)) {
                   const animator = tooltipAnimators.get(tooltip);
                   if (distanceFromCenter < maxDistance * 0.5) {
                     const baseOpacity = Math.max(0, 1 - (distanceFromCenter / (maxDistance * 0.5)));
-                    // Appliquer le multiplicateur pour le fade-in progressif initial
                     const finalOpacity = baseOpacity * tooltipsOpacityMultiplier;
-                    // Utiliser quickTo pour des transitions ultra fluides
                     animator.opacity(finalOpacity);
                     animator.y(9 * (1 - finalOpacity));
                   } else {
@@ -624,8 +583,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
         scrollAnimationRef.current = scrollTimeline;
       };
-
-      // Démarrer la vérification immédiatement
       checkAndStart();
 
       return () => {
@@ -633,7 +590,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           scrollAnimationRef.current.kill();
           scrollAnimationRef.current = null;
         }
-        // Nettoyer les icônes dupliquées
         if (iconsWrapperRef.current) {
           const wrapper = iconsWrapperRef.current;
           const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
@@ -675,7 +631,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       let timeoutId: number | null = null;
 
       const handleWheel = (e: WheelEvent) => {
-        // Vérifier si la modale CV est ouverte
         if (document.body.getAttribute("data-modal-open") === "true") {
           return;
         }
@@ -685,8 +640,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           return;
         }
 
-        // Ignorer les scrolls horizontaux (deltaX plus grand que deltaY)
-        // Cela permet de scroller dans les icônes sans déclencher les transitions
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
           return;
         }
@@ -701,7 +654,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           e.preventDefault();
           changeText(textIndex + 1);
         } else if (goingDown && textIndex === texts.length - 1) {
-          // CORRECTION: Supprimer la condition allAnimationsComplete
           e.preventDefault();
           setScrollLocked(true);
           const tl = gsap.timeline({
@@ -756,7 +708,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Vérifier si la modale CV est ouverte
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
@@ -771,9 +722,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       
       const deltaY = touchStartY.current - e.touches[0].clientY;
       const deltaX = touchStartX.current - e.touches[0].clientX;
-      
-      // Ignorer les scrolls horizontaux (deltaX plus grand que deltaY)
-      // Cela permet de scroller dans les icônes sans déclencher les transitions
+
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         return;
       }
@@ -786,7 +735,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         hasTriggeredSwipe.current = true;
         touchStartY.current = e.touches[0].clientY;
       } else if (deltaY > 30 && textIndex === texts.length - 1) {
-        // CORRECTION: Supprimer la condition allAnimationsComplete
         e.preventDefault();
         setScrollLocked(true);
         const tl = gsap.timeline({
@@ -844,29 +792,24 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       onTransitionToProjects,
     ]);
 
-    // Réinitialiser textIndex à 0 si isForced et rendre tout visible immédiatement
     useEffect(() => {
       if (isForced) {
-        // Réinitialiser à 0 si nécessaire
         if (textIndex !== 0) {
           setTextIndex(0);
         }
         
         firstRender.current = true;
         setAllAnimationsComplete(true);
-        
-        // Rendre le conteneur principal visible IMMÉDIATEMENT
+
         const containerElement = ref && typeof ref === 'object' && ref.current ? ref.current : null;
         if (containerElement) {
           gsap.set(containerElement, { opacity: 1 });
         }
-        
-        // Rendre le contentContainer visible IMMÉDIATEMENT
+
         if (contentContainerRef.current) {
           gsap.set(contentContainerRef.current, { opacity: 1 });
         }
-        
-        // Déclencher l'animation du texte avec le délai normal
+
         setTimeout(() => {
           if (textRef.current) {
             gsap.set(textRef.current, { opacity: 0, y: 20 });
@@ -878,7 +821,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 y: 0,
                 duration: 0.8,
                 ease: "power2.out",
-                delay: 1.2, // Délai comme dans le premier render
+                delay: 1.2,
                 onComplete: () => {
                   firstRender.current = false;
                 },
@@ -890,12 +833,9 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [isForced, ref]);
 
     useEffect(() => {
-      // Si on revient de Projects, animer le texte IMMÉDIATEMENT
       if (returnFromProjects && textIndex === texts.length - 1) {
         if (textRef.current) {
-          // Désactiver l'animation CSS
           textRef.current.style.setProperty('animation', 'none', 'important');
-          // Animer le texte avec GSAP
           gsap.fromTo(
             textRef.current,
             { opacity: 0, y: 20 },
@@ -904,7 +844,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               y: 0,
               duration: 0.8,
               ease: "power2.out",
-              delay: 0.5, // Petit délai pour que le gradient soit visible
+              delay: 0.5,
             }
           );
         }
@@ -936,7 +876,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         );
       }
 
-      // TOUJOURS animer le gradient lors du changement de texte
       if (overlayRef.current) {
         const progress = textIndex / (texts.length - 1);
         gsap.to(overlayRef.current, {
@@ -1021,20 +960,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               ref={contentRightRef}
               className={styles.contentRight}
               onTouchStart={(e) => {
-                // Enregistrer la position initiale pour détecter le type de scroll
                 if (isMobile && e.touches.length > 0) {
                   touchStartX.current = e.touches[0].clientX;
                   touchStartY.current = e.touches[0].clientY;
                 }
               }}
               onTouchMove={(e) => {
-                // Bloquer uniquement le scroll horizontal, laisser passer le vertical
                 if (isMobile && e.touches.length > 0 && touchStartX.current !== null && touchStartY.current !== null) {
                   const deltaX = Math.abs(e.touches[0].clientX - touchStartX.current);
                   const deltaY = Math.abs(e.touches[0].clientY - touchStartY.current);
-                  
-                  // Si c'est un scroll horizontal (deltaX > deltaY), empêcher la propagation
-                  // Sinon, laisser passer pour le scroll vertical
+
                   if (deltaX > deltaY && deltaX > 10) {
                     e.stopPropagation();
                   }

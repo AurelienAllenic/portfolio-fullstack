@@ -19,26 +19,21 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Animation d'ouverture au chargement
   useEffect(() => {
-    // L'animation d'ouverture commence immédiatement
     setIsOpening(true);
   }, []);
 
-  // Vérifier si l'utilisateur est déjà connecté
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
 
-  // Gérer les erreurs et succès depuis l'URL (pour OAuth)
   useEffect(() => {
     const errorParam = searchParams.get('error');
     const successParam = searchParams.get('success');
     
     if (successParam === 'logged_in') {
-      // Si on revient du callback OAuth avec succès, déclencher l'animation de transition
       setIsTransitioning(true);
       return;
     }
@@ -60,18 +55,15 @@ const Login: React.FC = () => {
     }
   }, [searchParams]);
 
-  // URL de l'API backend
   const getApiUrl = () => {
     return import.meta.env.VITE_API_URL || 'http://localhost:3000';
   };
 
-  // Connexion Google OAuth
   const handleGoogleLogin = () => {
     const apiUrl = getApiUrl().replace(/\/$/, '');
     window.location.href = `${apiUrl}/auth/google`;
   };
 
-  // Connexion email/password
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -79,7 +71,6 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      // Démarrer l'animation de fermeture avant la navigation
       setIsTransitioning(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la connexion');
@@ -87,13 +78,11 @@ const Login: React.FC = () => {
     }
   };
 
-  // Gérer l'ouverture complète
   const handleOpeningComplete = () => {
     setShowContent(true);
     setIsOpening(false);
   };
 
-  // Gérer la transition vers le dashboard
   const handleTransitionComplete = () => {
     navigate('/dashboard');
   };
