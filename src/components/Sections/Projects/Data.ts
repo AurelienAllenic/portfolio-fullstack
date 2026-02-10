@@ -58,6 +58,9 @@ const EcoAlternativ = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,
 const PierreGasly = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_qombd8.webp'
 const Eliebenhamou = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_sc5vhr.webp'
 const LaCommune = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_xnku7a.webp'
+const Anavie = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/anavie_sumvpa.webp'
+const RollerGrill = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rollergrill_wttjr8.webp'
+
 
 const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
 const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
@@ -98,7 +101,8 @@ const EcoAlternativGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_we
 const PierreGaslyGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pierre-gasly_1_hsgtgl.gif'
 const EliebenhamouGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/eliebenhamou_cnbstj.gif'
 const LaCommuneGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_ddcxu3.gif'
-
+const AnavieGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/anavie_smxnim.gif'
+const RollerGrillGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rollergrill_shpbxd.gif'
 
 /* COVERS */
 
@@ -826,5 +830,33 @@ export const solead = [
         figma: '',
         folder: '',
         technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery']
+    },
+    {
+        id: 11,
+        image: Anavie,
+        imageDiaporama: [Anavie, AnavieGif],
+        title: 'Anavie',
+        description: "Site d'assurance santé, emprunteur, épargen et retraite",
+        titleEn: 'Anavie',
+        descriptionEn: "Health insurance, borrower, savings and retirement site",
+        github: '',
+        demo: 'https://anavie.fr/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
+    },
+    {
+        id: 12,
+        image: RollerGrill,
+        imageDiaporama: [RollerGrill, RollerGrillGif],
+        title: 'RollerGrill International',
+        description: "Fabricant français d'équipements de cuisine professionnelle depuis 1947.",
+        titleEn: 'RollerGrill International',
+        descriptionEn: "French manufacturer of professional kitchen equipment since 1947.",
+        github: '',
+        demo: 'https://www.rollergrill-international.com/fr/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
     },
 ]
