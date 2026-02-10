@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import GlobalLoader from "./GlobalLoader";
 
 /**
- * Page de test du loader général : /loader
- * Une fois le loader terminé, redirection vers l'accueil.
+ * Loader test page : /loader
+ * Once the loader is complete, redirect to the home page.
  */
 const LoaderTestPage = () => {
   const navigate = useNavigate();

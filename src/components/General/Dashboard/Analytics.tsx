@@ -5,7 +5,6 @@ import {
 } from 'recharts';
 import styles from './analytics.module.scss';
 
-/** Normalise un label (sans _mobile, _LANG_FR, _LANG_EN) et retourne la zone d’affichage */
 function getZoneFromLabel(label: string): string {
   let base = label
     .replace(/_LANG_FR$/, '')
@@ -22,7 +21,6 @@ function getZoneFromLabel(label: string): string {
   return 'Autres';
 }
 
-/** Retourne si le label est en français ou anglais */
 function getLangFromLabel(label: string): 'FR' | 'EN' | null {
   if (label.endsWith('_LANG_FR')) return 'FR';
   if (label.endsWith('_LANG_EN')) return 'EN';

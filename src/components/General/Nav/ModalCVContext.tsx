@@ -19,7 +19,7 @@ export const ModalCVProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ModalCVContext.Provider value={{ isModalOpen, openModal, closeModal }}>
       {children}
-      {/* Rendre la modale une seule fois ici pour éviter le flash au resize */}
+      {/* Render the modal only once here to avoid the flash on resize */}
       <ModalCV isOpen={isModalOpen} onClose={closeModal} />
     </ModalCVContext.Provider>
   );

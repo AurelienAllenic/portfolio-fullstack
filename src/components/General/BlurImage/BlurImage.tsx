@@ -2,8 +2,8 @@ import { useState } from "react";
 import styles from "./BlurImage.module.scss";
 
 /**
- * Extrait le public_id d'une URL Cloudinary (dernier segment après /image/upload/).
- * Évite de dupliquer les paramètres quand l'URL contient déjà des transforms.
+ * Extract the public_id of a Cloudinary URL (last segment after /image/upload/).
+ * Avoid duplicating parameters when the URL already contains transforms.
  */
 const getCloudinaryPublicId = (url: string): string | null => {
   if (!url || !url.includes("cloudinary.com")) return null;
@@ -15,9 +15,9 @@ const getCloudinaryPublicId = (url: string): string | null => {
 };
 
 /**
- * Génère une URL Cloudinary "tiny" (20px) pour le placeholder blur.
- * Pour les URLs non-Cloudinary, retourne null (pas de placeholder blur).
- * Pour les GIFs, on n'utilise pas f_webp (Cloudinary peut renvoyer 400).
+ * Generate a Cloudinary "tiny" URL (20px) for the placeholder blur.
+ * For non-Cloudinary URLs, return null (no placeholder blur).
+ * For GIFs, we don't use f_webp (Cloudinary may return 400).
  */
 export const getTinyCloudinaryUrl = (url: string): string | null => {
   const base = url?.split("/image/upload/")[0];
@@ -33,15 +33,10 @@ interface BlurImageProps {
   alt: string;
   className?: string;
   loading?: "lazy" | "eager";
-  /** Optionnel : URL déjà optimisée (largeur) pour l'image finale. Si non fourni, utilise src telle quelle. */
   fullSrc?: string;
-  /** Pour usage en fond (object-fit cover, remplit le parent). */
   objectFit?: "cover" | "contain" | "fill";
-  /** Style appliqué au wrapper (ex. position absolute pour slideshow). */
   wrapperStyle?: React.CSSProperties;
-  /** Classes additionnelles sur l'élément img (ex. slideshow active). */
   imgClassName?: string;
-  /** Style appliqué sur l'élément img (ex. position relative/absolute). */
   imgStyle?: React.CSSProperties;
 }
 

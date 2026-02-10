@@ -7,12 +7,12 @@ interface ProtectedEmailProps {
 }
 
 /**
- * Composant pour afficher un email protégé contre le scraping
- * L'email est encodé en base64 et décodé au moment du rendu
+ * Component to display a protected email against scraping
+ * The email is encoded in base64 and decoded at render time
  * 
- * @param encodedEmail - Email encodé en base64
- * @param displayText - Texte à afficher (par défaut: l'email)
- * @param className - Classes CSS supplémentaires
+ * @param encodedEmail - Encoded email in base64
+ * @param displayText
+ * @param className
  */
 const ProtectedEmail: React.FC<ProtectedEmailProps> = ({ 
   encodedEmail, 

@@ -18,7 +18,6 @@
   }
 }
 
-/* Projects component */
 
 .containerProjects {
   height: 100vh;
@@ -27,9 +26,6 @@
   background: #000;
   color: #fff;
 }
-
-/* Projects Category component */
-
 .cover {
   width: 100%;
   color: #fff;
@@ -327,8 +323,6 @@
   @media (max-width: 630px) {
     justify-content: center;
   }
-
-  /* Forcer les dimensions du wrapper BlurImage pour ne pas casser le layout (wrapper = width/height 100% par défaut) */
   .mobileImage {
     width: 200px !important;
     min-width: 200px;
@@ -554,7 +548,6 @@
   align-items: center;
   justify-content: flex-end;
   padding-right: 0;
-  /* Hauteur explicite pour que l’image cover ait de la place (grid align-items: center sinon colonne à 0) */
   align-self: stretch;
   min-height: min(60vh, 480px);
 
@@ -617,8 +610,6 @@
     right: 45px;
   }
 }
-
-/* Single Project component */
 
 .containerSingleProject {
   min-height: 100vh;

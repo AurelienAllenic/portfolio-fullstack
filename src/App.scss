@@ -12,23 +12,16 @@ body {
 }
 h2 {
   font-weight: inherit;
-} /* Pour Chrome, Edge, Safari */
+}
 ::-webkit-scrollbar {
   display: none;
 }
-
-/* Pour Firefox */
 html {
-  scrollbar-width: none; /* masque la scrollbar */
+  scrollbar-width: none;
 }
-
-/* Pour IE et anciennes versions Edge */
 html {
   -ms-overflow-style: none;
 }
-
-/* prevent refresh on mobile */
-
 html,
 body {
   overscroll-behavior-y: contain;
