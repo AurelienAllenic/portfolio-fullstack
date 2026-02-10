@@ -74,7 +74,6 @@ const PolitiqueConfidentialite = () => {
         <div className={styles.politiqueConfidentialiteContainer} style={{ opacity: showContent ? 1 : 0 }}>
           <h1>{t("privacy.title")}</h1>
           <div className={styles.privacyContent}>
-
             {/* Introduction */}
             <section className={styles.section}>
               <h2>{t("privacy.section.introduction")}</h2>
@@ -84,7 +83,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Collecte de données */}
             <section className={styles.section}>
               <h2>{t("privacy.section.collection")}</h2>
@@ -103,7 +101,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Utilisation des données */}
             <section className={styles.section}>
               <h2>{t("privacy.section.usage")}</h2>
@@ -121,7 +118,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Protection des données */}
             <section className={styles.section}>
               <h2>{t("privacy.section.protection")}</h2>
@@ -134,7 +130,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Cookies */}
             <section className={styles.section}>
               <h2>{t("privacy.section.cookies")}</h2>
@@ -144,7 +139,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Droits RGPD */}
             <section className={styles.section}>
               <h2>{t("privacy.section.gdpr")}</h2>
@@ -168,7 +162,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Durée de conservation */}
             <section className={styles.section}>
               <h2>{t("privacy.section.retention")}</h2>
@@ -178,7 +171,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Tiers */}
             <section className={styles.section}>
               <h2>{t("privacy.section.sharing")}</h2>
@@ -193,7 +185,6 @@ const PolitiqueConfidentialite = () => {
                 </ul>
               </div>
             </section>
-
             {/* Modifications */}
             <section className={styles.section}>
               <h2>{t("privacy.section.modifications")}</h2>
@@ -203,7 +194,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Contact et liens */}
             <section className={styles.section}>
               <h2>{t("privacy.section.contact")}</h2>
@@ -217,7 +207,6 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
             {/* Navigation */}
             <section className={styles.section}>
               <h2>{t("privacy.section.otherPages")}</h2>
@@ -243,9 +232,7 @@ const PolitiqueConfidentialite = () => {
                 </p>
               </div>
             </section>
-
           </div>
-
           <button onClick={handleBackToSite} className={styles.backButtonSmall}>
             <FaArrowRight />{t("common.backToSite")}
           </button>

@@ -15,7 +15,6 @@ const Footer = () => {
   const creditsLinkRef = useRef<HTMLAnchorElement>(null);
   const mentionsLinkRef = useRef<HTMLAnchorElement>(null);
   const politiqueConfidentialiteLinkRef = useRef<HTMLAnchorElement>(null);
-
   const { trackClick } = useAnalytics();
 
   const handleCreditsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -29,7 +28,6 @@ const Footer = () => {
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-
     setIsTransitioningToCredits(true);
   };
 
@@ -69,7 +67,6 @@ const Footer = () => {
       sessionStorage.setItem('gradientCenterX', centerX.toString());
       sessionStorage.setItem('gradientCenterY', centerY.toString());
     }
-
     setIsTransitioningToPolitiqueConfidentialite(true);
   };
 

@@ -175,7 +175,6 @@ const Contact = () => {
                 required
               />
             </div>
-
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
                 {t("contact.form.email")}
@@ -190,7 +189,6 @@ const Contact = () => {
                 required
               />
             </div>
-
             <div className={styles.formGroup}>
               <label htmlFor="message" className={styles.label}>
                 {t("contact.form.message")}
@@ -205,7 +203,6 @@ const Contact = () => {
                 required
               />
             </div>
-
             {submitStatus === 'success' && (
               <div className={styles.successMessage}>
                 {t("contact.form.success")}
@@ -216,7 +213,6 @@ const Contact = () => {
                 ✗ {errorMessage}
               </div>
             )}
-
             <div className={styles.formFooter}>
               <div className={styles.checkboxGroup}>
                 <input
@@ -245,7 +241,6 @@ const Contact = () => {
             </div>
           </form>
         </div>
-
         {/* Right section: Title and description */}
         <div className={styles.infoSection}>
           <div className={styles.infoContent}>

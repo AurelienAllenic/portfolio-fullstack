@@ -54,7 +54,6 @@ const Hero: React.FC<HeroProps> = ({
 
     const currentGradient = currentGradientStateRef.current;
     const forceChanged = lastForceHeroStateRef.current !== forceHeroState;
-
     const stateMismatch = (forceHeroState === "hero1" && (currentGradient === "hero2" || currentGradient === "transition")) ||
                           (forceHeroState === "hero2" && currentGradient !== "hero2");
 
@@ -148,7 +147,6 @@ const Hero: React.FC<HeroProps> = ({
             gsap.set(contentContainer, { opacity: 1 });
           }
         }
-        
         setTimeout(() => {
           isForcedNavigationRef.current = false;
         }, 100);
@@ -202,7 +200,6 @@ const Hero: React.FC<HeroProps> = ({
     }, 1000);
   };
 
-
   useEffect(() => {
     const overlay = overlayRef.current;
     const container = containerRef.current;
@@ -240,7 +237,6 @@ const Hero: React.FC<HeroProps> = ({
             setGradientState("hero1");
           }
         }
-
         if (hero2Ref.current) {
           if (progress >= 0.3 && !tl.reversed()) {
             gsap.to(hero2Ref.current, {
@@ -288,7 +284,6 @@ const Hero: React.FC<HeroProps> = ({
           duration: 1,
           ease: "power2.out",
         });
-
         if (isDesktop) {
           gsap.set(titles, { opacity: 0, y: -45 });
           gsap.to(titles, {
@@ -346,7 +341,6 @@ const Hero: React.FC<HeroProps> = ({
         scrollIndicators.forEach((el) => {
           el.style.animation = "none";
         });
-
         if (isDesktop) {
           gsap.set(titles, { opacity: 0, y: -45 });
           gsap.to(titles, {
@@ -368,7 +362,6 @@ const Hero: React.FC<HeroProps> = ({
             ease: "power2.out",
           });
         }
-
         gsap.set(scrollIndicators, { opacity: 0, x: -45 });
         gsap.to(scrollIndicators, {
           opacity: 1,
@@ -383,7 +376,6 @@ const Hero: React.FC<HeroProps> = ({
         });
       },
     });
-
     if (returnFromProjects) {
       gsap.set(overlay, { "--gradient-size": "0%" });
       tlRef.current?.progress(1, false);
@@ -407,7 +399,6 @@ const Hero: React.FC<HeroProps> = ({
       scrollIndicators.forEach((el) => {
         el.style.animation = "none";
       });
-
       const icons = container.querySelectorAll<HTMLImageElement>(
         ".scrollIndicatorContainer img"
       );
@@ -420,7 +411,6 @@ const Hero: React.FC<HeroProps> = ({
         duration: 1,
         ease: "power2.out",
       });
-
       if (isDesktop) {
         gsap.set(titles, { opacity: 0, y: -45 });
         gsap.to(titles, {
@@ -502,7 +492,6 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <div ref={containerRef} className={styles.containerHero} id="about">
       <div ref={overlayRef} className={styles.overlay}></div>
-
       {gradientState === "hero1" && <HeroBeforeScroll key="hero1" />}
       {gradientState === "hero2" && (
         <HeroAfterScroll

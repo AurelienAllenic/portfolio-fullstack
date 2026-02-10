@@ -431,7 +431,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
                 });
               }
             }
-            
             if (image2 && image2.isConnected) {
               const opacity2 = parseFloat(getComputedStyle(image2).opacity);
               if (opacity2 < 0.9) {
@@ -450,7 +449,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       if (mosaicArray.length >= 2) {
         const image1 = mosaicArray[0];
         const image2 = mosaicArray[1];
-        
         if (image1 && image1.isConnected) {
           tl.to(image1, {
             opacity: 1,
@@ -459,7 +457,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             force3D: true,
           }, 0);
         }
-        
         if (image2 && image2.isConnected) {
           tl.to(image2, {
             opacity: 1,
@@ -469,10 +466,8 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           }, 0.08);
         }
       }
-      
       mosaicArray.forEach((item, index) => {
         if (index === 0 || index === 1) return;
-        
         if (item && item.isConnected) {
           tl.to(item, {
             opacity: 1,
@@ -491,19 +486,16 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           }, (index * 0.08 * 1000) + 100);
         }
       });
-      
       if (mosaicArray.length >= 2) {
         setTimeout(() => {
           const image1 = mosaicArray[0];
           const image2 = mosaicArray[1];
-          
           if (image1 && image1.isConnected) {
             const opacity1 = parseFloat(getComputedStyle(image1).opacity);
             if (opacity1 < 0.9) {
               gsap.set(image1, { opacity: 1 });
             }
           }
-          
           if (image2 && image2.isConnected) {
             const opacity2 = parseFloat(getComputedStyle(image2).opacity);
             if (opacity2 < 0.9) {
@@ -512,37 +504,31 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           }
         }, 500);
       }
-
       tl.to(ctaButton, {
         opacity: 1,
         y: 0,
         duration: 0.4,
       }, 0.3);
-
       tl.to([titleMain, titleAccent], {
         opacity: 1,
         y: 0,
         duration: 0.5,
         stagger: 0.05,
       }, 0.4);
-
       tl.to(contentBox, {
         opacity: 1,
         duration: 0.4,
       }, 0.5);
-
       tl.to(icons, {
         opacity: 1,
         duration: 0.4,
         stagger: 0.05,
       }, 0.6);
-
       tl.to(rightImage, {
         opacity: 1,
         x: 0,
         duration: 0.5,
       }, 0.2);
-
       if (mobileTitleMain && mobileTitleAccent) {
         tl.to([mobileTitleMain, mobileTitleAccent], {
           opacity: 1,
@@ -551,7 +537,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           stagger: 0.05,
         }, 0.2);
       }
-
       if (mobileImage) {
         tl.to(mobileImage, {
           opacity: 1,
@@ -559,14 +544,12 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           duration: 0.4,
         }, 0.3);
       }
-
       if (mobileDescription) {
         tl.to(mobileDescription, {
           opacity: 1,
           duration: 0.4,
         }, 0.4);
       }
-
       if (mobileImageLeft) {
         tl.to(mobileImageLeft, {
           opacity: 1,
@@ -574,7 +557,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           duration: 0.4,
         }, 0.5);
       }
-
       if (mobileImageRight) {
         tl.to(mobileImageRight, {
           opacity: 1,
@@ -582,7 +564,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           duration: 0.4,
         }, 0.5);
       }
-
       if (mobileIcons.length > 0) {
         tl.to(mobileIcons, {
           opacity: 1,
@@ -590,7 +571,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           stagger: 0.05,
         }, 0.6);
       }
-
       if (mobileCta) {
         tl.to(mobileCta, {
           opacity: 1,
@@ -599,7 +579,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         }, 0.7);
       }
     }
-
     const fallbackTimer = setTimeout(() => {
       const el = containerRef.current;
       if (!el) return;
@@ -670,13 +649,11 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             </p>
           ))}
         </div>
-
         <aside className={styles.left}>
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => {
             const projectIndex = findProjectIndexByImage(src);
             const projectUrl = projectIndex !== null ? `/projects/${cover.slug}?project=${projectIndex}` : null;
-            
             return (
               <div key={i} className={styles.mosaicItem}>
                 {projectUrl ? (
@@ -704,7 +681,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             );
           })}
         </div>
-
         <a 
           href={`/projects/${cover.slug}`} 
           className={styles.cta}
@@ -714,7 +690,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           <span>{t("projects.view")}</span>
         </a>
       </aside>
-
       <div className={styles.center}>
         <h2 className={styles.title}>
           <span className={styles.titleMain}>
@@ -724,7 +699,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             {titleParts.accent}
           </span>
         </h2>
-
         <div className={styles.contentBox}>
           {categoryDescription.split(". ").map((line, i, arr) => (
             <p key={i}>
@@ -733,13 +707,11 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             </p>
           ))}
         </div>
-
         <div className={styles.icons}>
           {cover.listIcons.map((it, i) => {
             if (typeof it === "string") {
               const techSlug = isUrl(it) ? getTechSlug(it) : null;
               const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
-              
               return (
                 <div key={i} className={styles.iconContainer}>
                   {isUrl(it) ? (
@@ -769,7 +741,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             }
             const techSlug = getTechSlug(it.src);
             const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
-            
             return (
               <div key={i} className={styles.iconContainer}>
                 {techUrl ? (
@@ -792,7 +763,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           })}
         </div>
       </div>
-
         <aside className={styles.right}>
           {(() => {
             const projectIndex = findProjectIndexByImage(cover.mainImage);
@@ -811,7 +781,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             );
           })()}
         </aside>
-
         <div className={styles.mobileBottomSection}>
           {(() => {
             const projectIndex = cover.sideImages[1] ? findProjectIndexByImage(cover.sideImages[1]) : null;
@@ -835,7 +804,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
               if (typeof it === "string") {
                 const techSlug = isUrl(it) ? getTechSlug(it) : null;
                 const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
-                
                 return (
                   <div key={i} className={styles.iconContainer}>
                     {isUrl(it) ? (
@@ -865,7 +833,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
               }
               const techSlug = getTechSlug(it.src);
               const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
-              
               return (
                 <div key={i} className={styles.iconContainer}>
                   {techUrl ? (

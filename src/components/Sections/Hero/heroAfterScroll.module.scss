@@ -38,12 +38,10 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  
   padding-top: 80px;
   padding-bottom: 8vh;
   z-index: 5;
   overflow: visible;
-
   @media (max-width: 768px) {
     align-items: center;
     padding-top: 60px;
@@ -56,7 +54,6 @@
   @media (max-height: 270px) {
     padding-top: 30px;
   }  
-
   .overlay {
     position: absolute;
     inset: 0;
@@ -64,7 +61,6 @@
     animation: overlayAppearClassic 1s ease-out forwards;
     z-index: 1;
   }
-
   .contentContainer {
     position: relative;
     display: flex;
@@ -76,7 +72,6 @@
     gap: 40px;
     z-index: 10;
     overflow: visible;
-
     @media (max-width: 768px) {
       flex-direction: column;
       align-items: center;
@@ -89,8 +84,6 @@
     @media(max-height: 600px){
       gap: 0px;
     }
-
-
     .contentLeft {
       flex: 1;
       display: flex;
@@ -107,7 +100,6 @@
         opacity: 0;
         animation: appear 1.5s ease-out forwards;
         animation-delay: 0.5s;
-
         @media (max-width: 1400px) {
           font-size: 90px;
         }
@@ -130,7 +122,6 @@
         @media (max-height: 270px) {
           font-size: 30px;
         }  
-
         .titleLeftHighlight {
           position: absolute;
           top: 105px;
@@ -139,7 +130,6 @@
           opacity: 0;
           animation: appear 1s ease-out forwards;
           animation-delay: 0.75s;
-
           @media (max-width: 1400px) {
             font-size: 45px;
             top: 90px;
@@ -198,12 +188,9 @@
         width: 100%;
         line-height: 38px;
         opacity: 0;
-        
-        
         &.noAnimation {
           animation: none !important;
         }
-
         @media (max-width: 1400px) {
           font-size: 25px;
           line-height: 30px;
@@ -246,7 +233,6 @@
           line-height: 21px;
         }
       }
-
       .mediumSubtitle {
         width: 560px;
         font-size: 31px;
@@ -280,7 +266,6 @@
           line-height: 21px;
         }
       }
-
       .largeSubtitle {
         width: 630px;
         font-size: 29px;
@@ -317,7 +302,6 @@
         }
       }
     }
-
     .iconsWrapper {
       flex: 1;
       display: flex;
@@ -327,7 +311,6 @@
       top: 75%;
       transform: translateY(-50%);
       overflow: visible !important;
-
       @media (max-width: 768px) {
         gap: 10px;
         overflow: visible !important;
@@ -349,7 +332,6 @@
         padding-top: 70px;
       }
     }
-
     .contentRight {
       flex: 1;
       display: flex;
@@ -358,7 +340,6 @@
       align-items: flex-start;
       align-content: flex-start;
       gap: 20px;
-
       @media (max-width: 768px) {
         align-items: center;
         gap: 0;
@@ -380,8 +361,6 @@
       @media (max-height: 400px) {
         height: 135px;
       }
-
-
       .iconContainer {
         flex: 0 1 calc(100% / 6 - 16px);
         display: flex;
@@ -390,7 +369,6 @@
         position: relative;
         z-index: 20;
         overflow: visible;
-
         @media (max-width: 1400px) {
           flex: 0 1 calc(100% / 5 - 16px);
         }
@@ -404,7 +382,6 @@
         @media (max-width: 435px) {
           min-width: 45px;
         }
-
         img {
           width: 77px;
           height: 77px;
@@ -414,7 +391,6 @@
             addAppearedClass 0.8s ease-out 0.8s forwards;
           transition: transform 0.3s ease-out;
           will-change: transform;
-
           @media (max-width: 1400px) {
             width: 60px;
             height: 60px;
@@ -431,12 +407,10 @@
             width: 45px;
             height: 45px;
           }
-
           &:hover {
             transform: scale(1.1);
           }
         }
-
         .tooltip {
           position: absolute;
           background: rgba(0, 0, 0, 0.8);
@@ -451,7 +425,6 @@
           pointer-events: none;
           transition: opacity 0.5s ease, transform 0.5s ease;
           z-index: 10000;
-          
           @media (max-width: 768px) {
             z-index: 10000;
             position: absolute;
@@ -459,25 +432,21 @@
             will-change: opacity, transform;
           }
         }
-
         &.appeared:hover .tooltip {
           opacity: 1;
           transform: translateY(0);
         }
-
         &.tooltipActive .tooltip,
         .tooltip.tooltipVisible {
           opacity: 1;
           transform: translateY(0);
         }
-
         @media (max-width: 768px) {
           &.appeared:hover .tooltip {
             opacity: 0;
             transform: translateY(9px);
           }
         }
-
         .tooltipTop {
           bottom: 55px;
           @media (max-width: 768px) {
@@ -501,7 +470,6 @@
     }
   }
 }
-
 .gradientOverlay {
   position: absolute;
   inset: 0;
@@ -514,11 +482,9 @@
   z-index: 0;
   transition: background 0.8s ease;
 }
-
 .scrollArrowLeft,
 .scrollArrowRight {
   display: none;
-
   @media (max-width: 768px) {
     display: flex;
     align-items: center;
@@ -543,36 +509,30 @@
     -webkit-user-select: none;
     margin-top: -60px; 
     opacity: 0;
-
     @media (max-height: 545px) {
       margin-top: -85px;
     }
     @media (max-height: 490px) {
       margin-top: 0px;
     }
-
     &:hover {
       background: rgba(255, 255, 255, 0.2);
       border-color: rgba(255, 255, 255, 0.5);
       transform: scale(1.1);
     }
-
     &:active {
       transform: scale(0.95);
     }
-
     &:focus {
       outline: none;
     }
   }
 }
-
 .scrollArrowLeft {
   @media (max-width: 768px) {
     margin-right: 5px;
   }
 }
-
 .scrollArrowRight {
   @media (max-width: 768px) {
     margin-left: 5px;

@@ -8,7 +8,6 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
-  
   &::before {
     content: '';
     position: absolute;
@@ -24,7 +23,6 @@
     z-index: 0;
   }
 }
-
 .loginCard {
   display: flex;
   flex-direction: column;
@@ -43,7 +41,6 @@
   background : rgba(0, 0, 0, 0.5);
   border-radius: 10px;
 }
-
 .title {
   font-family: $font-family-secondary;
   font-size: 2.5rem;
@@ -52,12 +49,10 @@
   text-align: center;
   color: white;
   letter-spacing: 0.1rem;
-  
   @media (min-width: 768px) {
     font-size: 3rem;
   }
 }
-
 .errorMessage {
   background-color: rgba(204, 51, 51, 0.2);
   color: #ffcccc;
@@ -70,27 +65,23 @@
   width: 100%;
   text-align: center;
 }
-
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
 }
-
 .formGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
-
   label {
     font-weight: $font-weight-semibold;
     color: white;
     font-size: 0.9rem;
     font-family: $font-family-secondary;
   }
-
   input {
     padding: 0.75rem 1rem;
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -101,36 +92,30 @@
     color: white;
     transition: border-color 0.3s ease, background 0.3s ease;
     width: 100%;
-
     &:focus {
       outline: none;
       border-color: rgba(255, 255, 255, 0.5);
       background: rgba(255, 255, 255, 0.15);
     }
-
     &:disabled {
       background-color: rgba(255, 255, 255, 0.05);
       cursor: not-allowed;
       opacity: 0.6;
     }
-
     &::placeholder {
       color: rgba(255, 255, 255, 0.5);
     }
   }
 }
-
 .passwordInputWrapper {
   position: relative;
   width: 100%;
   display: flex;
   align-items: center;
-
   input {
     padding-right: 3rem;
   }
 }
-
 .passwordToggle {
   position: absolute;
   right: 0.75rem;
@@ -144,17 +129,14 @@
   justify-content: center;
   transition: color 0.3s ease;
   font-size: 1.2rem;
-
   &:hover:not(:disabled) {
     color: white;
   }
-
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 }
-
 .submitButton {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
@@ -167,23 +149,19 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 0.5rem;
-
   &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
   }
-
   &:active:not(:disabled) {
     transform: translateY(0);
   }
-
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
-
 .divider {
   display: flex;
   align-items: center;
@@ -192,20 +170,17 @@
   color: rgba(255, 255, 255, 0.6);
   width: 100%;
   font-family: $font-family-text;
-
   &::before,
   &::after {
     content: '';
     flex: 1;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
-
   span {
     padding: 0 1rem;
     font-size: 0.9rem;
   }
 }
-
 .googleButton {
   width: 100%;
   padding: 0.75rem 1.5rem;
@@ -222,32 +197,26 @@
   justify-content: center;
   gap: 0.75rem;
   transition: all 0.3s ease;
-
   &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
   }
-
   &:active:not(:disabled) {
     transform: translateY(0);
   }
-
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
-
 .googleIcon {
   font-size: 1.5rem;
 }
-
 @media (max-width: 768px) {
   .loginCard {
     padding: 1.5rem;
   }
-
   .title {
     font-size: 2rem;
   }

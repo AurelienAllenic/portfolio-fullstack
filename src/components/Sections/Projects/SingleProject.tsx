@@ -8,7 +8,7 @@ import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
-/** Slug pour les labels analytics (nom du projet / bouton) */
+/** Slug for analytics labels (project name / button) */
 const slugifyProjectName = (name: string): string =>
   name
     .toLowerCase()
@@ -306,7 +306,6 @@ const SingleProject = ({
         }
       });
     }
-
     slideIntervalRef.current = setTimeout(() => {
       if (!isTransitioningRef.current) {
         isTransitioningRef.current = true;
@@ -470,7 +469,6 @@ const SingleProject = ({
               const firstImage = projectImages[0] || '';
               const isFirstGif = isGif(firstImage);
               const thumbnailSrc = isFirstGif ? firstImage : optimizeImageUrl(firstImage, isMobile ? 200 : 300, "75");
-              
               return (
                 <div
                   key={project.id}
@@ -512,7 +510,6 @@ const SingleProject = ({
             <HiChevronRight />
           </button>
         </div>
-
         {/* Selected project content */}
         <div className={styles.projectContent}>
           {/* Main image with crossfade transition */}
@@ -530,7 +527,6 @@ const SingleProject = ({
                 maxWidth: "100%",
                 objectFit: "cover" as const,
               };
-              
               return isImgGif ? (
                 <span
                   key={`${selectedProject.id}-${index}`}
@@ -576,7 +572,6 @@ const SingleProject = ({
               );
             })}
           </div>
-
           {/* Project details */}
           <div className={styles.projectDetails}>
             <h2 className={styles.projectTitle}>{projectTitle}</h2>
@@ -597,7 +592,6 @@ const SingleProject = ({
                 );
               })}
             </div>
-
             <div className={styles.projectButtons}>
               {selectedProject.github && (
                 <a
@@ -650,10 +644,8 @@ const SingleProject = ({
               )}
             </div>
           </div>
-
           <div className={styles.categoryLabel}>{categoryLabel}</div>
         </div>
-
         <button onClick={onBack} className={styles.backButton}>
           ← {language === "en" ? "Back" : "Retour"}
         </button>

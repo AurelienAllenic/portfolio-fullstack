@@ -6,7 +6,6 @@
   margin: 0 auto;
   padding: 1rem;
 }
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -14,26 +13,22 @@
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
 }
-
 .title {
   font-family: $font-family-secondary;
   font-size: 2rem;
   font-weight: $font-weight-semibold;
   color: white;
   margin: 0;
-  
   @media (max-width: 768px) {
     font-size: 1.5rem;
   }
 }
-
 .deleteButton {
   padding: 0.5rem 1rem;
   background: rgba(220, 53, 69, 0.2);
@@ -47,50 +42,42 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
   &:hover {
     background: rgba(220, 53, 69, 0.3);
     border-color: rgba(220, 53, 69, 0.7);
   }
 }
-
 .loading {
   text-align: center;
   padding: 2rem;
   color: white;
   font-family: $font-family-text;
 }
-
 .errorMessage,
 .successMessage {
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1.5rem;
   font-family: $font-family-text;
-  
   p {
     margin: 0;
   }
 }
-
 .errorMessage {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #f87171;
 }
-
 .successMessage {
   background: rgba(34, 197, 94, 0.15);
   border: 1px solid rgba(34, 197, 94, 0.3);
   color: #4ade80;
 }
-
 .form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
-
 .formSection {
   display: flex;
   flex-direction: column;
@@ -100,7 +87,6 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 }
-
 .sectionTitle {
   font-family: $font-family-secondary;
   font-size: 1.5rem;
@@ -108,13 +94,11 @@
   color: white;
   margin: 0 0 0.5rem 0;
 }
-
 .fileGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .fileLabel {
   display: flex;
   flex-direction: column;
@@ -127,34 +111,28 @@
   transition: all 0.3s ease;
   font-family: $font-family-text;
   color: white;
-
   &:hover {
     border-color: rgba(255, 255, 255, 0.4);
     background: rgba(255, 255, 255, 0.05);
   }
 }
-
 .fileIcon {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
-
 .fileInput {
   display: none;
 }
-
 .fileName {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
   font-style: italic;
 }
-
 .currentFile {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
-
 .submitButton {
   width: 100%;
   padding: 0.75rem 1.5rem;
@@ -171,19 +149,16 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-
   &:hover:not(:disabled) {
     background: rgba(34, 197, 94, 0.3);
     border-color: rgba(34, 197, 94, 0.7);
     transform: translateY(-2px);
   }
-
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
-
 .previewSection {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -191,14 +166,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 }
-
 .previewGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-top: 1rem;
 }
-
 .previewItem {
   display: flex;
   flex-direction: column;
@@ -207,7 +180,6 @@
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 6px;
-
   h4 {
     margin: 0;
     font-family: $font-family-secondary;
@@ -215,7 +187,6 @@
     color: white;
   }
 }
-
 .previewImage {
   max-width: 100%;
   max-height: 200px;
@@ -223,19 +194,16 @@
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .previewPdfIcon {
   font-size: 3rem;
   color: rgba(255, 255, 255, 0.6);
 }
-
 .previewLink {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: underline;
   font-size: 0.9rem;
   font-family: $font-family-text;
   transition: color 0.3s ease;
-
   &:hover {
     color: white;
   }
@@ -245,7 +213,6 @@
   .cvManagementContainer {
     padding: 0.5rem;
   }
-
   .previewGrid {
     grid-template-columns: 1fr;
   }

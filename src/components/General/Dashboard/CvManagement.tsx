@@ -15,7 +15,6 @@ const CvManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const [imageWebpFr, setImageWebpFr] = useState<File | null>(null);
   const [imageWebpEn, setImageWebpEn] = useState<File | null>(null);
   const [pdfFr, setPdfFr] = useState<File | null>(null);
@@ -87,7 +86,6 @@ const CvManagement: React.FC = () => {
       }
 
       setSuccess('CV enregistré avec succès !');
-      
       setImageWebpFr(null);
       setImageWebpEn(null);
       setPdfFr(null);
@@ -125,7 +123,6 @@ const CvManagement: React.FC = () => {
 
       setSuccess('CV supprimé avec succès !');
       setCvData(null);
-
       setImageWebpFr(null);
       setImageWebpEn(null);
       setPdfFr(null);
@@ -221,10 +218,8 @@ const CvManagement: React.FC = () => {
             </label>
           </div>
         </div>
-
         <div className={styles.formSection}>
           <h3 className={styles.sectionTitle}>CV Anglais</h3>
-          
           <div className={styles.fileGroup}>
             <label className={styles.fileLabel}>
               <FaFileImage className={styles.fileIcon} />
@@ -245,7 +240,6 @@ const CvManagement: React.FC = () => {
               )}
             </label>
           </div>
-
           <div className={styles.fileGroup}>
             <label className={styles.fileLabel}>
               <FaFilePdf className={styles.fileIcon} />
@@ -267,7 +261,6 @@ const CvManagement: React.FC = () => {
             </label>
           </div>
         </div>
-
         <button 
           type="submit" 
           className={styles.submitButton}
@@ -277,7 +270,6 @@ const CvManagement: React.FC = () => {
           {isSubmitting ? 'Enregistrement...' : 'Enregistrer les modifications'}
         </button>
       </form>
-
       {cvData && (
         <div className={styles.previewSection}>
           <h3 className={styles.sectionTitle}>Aperçu des CVs actuels</h3>

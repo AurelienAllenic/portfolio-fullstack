@@ -22,7 +22,6 @@ const GlobalLoader = ({
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
-
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
     overlay.style.setProperty("--center-x", `${centerX}px`);
@@ -54,7 +53,6 @@ const GlobalLoader = ({
 
     gsap.set(overlay, { display: "block", "--gradient-size": "100%" });
     setPercent(0);
-
 
     tl.add(() => {
       const start = Date.now();

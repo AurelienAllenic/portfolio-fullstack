@@ -74,7 +74,6 @@ const Mentions = () => {
         <div className={styles.mentionsContainer} style={{ opacity: showContent ? 1 : 0 }}>
           <h1>{t("mentions.title")}</h1>
           <div className={styles.legalContent}>
-            
             {/* Identification du site */}
             <section className={styles.section}>
               <h2>{t("mentions.section.identification")}</h2>
@@ -90,7 +89,6 @@ const Mentions = () => {
                 </p>
               </div>
             </section>
-
             {/* Informations techniques */}
             <section className={styles.section}>
               <h2>{t("mentions.section.technical")}</h2>
@@ -100,7 +98,6 @@ const Mentions = () => {
                 <p><strong>{t("mentions.section.technical.publisher")}</strong> Aurélien Allenic</p>
               </div>
             </section>
-
             {/* Propriété intellectuelle */}
             <section className={styles.section}>
               <h2>{t("mentions.section.intellectual")}</h2>
@@ -122,7 +119,6 @@ const Mentions = () => {
                 </p>
               </div>
             </section>
-
             {/* Politique de confidentialité */}
             <section className={styles.section}>
               <h2>{t("mentions.section.privacy")}</h2>
@@ -140,7 +136,6 @@ const Mentions = () => {
                 </p>
               </div>
             </section>
-
             {/* Limitation de responsabilité */}
             <section className={styles.section}>
               <h2>{t("mentions.section.liability")}</h2>
@@ -153,7 +148,6 @@ const Mentions = () => {
                 </p>
               </div>
             </section>
-
             {/* Conditions d'accès */}
             <section className={styles.section}>
               <h2>{t("mentions.section.access")}</h2>
@@ -170,7 +164,6 @@ const Mentions = () => {
                 </ul>
               </div>
             </section>
-
             {/* Cookies et données */}
             <section className={styles.section}>
               <h2>{t("mentions.section.cookies")}</h2>
@@ -180,7 +173,6 @@ const Mentions = () => {
                 </p>
               </div>
             </section>
-
             {/* Contact */}
             <section className={styles.section}>
               <h2>{t("mentions.section.contact")}</h2>

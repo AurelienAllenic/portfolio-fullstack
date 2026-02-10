@@ -1,6 +1,5 @@
 @use "../../abstract/variables.scss" as *;
 
-
 .background {
   position: fixed;
   top: 0;
@@ -30,7 +29,6 @@
     transparent var(--gradient-size, 100%),
     #050505 var(--gradient-size, 100%)
   );
-
   @media (max-width: 1650px) {
     background: radial-gradient(
       circle at center,
@@ -53,20 +51,17 @@
     );
   }
 }
-
 .percentContainer {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
   z-index: 100000;
   pointer-events: none;
-
   @media (max-width: 767px) {
     bottom: 1.5rem;
     right: 1.5rem;
   }
 }
-
 .percentWrap {
   position: relative;
   display: inline-block;
@@ -88,25 +83,21 @@
     font-size: clamp(4.5rem, 7vw, 5rem);
   }
 }
-
 .percentTrail {
   filter: blur(4px);
   transform: translateX(-0.08em);
   opacity: 0.4;
 }
-
 .percentTrail2 {
   filter: blur(8px);
   transform: translateX(-0.18em);
   opacity: 0.3;
 }
-
 .percentTrail3 {
   filter: blur(12px);
   transform: translateX(-0.3em);
   opacity: 0.15;
 }
-
 .percent {
   position: relative;
   z-index: 1;

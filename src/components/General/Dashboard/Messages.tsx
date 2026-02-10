@@ -30,11 +30,9 @@ const Messages: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       });
-
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des messages');
       }
-
       const data = await response.json();
       setMessages(data.data || []);
     } catch (err) {
@@ -118,7 +116,6 @@ const Messages: React.FC = () => {
           Actualiser
         </button>
       </div>
-
       {messages.length === 0 ? (
         <div className={styles.emptyState}>
           <FaEnvelope className={styles.emptyIcon} />
@@ -128,7 +125,6 @@ const Messages: React.FC = () => {
         <div className={styles.messagesList}>
           {messages.map((message) => {
             const isExpanded = expandedId === message._id;
-
             return (
               <div
                 key={message._id}
@@ -151,7 +147,6 @@ const Messages: React.FC = () => {
                       <span className={styles.date}>{formatDate(message.createdAt)}</span>
                     </div>
                   </div>
-
                   <div className={styles.headerActions}>
                     <button
                       onClick={(e) => handleDelete(message._id, e)}
@@ -171,7 +166,6 @@ const Messages: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
                 <div className={`${styles.messageContent} ${isExpanded ? styles.visible : ''}`}>
                   <p>{message.message}</p>
                 </div>

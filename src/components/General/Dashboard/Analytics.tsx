@@ -76,18 +76,14 @@ const Analytics: React.FC = () => {
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStat[]>([]);
   const [yearlyStats, setYearlyStats] = useState<YearlyStat[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [aggregating, setAggregating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   const [period, setPeriod] = useState<Period>('daily');
-
   const [selectedDate, setSelectedDate] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
-
   const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
   const [openMobile, setOpenMobile] = useState(false);
   const [openDesktop, setOpenDesktop] = useState(false);
@@ -159,7 +155,6 @@ const Analytics: React.FC = () => {
         setYearlyStats([]);
         return;
       }
-
       const data = await response.json();
       setYearlyStats(data || []);
     } catch (err) {
@@ -505,7 +500,6 @@ const Analytics: React.FC = () => {
           </p>
         </div>
       )}
-
       {comparisonChartData.length > 0 && (
         <div className={styles.chartSection}>
           <h3>Comparaison Mobile vs Desktop</h3>
@@ -524,7 +518,6 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       )}
-
       {comparisonChartData.length > 0 && (
         <div className={styles.chartSection}>
           <h3>Activité des Visiteurs</h3>
@@ -543,7 +536,6 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       )}
-
       {zoneChartDataWithColors.length > 0 && (
         <div className={styles.chartSection}>
           <h3>Actions les plus utilisées (par zone)</h3>
@@ -567,7 +559,6 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       )}
-
       {(languageStats.FR > 0 || languageStats.EN > 0) && (
         <div className={styles.chartSection}>
           <h3>Répartition par langue</h3>
@@ -612,7 +603,6 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       )}
-
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <h3>Pages Vues</h3>
@@ -639,7 +629,6 @@ const Analytics: React.FC = () => {
           <span className={styles.statLabel}>Nav, sections, footer, etc.</span>
         </div>
       </div>
-
       {period === 'monthly' && filteredMonthlyStats.length > 0 && (
         <div className={styles.monthlyDetailSection}>
           <h3>Détail par jour {selectedMonth !== 'all' ? `— ${selectedMonth}` : ''}</h3>
@@ -726,7 +715,6 @@ const Analytics: React.FC = () => {
           })}
         </div>
       )}
-
       <div className={styles.dailyTable}>
         <h3>
           {period === 'daily' && 'Historique Journalier'}
@@ -754,7 +742,6 @@ const Analytics: React.FC = () => {
           </table>
         </div>
       </div>
-
       <div className={styles.platformComparison}>
         <div className={styles.platformSection}>
           <div
@@ -769,7 +756,6 @@ const Analytics: React.FC = () => {
             </h3>
             <span className={styles.toggleIcon}>{openMobile ? '▲' : '▼'}</span>
           </div>
-
           <div className={styles.accordionContent} aria-hidden={!openMobile}>
             <div className={styles.langBreakdown}>
               Français : <strong>{mobileByLang.FR}</strong> clics — English : <strong>{mobileByLang.EN}</strong> clics
@@ -798,7 +784,6 @@ const Analytics: React.FC = () => {
             </div>
           </div>
         </div>
-
         <div className={styles.platformSection}>
           <div
             className={styles.accordionHeader}
@@ -812,7 +797,6 @@ const Analytics: React.FC = () => {
             </h3>
             <span className={styles.toggleIcon}>{openDesktop ? '▲' : '▼'}</span>
           </div>
-
           <div className={styles.accordionContent} aria-hidden={!openDesktop}>
             <div className={styles.langBreakdown}>
               Français : <strong>{desktopByLang.FR}</strong> clics — English : <strong>{desktopByLang.EN}</strong> clics

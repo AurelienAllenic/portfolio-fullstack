@@ -50,7 +50,6 @@ interface SliderProjectsProps {
 const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  
   const [scrollLocked, setScrollLocked] = useState(true);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -195,7 +194,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           const contentBox = firstCategoryContainer.querySelector(`[class*="contentBox"]`);
           const icons = firstCategoryContainer.querySelectorAll(`[class*="iconContainer"]`);
           const rightImage = firstCategoryContainer.querySelector(`[class*="right"] img`);
-          
           const mobileTitleMain = firstCategoryContainer.querySelector(`[class*="mobileTitleMain"]`);
           const mobileTitleAccent = firstCategoryContainer.querySelector(`[class*="mobileTitleAccent"]`);
           const mobileDescription = firstCategoryContainer.querySelector(`[class*="mobileDescription"]`);
@@ -227,7 +225,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
           if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
         }
-        
         gsap.to(firstElement, {
           y: 0,
           opacity: 1,
@@ -895,7 +892,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     }
     
     const isSectionAtTop = sectionTop >= -20;
-    
     const canScrollDown = contentOverflows && !isSectionAtBottom;
     const canScrollUp = contentOverflows && !isSectionAtTop;
 
@@ -914,7 +910,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         transitionToContact();
         return;
       }
-
       if (isAtBottomRef.current && currentIdx < covers.length - 1) {
         e.preventDefault();
         e.stopPropagation();
@@ -929,7 +924,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         isAtTopRef.current = false;
         return;
       }
-      
       if (isAtTopRef.current && currentIdx > 0) {
         e.preventDefault();
         e.stopPropagation();
@@ -963,7 +957,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     container.setAttribute('data-slider-index', currentIndex.toString());
     container.setAttribute('data-slider-locked', scrollLocked.toString());
   }, [currentIndex, scrollLocked]);
-
 
   return (
     <div 

@@ -39,7 +39,6 @@ const Dashboard: React.FC = () => {
       <div className={styles.dashboardContainer}>
         <div className={styles.dashboardCard} style={{ opacity: showContent ? 1 : 0 }}>
           <h1 className={styles.title}>Dashboard</h1>
-          
           <div className={styles.tabs}>
             <button
               className={`${styles.tab} ${activeTab === 'home' ? styles.activeTab : ''}`}
@@ -60,7 +59,6 @@ const Dashboard: React.FC = () => {
               CV
             </button>
           </div>
-
           <div className={styles.tabContent}>
             {activeTab === 'home' ? (
               <>
@@ -77,7 +75,6 @@ const Dashboard: React.FC = () => {
                     <p className={styles.email}>{user?.email}</p>
                   </div>
                 </div>
-
                 <div className={styles.content}>
                   <Analytics />
                 </div>
@@ -88,7 +85,6 @@ const Dashboard: React.FC = () => {
               <CvManagement />
             )}
           </div>
-
           <button onClick={handleLogout} className={styles.logoutButton} disabled={isTransitioning}>
             <CiLogout />
           </button>

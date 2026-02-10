@@ -8,7 +8,6 @@
     position: relative;
     overflow: hidden;
     z-index: 1;
-    
     &::before {
         content: '';
         position: absolute;
@@ -24,7 +23,6 @@
         z-index: 0;
     }
 }
-
 .overlay {
     position: absolute;
     top: 0;
@@ -115,7 +113,6 @@
     padding: 40px 20px;
     overflow-y: auto;
     max-height: 90vh;
-    
     h1{
         font-family: $font-family-secondary;
         font-size: 40px;
@@ -132,18 +129,15 @@
             font-size: 65px;
         }
     }
-
     .legalContent {
         width: 100%;
         display: flex;
         flex-direction: column;
         gap: 30px;
-        
         .section {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            
             h2 {
                 font-family: $font-family-secondary;
                 font-size: 28px;
@@ -151,34 +145,28 @@
                 margin: 0;
                 border-bottom: 2px solid rgba(255, 255, 255, 0.3);
                 padding-bottom: 10px;
-                
                 @media(min-width: 767px){
                     font-size: 32px;
                 }
             }
-            
             .sectionContent {
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
-                
                 p {
                     font-family: $font-family-primary;
                     font-size: 14px;
                     line-height: 1.6;
                     color: rgba(255, 255, 255, 0.9);
                     margin: 0;
-                    
                     @media(min-width: 767px){
                         font-size: 16px;
                     }
-                    
                     strong {
                         color: white;
                         font-weight: 600;
                     }
                 }
-                
                 ul {
                     list-style: none;
                     padding: 0;
@@ -186,7 +174,6 @@
                     display: flex;
                     flex-direction: column;
                     gap: 8px;
-                    
                     li {
                         font-family: $font-family-primary;
                         font-size: 14px;
@@ -194,11 +181,9 @@
                         color: rgba(255, 255, 255, 0.9);
                         padding-left: 20px;
                         position: relative;
-                        
                         @media(min-width: 767px){
                             font-size: 16px;
                         }
-                        
                         &::before {
                             content: '▸';
                             position: absolute;
@@ -210,7 +195,6 @@
             }
         }
     }
-    
     .backButton {
         color: white;
         display: flex;
@@ -227,7 +211,6 @@
         font-size: 18px;
         padding: 0;
         transition: opacity 0.3s ease;
-        
         &:hover {
             opacity: 0.8;
         }
@@ -244,7 +227,6 @@
             font-size: 40px;
         }
     }
-
     .backButtonSmall {
         color: white;
         display: flex;
@@ -261,7 +243,6 @@
         font-size: 14px;
         padding: 0;
         transition: opacity 0.3s ease;
-        
         &:hover {
             opacity: 0.8;
         }
@@ -279,31 +260,26 @@
         }
     }
 }
-
 .emailLink {
     color: #fff!important;
     text-decoration: underline;
     font-weight: 500;
     transition: color 0.3s ease;
-    
     &:hover {
         color: #d0d0ff;
         text-decoration: underline;
     }
 }
-
 .link {
     color: #fff!important;
     text-decoration: underline;
     font-weight: 500;
     transition: color 0.3s ease;
     cursor: pointer;
-    
     &:hover {
         color: #fff;
     }
 }
-
 .conditionsList {
     list-style: none;
     padding: 0;

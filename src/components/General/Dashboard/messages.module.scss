@@ -6,7 +6,6 @@
   margin: 0 auto;
   padding: 1rem;
 }
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -15,19 +14,16 @@
   padding-bottom: 1rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
-
 .title {
   font-family: $font-family-secondary;
   font-size: 2rem;
   font-weight: $font-weight-semibold;
   color: white;
   margin: 0;
-  
   @media (max-width: 768px) {
     font-size: 1.5rem;
   }
 }
-
 .refreshButton {
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.1);
@@ -38,13 +34,11 @@
   font-family: $font-family-text;
   cursor: pointer;
   transition: all 0.3s ease;
-
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
   }
 }
-
 .loading,
 .error {
   text-align: center;
@@ -52,14 +46,12 @@
   color: white;
   font-family: $font-family-text;
 }
-
 .error {
   p {
     margin-bottom: 1rem;
     color: rgba(255, 100, 100, 1);
   }
 }
-
 .retryButton {
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
@@ -70,26 +62,22 @@
   font-family: $font-family-text;
   cursor: pointer;
   transition: all 0.3s ease;
-
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
   }
 }
-
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
   color: rgba(255, 255, 255, 0.6);
   font-family: $font-family-text;
 }
-
 .emptyIcon {
   font-size: 4rem;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
-
 .messagesList {
   display: flex;
   flex-direction: column;
@@ -97,17 +85,13 @@
   max-height: 70vh;
   overflow-y: auto;
   padding-right: 0.5rem;
-
-  // Scrollbar styling
   &::-webkit-scrollbar {
     width: 8px;
   }
-
   &::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
   }
-
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
@@ -117,20 +101,17 @@
     }
   }
 }
-
 .messageCard {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-
   &:hover {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(0, 0, 0, 0.2);
   }
 }
-
 .messageHeader {
   display: flex;
   justify-content: space-between;
@@ -138,14 +119,12 @@
   margin-bottom: 1rem;
   gap: 1rem;
 }
-
 .messageInfo {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
 }
-
 .emailRow,
 .dateRow {
   display: flex;
@@ -155,7 +134,6 @@
   font-family: $font-family-text;
   font-size: 0.9rem;
 }
-
 .icon {
   font-size: 0.9rem;
   opacity: 0.7;
@@ -165,12 +143,10 @@
   font-weight: $font-weight-semibold;
   color: white;
 }
-
 .date {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
-
 .deleteButton {
   padding: 0.5rem;
   background: rgba(220, 53, 69, 0.2);
@@ -185,31 +161,26 @@
   min-width: 40px;
   height: 40px;
   flex-shrink: 0;
-
   &:hover:not(:disabled) {
     background: rgba(220, 53, 69, 0.3);
     border-color: rgba(220, 53, 69, 0.7);
     transform: translateY(-2px);
   }
-
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
-
 .deleting {
   font-size: 0.8rem;
   font-family: $font-family-text;
 }
-
 .messageContent {
   color: white;
   font-family: $font-family-text;
   line-height: 1.6;
   white-space: pre-wrap;
   word-wrap: break-word;
-  
   p {
     margin: 0;
   }
@@ -219,25 +190,20 @@
   .messagesContainer {
     padding: 0.5rem;
   }
-
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-
   .refreshButton {
     width: 100%;
   }
-
   .messageCard {
     padding: 1rem;
   }
-
   .messageHeader {
     flex-direction: column;
   }
-
   .deleteButton {
     align-self: flex-end;
   }
@@ -246,43 +212,36 @@
 .messageCard {
   cursor: pointer;
   transition: all 0.25s ease;
-
   &:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.2);
   }
-
   &.expanded {
     background: rgba(0, 0, 0, 0.2);
     border-color: rgba(0, 0, 0, 0.2);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 }
-
 .headerActions {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
 .toggleIcon {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.6);
   transition: transform 0.25s ease;
   pointer-events: none;
 }
-
 .messageContent {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s ease-out, padding 0.35s ease-out;
   padding: 0 1.5rem;
-
   &.visible {
     max-height: 1200px;
     padding: 1.5rem;
   }
-
   p {
     margin: 0;
     color: white;
