@@ -367,6 +367,9 @@
   position: relative;
   left: 65%;
   top: 5px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
   z-index: 1;
   @media (max-width: 586px) {
     font-size: 45px;
