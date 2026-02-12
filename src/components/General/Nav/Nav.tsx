@@ -20,9 +20,7 @@ const Nav = () => {
     { title: t("projects.category.personnel"), index: 0 },
     { title: t("projects.category.solead"), index: 1 },
     { title: t("projects.category.iim"), index: 2 },
-    { title: t("projects.category.python"), index: 3 },
-    { title: t("projects.category.react"), index: 4 },
-    { title: t("projects.category.web"), index: 5 },
+    { title: t("projects.category.openclassrooms"), index: 3 },
   ];
 
   useEffect(() => {

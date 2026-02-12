@@ -141,6 +141,138 @@
     }
   }
 }
+
+/* Page sélecteur de formations : titre + texte au-dessus, cartes en dessous */
+.formationSelectorPage {
+  .formationSelectorInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .formationSelectorHeader {
+    text-align: center;
+    width: 100%;
+  }
+
+  .formationSelectorTitle {
+    font-family: $font-family-primary;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 400;
+    margin: 0 0 1rem;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .formationSelectorDescription {
+    font-family: $font-family-primary;
+    color: #e6e6e6;
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    line-height: 1.6;
+    max-width: 560px;
+    margin: 0 auto;
+    p {
+      margin: 0;
+    }
+  }
+
+  .formationSelectorGrid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 200px;
+    gap: 1.25rem;
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(3, 160px);
+      gap: 1rem;
+    }
+  }
+}
+
+.formationSelectorGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 200px;
+  gap: 14px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  @media (max-width: 900px) {
+    max-width: 100%;
+    grid-template-rows: 160px;
+    gap: 12px;
+    margin: 0 auto 24px;
+  }
+}
+
+.formationCard {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  text-decoration: none;
+  color: #fff;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  &:hover {
+    transform: scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.formationCardImage {
+  position: absolute;
+  inset: 0;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+  }
+}
+
+.formationCardTitle {
+  position: relative;
+  z-index: 1;
+  font-family: $font-family-primary;
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: 500;
+  text-align: center;
+  padding: 12px 8px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+}
+
+.formationSelectorBackButton {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-family: $font-family-primary;
+  font-size: 16px;
+  cursor: pointer;
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
 .cta {
   position: absolute;
   bottom: -45px;

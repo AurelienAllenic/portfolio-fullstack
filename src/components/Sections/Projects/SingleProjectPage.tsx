@@ -1,24 +1,23 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SingleProject from "./SingleProject";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import LanguageToggle from "../../General/Language/LanguageToggle";
 import {
-  openclassrooms1_cover,
-  openclassrooms2_cover,
-  openclassrooms3_cover,
   projects_cover,
   solead_cover,
-  openclassrooms1,
-  openclassrooms2,
-  openclassrooms3,
+  iim_cover,
+  OPENCLASSROOMS_FORMATIONS,
   projects,
   solead,
   iim,
-  iim_cover,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import FormationSelector from "./FormationSelector";
+import styles from "./projects.module.scss";
+
+const FORMATION_SLUGS = ["formation-web", "formation-react", "formation-python"] as const;
 
 const SingleProjectPage = () => {
   const { categorySlug, programmingLanguage } = useParams<{ categorySlug: string; programmingLanguage?: string }>();
@@ -26,8 +25,16 @@ const SingleProjectPage = () => {
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [showEntryOverlay, setShowEntryOverlay] = useState(true);
+  const backTargetRef = useRef("/");
 
   useTrackSectionArrival('page_projects');
+
+  const isFormationsOpenclassrooms = categorySlug === "formations-openclassrooms";
+  const formationSlug = isFormationsOpenclassrooms && programmingLanguage && FORMATION_SLUGS.includes(programmingLanguage as typeof FORMATION_SLUGS[number])
+    ? programmingLanguage
+    : null;
+  const isFormationSelectorPage = isFormationsOpenclassrooms && !formationSlug;
   
   const categoryKeyMap: Record<string, string> = {
     "formation-web": "web",
@@ -36,29 +43,28 @@ const SingleProjectPage = () => {
     "projets-personnels": "personnel",
     "projets-solead": "solead",
     "mastere-iim": "iim",
+    "formations-openclassrooms": "openclassrooms",
   };
 
   const covers: ProjectCover[] = [
     projects_cover,
     solead_cover,
     iim_cover,
-    openclassrooms3_cover,
-    openclassrooms2_cover,
-    openclassrooms1_cover,
   ];
 
   const projectsData: Project[][] = [
     projects,
     solead,
     iim,
-    openclassrooms3,
-    openclassrooms2,
-    openclassrooms1,
   ];
 
   const categoryIndex = covers.findIndex(cover => cover.slug === categorySlug);
-  let filteredProjects = projectsData[categoryIndex] || [];
-  if (programmingLanguage && categoryIndex !== -1) {
+  let filteredProjects: Project[] = projectsData[categoryIndex] || [];
+
+  if (formationSlug) {
+    const formation = OPENCLASSROOMS_FORMATIONS.find(f => f.slug === formationSlug);
+    filteredProjects = formation ? (formation.projects as Project[]) : [];
+  } else if (programmingLanguage && categoryIndex !== -1) {
     const normalizedLanguage = programmingLanguage.toLowerCase();
     filteredProjects = filteredProjects.filter(project => 
       project.technologies.some(tech => {
@@ -78,21 +84,26 @@ const SingleProjectPage = () => {
 
   const projectIndexParam = searchParams.get('project');
   let initialProjectIndex = 0;
-  
-  if (projectIndexParam && categoryIndex !== -1) {
-    const originalIndex = parseInt(projectIndexParam, 10);
-    const allProjects = projectsData[categoryIndex] || [];
 
-    if (programmingLanguage && allProjects[originalIndex]) {
-      const targetProject = allProjects[originalIndex];
-      const filteredIndex = filteredProjects.findIndex(p => p.id === targetProject.id);
-      initialProjectIndex = filteredIndex !== -1 ? filteredIndex : 0;
-    } else {
-      initialProjectIndex = originalIndex;
+  if (projectIndexParam) {
+    const originalIndex = parseInt(projectIndexParam, 10);
+    if (formationSlug) {
+      initialProjectIndex = filteredProjects.length
+        ? Math.max(0, Math.min(originalIndex, filteredProjects.length - 1))
+        : 0;
+    } else if (categoryIndex !== -1) {
+      const allProjects = projectsData[categoryIndex] || [];
+      if (programmingLanguage && allProjects[originalIndex]) {
+        const targetProject = allProjects[originalIndex];
+        const filteredIndex = filteredProjects.findIndex(p => p.id === targetProject.id);
+        initialProjectIndex = filteredIndex !== -1 ? filteredIndex : 0;
+      } else {
+        initialProjectIndex = originalIndex;
+      }
     }
   }
 
-  if (categoryIndex === -1) {
+  if (categoryIndex === -1 && !isFormationSelectorPage && !formationSlug) {
     return (
       <div style={{ 
         display: "flex", 
@@ -130,12 +141,16 @@ const SingleProjectPage = () => {
   }
 
   const handleBack = () => {
-    sessionStorage.setItem('shouldRestoreScroll', 'true');
+    backTargetRef.current = formationSlug ? "/projects/formations-openclassrooms" : "/";
+    if (!formationSlug) {
+      sessionStorage.setItem('shouldRestoreScroll', 'true');
+    }
     setIsTransitioningBack(true);
   };
 
   const handleTransitionBackComplete = () => {
-    navigate("/");
+    const target = backTargetRef.current;
+    navigate(target);
   };
 
   useEffect(() => {
@@ -145,6 +160,42 @@ const SingleProjectPage = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Éviter que l'overlay "in" (fermeture) reste actif après navigation formation → sélecteur
+  useEffect(() => {
+    if (isFormationSelectorPage) {
+      setIsTransitioningBack(false);
+    }
+  }, [isFormationSelectorPage]);
+
+  if (isFormationSelectorPage) {
+    return (
+      <>
+        <RadialTransitionOverlay
+          isActive={showEntryOverlay}
+          direction="out"
+          onComplete={() => setShowEntryOverlay(false)}
+        />
+        <RadialTransitionOverlay
+          isActive={isTransitioningBack}
+          direction="in"
+          onComplete={handleTransitionBackComplete}
+        />
+        <div style={{ opacity: showContent ? 1 : 0, position: "relative" }}>
+          <FormationSelector formations={OPENCLASSROOMS_FORMATIONS} />
+          <button
+            type="button"
+            onClick={handleBack}
+            className={styles.formationSelectorBackButton}
+            aria-label="Retour à l'accueil"
+          >
+            ← Retour
+          </button>
+        </div>
+        <LanguageToggle />
+      </>
+    );
+  }
 
   return (
     <>
@@ -156,8 +207,8 @@ const SingleProjectPage = () => {
       <div style={{ opacity: showContent ? 1 : 0 }}>
         <SingleProject
           projects={filteredProjects}
-          categoryKey={categoryKeyMap[categorySlug ?? ""] ?? "web"}
-          programmingLanguage={programmingLanguage}
+          categoryKey={formationSlug ? categoryKeyMap[formationSlug] ?? "web" : categoryKeyMap[categorySlug ?? ""] ?? "web"}
+          programmingLanguage={formationSlug ? undefined : programmingLanguage}
           initialProjectIndex={isNaN(initialProjectIndex) || initialProjectIndex >= filteredProjects.length ? 0 : initialProjectIndex}
           onBack={handleBack}
         />

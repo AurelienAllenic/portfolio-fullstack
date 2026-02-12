@@ -133,6 +133,16 @@ export const openclassrooms3_cover = {
     listIcons: [Python, Django]
 }
 
+/** Cover pour la catégorie "Formations Openclassrooms" sur la page principale (même composant que les autres catégories). sideImages = 4 projets OC. */
+export const formations_openclassrooms_cover = {
+    title: 'Formations Openclassrooms',
+    slug: 'formations-openclassrooms',
+    content: "Lors de ces trois formations Openclassrooms : Développeur Web, développeur JavaScript / React et Développeur d'applications Python, j'ai pu aborder des thèmes et des langages de programmation variés.",
+    sideImages: [Booki, GameOn, BooksToScrape, Kasa],
+    mainImage: Booki,
+    listIcons: [HTML, CSS, SCSS, Js, ReactJs, nodeJs, Python, Django]
+}
+
 export const projects_cover = {
     title: 'Projets personnels',
     slug: 'projets-personnels',
@@ -505,6 +515,20 @@ export const openclassrooms3 = [
     },
 ]
 
+/** Sous-formations Openclassrooms : 4 cadres (3 formations + 1 slot pour extension) */
+export const OPENCLASSROOMS_FORMATIONS = [
+    { slug: 'formation-web', title: 'Formation Développeur Web', cover: openclassrooms1_cover, projects: openclassrooms1 },
+    { slug: 'formation-react', title: 'Formation React', cover: openclassrooms2_cover, projects: openclassrooms2 },
+    { slug: 'formation-python', title: 'Formation Python', cover: openclassrooms3_cover, projects: openclassrooms3 },
+] as const;
+
+/** 4 projets OC pour la mosaic de la slide "Formations Openclassrooms" (images = sideImages du cover) */
+export const openclassrooms_mosaic_projects = [
+    openclassrooms1[0],
+    openclassrooms2[0],
+    openclassrooms3[0],
+    openclassrooms2[3],
+];
 
 export const projects = [
     {

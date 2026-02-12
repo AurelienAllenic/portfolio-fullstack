@@ -6,15 +6,11 @@ import { useNavigation } from "./NavigationContext";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
 import {
-  openclassrooms1_cover,
-  openclassrooms2_cover,
-  openclassrooms3_cover,
+  formations_openclassrooms_cover,
+  OPENCLASSROOMS_FORMATIONS,
   projects_cover,
   solead_cover,
   iim_cover,
-  openclassrooms1,
-  openclassrooms2,
-  openclassrooms3,
   projects,
   solead,
   iim,
@@ -44,9 +40,7 @@ const MobileNav = () => {
     { title: t("projects.category.personnel"), index: 0, image: projects_cover.mainImage },
     { title: t("projects.category.solead"), index: 1, image: solead_cover.mainImage },
     { title: t("projects.category.iim"), index: 2, image: iim_cover.mainImage },
-    { title: t("projects.category.python"), index: 3, image: openclassrooms3_cover.mainImage },
-    { title: t("projects.category.react"), index: 4, image: openclassrooms2_cover.mainImage },
-    { title: t("projects.category.web"), index: 5, image: openclassrooms1_cover.mainImage },
+    { title: t("projects.category.openclassrooms"), index: 3, image: formations_openclassrooms_cover.mainImage },
   ], [t]);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);
@@ -178,13 +172,18 @@ const MobileNav = () => {
     lockedImageRef.current = hoveredImage;
     const currentImage = lockedImageRef.current;
     
-    const allProjects = [...projects, ...solead, ...iim, ...openclassrooms3, ...openclassrooms2, ...openclassrooms1];
+    const allProjects = [
+      ...projects,
+      ...solead,
+      ...iim,
+      ...OPENCLASSROOMS_FORMATIONS.flatMap((f) => f.projects as { image?: string }[]),
+    ];
 
-    let randomImage = currentImage;
+    let randomImage: string | null = currentImage;
     let attempts = 0;
-    while (randomImage === currentImage && attempts < 10) {
+    while (randomImage === currentImage && attempts < 10 && allProjects.length > 0) {
       const randomIndex = Math.floor(Math.random() * allProjects.length);
-      randomImage = allProjects[randomIndex].image;
+      randomImage = allProjects[randomIndex]?.image ?? null;
       attempts++;
     }
     

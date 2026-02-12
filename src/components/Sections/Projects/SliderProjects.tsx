@@ -4,15 +4,11 @@ import styles from "./projects.module.scss";
 import ProjectCategory from "./ProjectCategory";
 import type { ProjectCover } from "./ProjectCategory";
 import {
-  openclassrooms1_cover,
-  openclassrooms2_cover,
-  openclassrooms3_cover,
+  formations_openclassrooms_cover,
+  openclassrooms_mosaic_projects,
   projects_cover,
   solead_cover,
   iim_cover,
-  openclassrooms1,
-  openclassrooms2,
-  openclassrooms3,
   projects,
   solead,
   iim,
@@ -74,18 +70,14 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     projects_cover,
     solead_cover,
     iim_cover,
-    openclassrooms3_cover,
-    openclassrooms2_cover,
-    openclassrooms1_cover,
+    formations_openclassrooms_cover,
   ];
 
   const projectsData = [
     projects,
     solead,
     iim,
-    openclassrooms3,
-    openclassrooms2,
-    openclassrooms1,
+    openclassrooms_mosaic_projects,
   ];
 
   useEffect(() => {

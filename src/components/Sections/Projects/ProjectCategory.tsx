@@ -187,6 +187,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     'formation-web': 'web',
     'formation-react': 'react',
     'formation-python': 'python',
+    'formations-openclassrooms': 'openclassrooms',
     'projets-personnels': 'personnel',
     'projets-solead': 'solead',
     'mastere-iim': 'iim',

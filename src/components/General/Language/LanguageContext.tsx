@@ -76,6 +76,8 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.react.description": "Suivie en 2021 / 2022, cette formation aborde à la fois React et node. Des projets front, et fullStacks ont pu y être réalisés.",
     "projects.category.web": "Formation Développeur Web",
     "projects.category.web.description": "Suivie en 2021, cette formation aborde largement les bases du développement web. Des projets en HTML, CSS, SCSS, Js vanilla, ReactJs et nodeJs ont pu être réalisés.",
+    "projects.category.openclassrooms": "Formations Openclassrooms",
+    "projects.category.openclassrooms.description": "Lors de ces trois formations Openclassrooms : Développeur Web, développeur JavaScript / React et Développeur d'applications Python, j'ai pu aborder des thèmes et des langages de programmation variés.",
     
     // Common
     "common.back": "Retour",
@@ -254,6 +256,8 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.react.description": "Followed in 2021 / 2022, this training covers both React and Node. Front-end and fullStack projects were carried out.",
     "projects.category.web": "Web Developer Training",
     "projects.category.web.description": "Followed in 2021, this training extensively covers the basics of web development. Projects in HTML, CSS, SCSS, vanilla JS, ReactJs and NodeJs were carried out.",
+    "projects.category.openclassrooms": "Openclassrooms Training",
+    "projects.category.openclassrooms.description": "During these three Openclassrooms trainings: Web Developer, JavaScript/React Developer and Python Application Developer, I was able to cover varied themes and programming languages.",
     
     // Common
     "common.back": "Back",
