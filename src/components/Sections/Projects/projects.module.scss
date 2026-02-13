@@ -152,6 +152,7 @@
     max-width: 900px;
     width: 100%;
     margin: 0 auto;
+    padding-top: 35px;
   }
 
   .formationSelectorHeader {
@@ -1097,6 +1098,18 @@
     display: flex;
     align-items: center;
     height: 36px;
+  }
+  @media (max-width: 400px) {
+    max-width: 225px;
+  }
+  @media (max-width: 380px) {
+    right: 0;
+  }
+  @media (max-width: 365px) {
+    max-width: 215px;
+  }
+  @media (max-width: 340px) {
+    max-width: 160px;
   }
 }
 .backButton {
