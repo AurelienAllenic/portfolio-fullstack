@@ -54,7 +54,9 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
       const isAtTop = window.scrollY === 0;
       if (!isAtTop) return;
 
-      const goingUp = e.deltaY < 0;
+      // Seuil minimum pour éviter les micro-scrolls du trackpad (réduit à 1 pour plus de sensibilité)
+      const SCROLL_THRESHOLD = 1;
+      const goingUp = e.deltaY < -SCROLL_THRESHOLD;
 
       if (goingUp && canReturnToHero()) {
         e.preventDefault();

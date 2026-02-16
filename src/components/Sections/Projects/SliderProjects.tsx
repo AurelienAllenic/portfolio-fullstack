@@ -701,6 +701,13 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
       const goingDown = e.deltaY > 0;
       const goingUp = e.deltaY < 0;
+      
+      // Seuil minimum pour éviter les micro-scrolls du trackpad (réduit à 1 pour plus de sensibilité)
+      const SCROLL_THRESHOLD = 1;
+      if (Math.abs(e.deltaY) < SCROLL_THRESHOLD) {
+        return;
+      }
+      
       const currentIdx = currentIndexRef.current;
 
       const currentElement = containerRef.current?.querySelector(
