@@ -78,12 +78,12 @@ function SparklingParticle({ position, delay = 0, geometry, baseMaterial, moveme
   )
 }
 
-export function Model(props) {
+export function Model({ maxParticles = 200, ...props }) {
   const { nodes, materials } = useGLTF('/particles.glb')
   
   // Créer un nuage d'étoiles : plus de particules, tailles variées, répartition en nuage
   const particles = useMemo(() => {
-    const count = 200 // Plus de particules pour effet nuage
+    const count = maxParticles
     return Array.from({ length: count }, (_, i) => {
       // Distribution en forme de nuage (plus dense au centre)
       const radius = Math.random() * 15 + 5 // Rayon entre 5 et 20
@@ -111,7 +111,7 @@ export function Model(props) {
         brightness,
       }
     })
-  }, [])
+  }, [maxParticles])
 
   return (
     <group {...props} dispose={null}>

@@ -7,44 +7,98 @@ import AutoZoom from "./components/General/ParticlesPage/AutoZoom";
 import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
 import styles from "./particlesPage.module.scss";
 
+const isTouchOrNarrow = () =>
+  typeof window !== "undefined" &&
+  (window.innerWidth < 768 || "ontouchstart" in window);
+
 const ParticlesPage: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [curtainClosed, setCurtainClosed] = useState(false);
   const [showNextModel, setShowNextModel] = useState(false);
   const [zoomResetTrigger, setZoomResetTrigger] = useState(0);
   const [showEntranceOverlay, setShowEntranceOverlay] = useState(true);
+  const [lowPerf] = useState(() => isTouchOrNarrow());
   const hasClosedRef = useRef(false);
+
+  // Bloquer tout scroll / overflow sur la page
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyTouchAction = body.style.touchAction;
+    const prevBodyHeight = body.style.height;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
+    body.style.height = "100%";
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.touchAction = prevBodyTouchAction;
+      body.style.height = prevBodyHeight;
+    };
+  }, []);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
+    const goToNext = () => {
+      hasClosedRef.current = true;
+      setCurtainClosed(true);
+      setTimeout(() => setShowNextModel(true), 400);
+    };
+
+    const goBack = () => {
+      hasClosedRef.current = false;
+      setCurtainClosed(false);
+      setShowNextModel(false);
+      setZoomResetTrigger((t) => t + 1);
+    };
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-
       if (hasClosedRef.current) {
-        // Scroll vers le haut = revenir au modèle
-        if (e.deltaY < 0) {
-          hasClosedRef.current = false;
-          setCurtainClosed(false);
-          setShowNextModel(false);
-          setZoomResetTrigger((t) => t + 1);
-        }
+        if (e.deltaY < 0) goBack();
         return;
       }
+      if (e.deltaY > 0) goToNext();
+    };
 
-      // Scroll vers le bas = fermer (noir + modèle suivant)
-      if (e.deltaY > 0) {
-        hasClosedRef.current = true;
-        setCurtainClosed(true);
-        setTimeout(() => setShowNextModel(true), 400);
+    const TOUCH_THRESHOLD = 50;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!e.changedTouches[0]) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchEndY - touchStartY;
+      // Du bas vers le haut (swipe up, deltaY < 0) = masquer ; du haut vers le bas (swipe down, deltaY > 0) = réafficher
+      if (hasClosedRef.current) {
+        if (deltaY > TOUCH_THRESHOLD) goBack();
+        return;
       }
+      if (deltaY < -TOUCH_THRESHOLD) goToNext();
     };
 
     wrapper.addEventListener("wheel", handleWheel, { passive: false });
+    wrapper.addEventListener("touchstart", handleTouchStart, { passive: true });
+    wrapper.addEventListener("touchmove", handleTouchMove, { passive: false });
+    wrapper.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       wrapper.removeEventListener("wheel", handleWheel);
+      wrapper.removeEventListener("touchstart", handleTouchStart);
+      wrapper.removeEventListener("touchmove", handleTouchMove);
+      wrapper.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -58,10 +112,20 @@ const ParticlesPage: React.FC = () => {
       </header>
 
       <div className={styles.canvasWrapper}>
-        <Canvas camera={{ position: [0, 0, 25], fov: 60 }}>
+        <Canvas
+          camera={{ position: [0, 0, 25], fov: 60 }}
+          dpr={lowPerf ? 1 : undefined}
+          frameloop={curtainClosed && lowPerf ? "never" : "always"}
+          gl={{
+            antialias: !lowPerf,
+            powerPreference: lowPerf ? "low-power" : "default",
+            stencil: false,
+            depth: true,
+          }}
+        >
           <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
-            <Model />
+            <Model maxParticles={lowPerf ? 30 : 200} />
             <AutoZoom resetTrigger={zoomResetTrigger} />
           </Suspense>
         </Canvas>

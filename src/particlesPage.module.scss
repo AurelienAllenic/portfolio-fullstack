@@ -6,6 +6,9 @@
   min-height: 450px;
   position: relative;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
   background: #000;
 }
 
