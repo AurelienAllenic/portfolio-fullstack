@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.scss";
 
 import SinglePage from "./SinglePage";
+import ParticlesPage from "./ParticlesPage";
 import SingleProjectPage from "./components/Sections/Projects/SingleProjectPage";
 import NotFound from "./components/General/NotFound/NotFound";
 import Credits from "./components/Asides/Credits/Credits";
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <BrowserRouter>
           <Routes>
             <Route path="/" element={<SinglePage />} />
+            <Route path="/particles" element={<ParticlesPage />} />
             <Route path="/projects/:categorySlug/:programmingLanguage" element={<SingleProjectPage />} />
             <Route path="/projects/:categorySlug" element={<SingleProjectPage />} />
             <Route path="/credits" element={<Credits />} />
