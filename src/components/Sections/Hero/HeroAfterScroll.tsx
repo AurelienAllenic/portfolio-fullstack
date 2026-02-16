@@ -647,8 +647,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         const isAtTop = window.scrollY === 0;
         if (!isAtTop) return;
 
-        const goingDown = e.deltaY > 0;
-        const goingUp = e.deltaY < 0;
+        // Seuil minimum pour éviter les micro-scrolls du trackpad (réduit à 1 pour plus de sensibilité)
+        const SCROLL_THRESHOLD = 1;
+        const goingDown = e.deltaY > SCROLL_THRESHOLD;
+        const goingUp = e.deltaY < -SCROLL_THRESHOLD;
 
         if (goingDown && textIndex < texts.length - 1) {
           e.preventDefault();
@@ -812,6 +814,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
         setTimeout(() => {
           if (textRef.current) {
+            gsap.killTweensOf(textRef.current);
             gsap.set(textRef.current, { opacity: 0, y: 20 });
             gsap.fromTo(
               textRef.current,
@@ -824,11 +827,16 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 delay: 1.2,
                 onComplete: () => {
                   firstRender.current = false;
+                  setScrollLocked(false);
+                  document.body.style.overflow = "";
                 },
               }
             );
           }
         }, 50);
+        
+        // Empêcher le useEffect principal de s'exécuter
+        return;
       }
     }, [isForced, ref]);
 
@@ -836,6 +844,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (returnFromProjects && textIndex === texts.length - 1) {
         if (textRef.current) {
           textRef.current.style.setProperty('animation', 'none', 'important');
+          gsap.killTweensOf(textRef.current);
           gsap.fromTo(
             textRef.current,
             { opacity: 0, y: 20 },
@@ -845,13 +854,24 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
               duration: 0.8,
               ease: "power2.out",
               delay: 0.5,
+              onComplete: () => {
+                setScrollLocked(false);
+                document.body.style.overflow = "";
+              },
             }
           );
         }
         return;
       }
 
+      // Ne pas animer si isForced est true ET qu'on est sur le premier rendu
+      // Mais autoriser les animations suivantes
+      if (isForced && firstRender.current) {
+        return;
+      }
+
       if (textRef.current) {
+        gsap.killTweensOf(textRef.current);
         gsap.set(textRef.current, { opacity: 0 });
         
         const yFrom = firstRender.current
@@ -871,6 +891,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
             delay: firstRender.current ? 1.2 : 0,
             onComplete: () => {
               firstRender.current = false;
+              setScrollLocked(false);
+              document.body.style.overflow = "";
             },
           }
         );
