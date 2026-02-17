@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import * as THREE from "three";
 
 const Z_MIN = 6;   // zoom max avant (très proche)
@@ -8,71 +8,59 @@ const FREQ = 0.30; // fréquence du cycle (zoom / dézoom plus rapide)
 
 interface AutoZoomProps {
   resetTrigger: number;
-  initialZoom?: number;
 }
 
-export default function AutoZoom({ resetTrigger, initialZoom }: AutoZoomProps) {
+export default function AutoZoom({ resetTrigger }: AutoZoomProps) {
   const { camera } = useThree();
   const timeOffsetRef = useRef(0);
   const lastResetRef = useRef(resetTrigger);
-  const initialZoomRef = useRef<number | null>(initialZoom ?? null);
   const hasInitializedRef = useRef(false);
-
-  // Mettre à jour initialZoomRef quand initialZoom change
-  useEffect(() => {
-    if (initialZoom !== undefined) {
-      initialZoomRef.current = initialZoom;
-      hasInitializedRef.current = false;
-    }
-  }, [initialZoom]);
-
-  useEffect(() => {
-    if (camera instanceof THREE.PerspectiveCamera) {
-      if (initialZoomRef.current !== null && !hasInitializedRef.current) {
-        // On a une valeur initiale depuis le mode édition
-        const startZoom = initialZoomRef.current;
-        camera.position.z = startZoom;
-        camera.lookAt(0, 0, 0);
-        camera.updateProjectionMatrix();
-        hasInitializedRef.current = true;
-      } else if (initialZoomRef.current === null) {
-        // Comportement normal : commencer depuis Z_MIN
-        camera.position.z = Z_MIN;
-        camera.lookAt(0, 0, 0);
-        camera.updateProjectionMatrix();
-        hasInitializedRef.current = false;
-      }
-    }
-  }, [camera, resetTrigger, initialZoom]);
 
   useFrame((state) => {
     const clock = state.clock.elapsedTime;
     
+    // Initialiser depuis la position actuelle de la caméra au premier frame
+    if (!hasInitializedRef.current && camera instanceof THREE.PerspectiveCamera) {
+      const currentZoom = camera.position.z;
+      const normalizedZoom = (currentZoom - Z_MIN) / (Z_MAX - Z_MIN);
+      const clampedNormalized = Math.max(0, Math.min(1, normalizedZoom));
+      
+      // Calculer l'angle pour la sinusoïde
+      const angle = Math.asin(Math.max(-1, Math.min(1, 2 * clampedNormalized - 1)));
+      
+      // Calculer l'offset de temps pour que l'animation reprenne à la position actuelle
+      timeOffsetRef.current = clock - (angle / FREQ);
+      hasInitializedRef.current = true;
+    }
+    
     if (resetTrigger !== lastResetRef.current) {
       lastResetRef.current = resetTrigger;
       
-      // Si on a une valeur initiale, calculer l'offset pour reprendre l'animation
-      if (initialZoomRef.current !== null && hasInitializedRef.current) {
-        const startZoom = initialZoomRef.current;
-        const normalizedZoom = (startZoom - Z_MIN) / (Z_MAX - Z_MIN);
-        // Inverser la sinusoïde : s = (sin(t*FREQ) + 1) / 2
-        // Donc 2*s - 1 = sin(t*FREQ), donc t*FREQ = arcsin(2*s - 1)
-        const angle = Math.asin(Math.max(-1, Math.min(1, 2 * normalizedZoom - 1)));
+      // Lire la position actuelle de la caméra
+      if (camera instanceof THREE.PerspectiveCamera) {
+        const currentZoom = camera.position.z;
+        const normalizedZoom = (currentZoom - Z_MIN) / (Z_MAX - Z_MIN);
+        const clampedNormalized = Math.max(0, Math.min(1, normalizedZoom));
+        
+        // Calculer l'angle pour la sinusoïde
+        const angle = Math.asin(Math.max(-1, Math.min(1, 2 * clampedNormalized - 1)));
+        
+        // Calculer l'offset de temps pour que l'animation reprenne à la position actuelle
         timeOffsetRef.current = clock - (angle / FREQ);
-        initialZoomRef.current = null; // Réinitialiser après utilisation
-        hasInitializedRef.current = false;
-      } else {
-        // Comportement normal
-        timeOffsetRef.current = clock;
       }
     }
     
-    const t = clock - timeOffsetRef.current;
-    // Sinusoïde : ralentit aux limites, plus de "cognée"
-    const s = (Math.sin(t * FREQ) + 1) / 2;
-    camera.position.z = Z_MIN + (Z_MAX - Z_MIN) * s;
-    camera.lookAt(0, 0, 0);
-    camera.updateProjectionMatrix();
+    if (camera instanceof THREE.PerspectiveCamera && hasInitializedRef.current) {
+      const t = clock - timeOffsetRef.current;
+      // Sinusoïde : ralentit aux limites, plus de "cognée"
+      const s = (Math.sin(t * FREQ) + 1) / 2;
+      const targetZ = Z_MIN + (Z_MAX - Z_MIN) * s;
+      
+      // Appliquer directement la position calculée (pas de transition, l'animation continue naturellement)
+      camera.position.z = targetZ;
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    }
   });
 
   return null;

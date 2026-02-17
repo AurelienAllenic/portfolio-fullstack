@@ -41,7 +41,7 @@
 .icon {
   width: 20px;
   height: 20px;
-  color: rgba(59, 130, 246, 1);
+  color: rgba(0, 0, 0, 1);
 }
 
 .title {
@@ -90,9 +90,9 @@
   color: rgba(0, 0, 0, 0.7);
 
   &:hover:not(:disabled) {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
-    color: rgba(59, 130, 246, 1);
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 1);
     transform: scale(1.05);
   }
 
@@ -140,13 +140,13 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(59, 130, 246, 1);
+    background: rgba(0, 0, 0, 1);
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
       transform: scale(1.2);
-      background: rgba(59, 130, 246, 0.8);
+      background: rgba(0, 0, 0, 0.8);
     }
   }
 
@@ -154,14 +154,14 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(59, 130, 246, 1);
+    background: rgba(0, 0, 0, 1);
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
 
     &:hover {
       transform: scale(1.2);
-      background: rgba(59, 130, 246, 0.8);
+      background: rgba(0, 0, 0, 0.8);
     }
   }
 }
@@ -197,9 +197,9 @@
   font-weight: 500;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
-    color: rgba(59, 130, 246, 1);
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 1);
   }
 
   &:active {

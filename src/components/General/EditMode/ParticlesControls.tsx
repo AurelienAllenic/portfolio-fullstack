@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useEditMode } from '../../../contexts/EditModeContext';
-import { HiMagnifyingGlassPlus, HiMagnifyingGlassMinus, HiArrowPath, HiStar } from 'react-icons/hi2';
+import { HiMagnifyingGlassPlus, HiMagnifyingGlassMinus, HiArrowPath } from 'react-icons/hi2';
 import styles from './particlesControls.module.scss';
 
 interface ParticlesControlsProps {
@@ -11,6 +11,16 @@ interface ParticlesControlsProps {
   rotation: { x: number; y: number; z: number };
   onZoomUpdate: (zoom: number) => void;
   onRotationUpdate: (rotation: { x: number; y: number; z: number }) => void;
+  // Nouvelles props pour particules
+  lightIntensity?: number;
+  onLightIntensityUpdate?: (intensity: number) => void;
+  particleCount?: number;
+  onParticleCountUpdate?: (count: number) => void;
+  particleColor?: string;
+  onParticleColorUpdate?: (color: string) => void;
+  minBrightness?: number;
+  maxBrightness?: number;
+  onBrightnessUpdate?: (min: number, max: number) => void;
 }
 
 const ParticlesControls = ({
@@ -20,6 +30,15 @@ const ParticlesControls = ({
   rotation,
   onZoomUpdate,
   onRotationUpdate,
+  lightIntensity = 0.5,
+  onLightIntensityUpdate,
+  particleCount = 200,
+  onParticleCountUpdate,
+  particleColor = '#ffffff',
+  onParticleColorUpdate,
+  minBrightness = 1.0,
+  maxBrightness = 3.5,
+  onBrightnessUpdate,
 }: ParticlesControlsProps) => {
   const { isEditMode } = useEditMode();
   const [isDragging, setIsDragging] = useState(false);
@@ -51,6 +70,7 @@ const ParticlesControls = ({
   }, [zoom]);
 
   const handleZoomIn = () => {
+    // Inversé : zoom in = reculer (augmenter la valeur Z)
     if (currentZoomIndex < zoomLevels.length - 1) {
       const newIndex = currentZoomIndex + 1;
       setCurrentZoomIndex(newIndex);
@@ -59,6 +79,7 @@ const ParticlesControls = ({
   };
 
   const handleZoomOut = () => {
+    // Inversé : zoom out = avancer (diminuer la valeur Z)
     if (currentZoomIndex > 0) {
       const newIndex = currentZoomIndex - 1;
       setCurrentZoomIndex(newIndex);
@@ -163,7 +184,6 @@ const ParticlesControls = ({
       <div className={styles.controlsContainer}>
         <div className={styles.controlsPanel}>
         <div className={styles.header}>
-          <HiStar className={styles.icon} />
           <h3 className={styles.title}>Contrôles des particules</h3>
         </div>
 
@@ -171,7 +191,7 @@ const ParticlesControls = ({
           <label className={styles.label}>Zoom caméra</label>
           <div className={styles.zoomControls}>
             <button
-              onClick={handleZoomOut}
+              onClick={handleZoomIn}
               disabled={currentZoomIndex === 0}
               className={styles.controlButton}
               aria-label="Zoom arrière"
@@ -180,7 +200,7 @@ const ParticlesControls = ({
             </button>
             <span className={styles.zoomValue}>{zoom}</span>
             <button
-              onClick={handleZoomIn}
+              onClick={handleZoomOut}
               disabled={currentZoomIndex === zoomLevels.length - 1}
               className={styles.controlButton}
               aria-label="Zoom avant"
@@ -193,9 +213,10 @@ const ParticlesControls = ({
               type="range"
               min="0"
               max={zoomLevels.length - 1}
-              value={currentZoomIndex}
+              value={zoomLevels.length - 1 - currentZoomIndex}
               onChange={(e) => {
-                const index = Number(e.target.value);
+                const invertedIndex = Number(e.target.value);
+                const index = zoomLevels.length - 1 - invertedIndex;
                 setCurrentZoomIndex(index);
                 onZoomUpdate(zoomLevels[index]);
               }}
@@ -227,6 +248,97 @@ const ParticlesControls = ({
             Réinitialiser rotation
           </button>
         </div>
+
+        {/* Contrôles des lumières */}
+        {onLightIntensityUpdate && (
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>Intensité lumière</label>
+            <div className={styles.zoomSlider}>
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                value={lightIntensity}
+                onChange={(e) => onLightIntensityUpdate(Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
+            <span className={styles.zoomValue}>{lightIntensity.toFixed(1)}</span>
+          </div>
+        )}
+
+        {/* Contrôles de concentration de points */}
+        {onParticleCountUpdate && (
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>Concentration de points</label>
+            <div className={styles.zoomSlider}>
+              <input
+                type="range"
+                min="10"
+                max="500"
+                step="10"
+                value={particleCount}
+                onChange={(e) => onParticleCountUpdate(Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
+            <span className={styles.zoomValue}>{particleCount}</span>
+          </div>
+        )}
+
+        {/* Contrôles de couleur */}
+        {onParticleColorUpdate && (
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>Couleur des points</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <input
+                type="color"
+                value={particleColor}
+                onChange={(e) => onParticleColorUpdate(e.target.value)}
+                style={{
+                  width: '50px',
+                  height: '36px',
+                  border: '2px solid rgba(0, 0, 0, 0.1)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              />
+              <span className={styles.zoomValue}>{particleColor}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Contrôles de brillance */}
+        {onBrightnessUpdate && (
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>Brillance min / max</label>
+            <div className={styles.zoomSlider} style={{ marginBottom: '8px' }}>
+              <label style={{ fontSize: '11px', color: 'rgba(0, 0, 0, 0.6)', marginBottom: '4px' }}>Min: {minBrightness.toFixed(1)}</label>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.1"
+                value={minBrightness}
+                onChange={(e) => onBrightnessUpdate(Number(e.target.value), maxBrightness)}
+                className={styles.slider}
+              />
+            </div>
+            <div className={styles.zoomSlider}>
+              <label style={{ fontSize: '11px', color: 'rgba(0, 0, 0, 0.6)', marginBottom: '4px' }}>Max: {maxBrightness.toFixed(1)}</label>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.1"
+                value={maxBrightness}
+                onChange={(e) => onBrightnessUpdate(minBrightness, Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
+          </div>
+        )}
 
         <div className={styles.controlGroup}>
           <p className={styles.hint}>

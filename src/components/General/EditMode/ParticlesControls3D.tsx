@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useThree } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 import { useEditMode } from '../../../contexts/EditModeContext';
 import * as THREE from 'three';
 
@@ -21,23 +21,47 @@ const ParticlesControls3D = ({
   const { isEditMode } = useEditMode();
   const prevZoomRef = useRef<number | null>(null);
   const prevRotationRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const targetZoomRef = useRef<number | null>(null);
+  const isAnimatingZoomRef = useRef(false);
 
-  // Appliquer le zoom à la caméra seulement si la valeur a changé
+  // Détecter les changements de zoom et démarrer l'animation
   useEffect(() => {
     if (!isEditMode || !isInitialized || !camera) return;
     
-    // Ne pas appliquer si c'est la première fois (pour éviter de modifier le modèle à l'ouverture)
     if (prevZoomRef.current === null) {
       prevZoomRef.current = zoom;
+      if (camera instanceof THREE.PerspectiveCamera) {
+        camera.position.z = zoom;
+      }
       return;
     }
     
-    // Appliquer seulement si la valeur a changé
     if (prevZoomRef.current !== zoom && camera instanceof THREE.PerspectiveCamera) {
-      camera.position.z = zoom;
-      prevZoomRef.current = zoom;
+      targetZoomRef.current = zoom;
+      isAnimatingZoomRef.current = true;
     }
   }, [isEditMode, isInitialized, zoom, camera]);
+
+  // Animation fluide du zoom avec useFrame
+  useFrame(() => {
+    if (!isEditMode || !isInitialized || !camera || !isAnimatingZoomRef.current) return;
+    
+    if (camera instanceof THREE.PerspectiveCamera && targetZoomRef.current !== null) {
+      const currentZ = camera.position.z;
+      const targetZ = targetZoomRef.current;
+      const diff = targetZ - currentZ;
+      
+      if (Math.abs(diff) > 0.01) {
+        // Interpolation avec easing ease-out
+        camera.position.z += diff * 0.15;
+      } else {
+        camera.position.z = targetZ;
+        prevZoomRef.current = targetZ;
+        isAnimatingZoomRef.current = false;
+        targetZoomRef.current = null;
+      }
+    }
+  });
 
   // Appliquer la rotation au groupe de particules seulement si la valeur a changé
   useEffect(() => {
@@ -66,13 +90,17 @@ const ParticlesControls3D = ({
     }
   }, [isEditMode, isInitialized, rotation, particlesGroupRef]);
 
-  // Réinitialiser les refs quand le mode édition est désactivé
+  // S'assurer que la caméra est à la bonne position quand on ferme le panneau
   useEffect(() => {
-    if (!isEditMode) {
+    if (!isEditMode && camera instanceof THREE.PerspectiveCamera && prevZoomRef.current !== null) {
+      // Forcer la caméra à la position du zoom du state avant de fermer
+      camera.position.z = zoom;
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
       prevZoomRef.current = null;
       prevRotationRef.current = null;
     }
-  }, [isEditMode]);
+  }, [isEditMode, camera, zoom]);
 
   return null;
 };

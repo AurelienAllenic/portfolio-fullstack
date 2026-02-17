@@ -9,24 +9,23 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 // Composant pour une particule individuelle avec effet brillant animé et mouvement de flottement
-function SparklingParticle({ position, delay = 0, geometry, baseMaterial, movementOffset = 0, size = 1, brightness = 1 }) {
+function SparklingParticle({ position, delay = 0, geometry, baseMaterial, movementOffset = 0, size = 1, brightness = 1, particleColor = 0xffffff, minBrightness = 1.0, maxBrightness = 3.5 }) {
   const meshRef = useRef()
   const initialPosition = useMemo(() => new THREE.Vector3(...position), [position])
 
-  // Cloner le material : émission = blanc pur, seule l'intensité varie (blanc lumineux → noir)
+  // Cloner le material : émission avec couleur personnalisable
   const material = useMemo(() => {
     if (!baseMaterial) return null
     const cloned = baseMaterial.clone()
     
-    // Toujours blanc pur pour l'émission : pas de gris, juste intensité qui baisse vers 0
-    cloned.emissive = new THREE.Color(0xffffff)
+    cloned.emissive = new THREE.Color(particleColor)
     
     if (cloned.emissiveIntensity !== undefined) {
       cloned.emissiveIntensity = 0
     }
     
     return cloned
-  }, [baseMaterial])
+  }, [baseMaterial, particleColor])
 
   useFrame((state) => {
     if (!meshRef.current || !material) return
@@ -37,9 +36,9 @@ function SparklingParticle({ position, delay = 0, geometry, baseMaterial, moveme
     const sparkleTime = time * 0.05 + delay
     const factor = (Math.sin(sparkleTime) + 1) / 2 // 0 à 1
     
-    // Étoiles toujours visibles : luminosité min 30%, max 100% (basé sur brightness)
-    const minEmission = 1.0 * brightness // Toujours visible
-    const maxEmission = 3.5 * brightness // Pic de brillance
+    // Étoiles toujours visibles : luminosité min/max personnalisables (basé sur brightness)
+    const minEmission = minBrightness * brightness
+    const maxEmission = maxBrightness * brightness
     const emissionIntensity = minEmission + (maxEmission - minEmission) * factor
     
     if (material.emissiveIntensity !== undefined) {
@@ -78,7 +77,7 @@ function SparklingParticle({ position, delay = 0, geometry, baseMaterial, moveme
   )
 }
 
-export function Model({ maxParticles = 200, groupRef, ...props }) {
+export function Model({ maxParticles = 200, groupRef, particleColor = 0xffffff, minBrightness = 1.0, maxBrightness = 3.5, ...props }) {
   const { nodes, materials } = useGLTF('/particles.glb')
   const internalGroupRef = useRef()
   
@@ -135,6 +134,9 @@ export function Model({ maxParticles = 200, groupRef, ...props }) {
           movementOffset={particle.movementOffset}
           size={particle.size}
           brightness={particle.brightness}
+          particleColor={particleColor}
+          minBrightness={minBrightness}
+          maxBrightness={maxBrightness}
           geometry={nodes.Icosphere.geometry}
           baseMaterial={materials.Mat_Etoile}
         />

@@ -30,6 +30,11 @@ const ParticlesPage: React.FC = () => {
   const [zoom, setZoom] = useState(25);
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
   const [isInitialized, setIsInitialized] = useState(false);
+  const [lightIntensity, setLightIntensity] = useState(0.5);
+  const [particleCount, setParticleCount] = useState(() => lowPerf ? 30 : 200);
+  const [particleColor, setParticleColor] = useState('#ffffff');
+  const [minBrightness, setMinBrightness] = useState(1.0);
+  const [maxBrightness, setMaxBrightness] = useState(3.5);
 
   // Fonction pour initialiser les valeurs depuis le modèle actuel
   const handleStateRead = (currentZoom: number, currentRotation: { x: number; y: number; z: number }) => {
@@ -40,10 +45,10 @@ const ParticlesPage: React.FC = () => {
     }
   };
 
-  // Réinitialiser quand le mode édition est désactivé et sauvegarder le zoom actuel
+  // Sauvegarder le zoom actuel quand on ferme le panneau pour une transition fluide
   useEffect(() => {
     if (!isEditMode && isInitialized) {
-      // Le zoom actuel sera utilisé par AutoZoom pour reprendre l'animation
+      // Le zoom actuel est déjà dans le state, AutoZoom lira la position de la caméra directement
       setIsInitialized(false);
     }
   }, [isEditMode, isInitialized]);
@@ -167,9 +172,15 @@ const ParticlesPage: React.FC = () => {
           }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.5} />
-            <Model maxParticles={lowPerf ? 30 : 200} groupRef={particlesGroupRef} />
-            {!isEditMode && <AutoZoom resetTrigger={zoomResetTrigger} initialZoom={zoom} />}
+            <ambientLight intensity={lightIntensity} />
+            <Model
+              maxParticles={particleCount}
+              groupRef={particlesGroupRef}
+              particleColor={parseInt(particleColor.replace('#', ''), 16)}
+              minBrightness={minBrightness}
+              maxBrightness={maxBrightness}
+            />
+            {!isEditMode && <AutoZoom resetTrigger={zoomResetTrigger} />}
             {isEditMode && (
               <>
                 <ReadModelState
@@ -213,6 +224,18 @@ const ParticlesPage: React.FC = () => {
           rotation={rotation}
           onZoomUpdate={setZoom}
           onRotationUpdate={setRotation}
+          lightIntensity={lightIntensity}
+          onLightIntensityUpdate={setLightIntensity}
+          particleCount={particleCount}
+          onParticleCountUpdate={setParticleCount}
+          particleColor={particleColor}
+          onParticleColorUpdate={setParticleColor}
+          minBrightness={minBrightness}
+          maxBrightness={maxBrightness}
+          onBrightnessUpdate={(min, max) => {
+            setMinBrightness(min);
+            setMaxBrightness(max);
+          }}
         />
       )}
     </div>
