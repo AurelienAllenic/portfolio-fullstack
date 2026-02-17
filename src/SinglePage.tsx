@@ -7,10 +7,12 @@ import MobileNav from "./components/General/Nav/MobileNav";
 import SliderProjects from "./components/Sections/Projects/SliderProjects";
 import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
 import { NavigationProvider, useNavigation } from "./components/General/Nav/NavigationContext";
+import { EditModeProvider } from "./contexts/EditModeContext";
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
 import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
 import GlobalLoader from "./components/General/GlobalLoader";
 import LanguageToggle from "./components/General/Language/LanguageToggle";
+import EditModeButton from "./components/General/EditMode/EditModeButton";
 import { useAnalytics } from "./hooks/useAnalytics";
 
 const SinglePage = () => {
@@ -112,31 +114,33 @@ const SinglePage = () => {
 
   return (
     <ModalCVProvider>
-      <NavigationProvider>
-        {showLoaderTransition && (
-          <RadialTransitionOverlay
-            isActive
-            direction="out"
-            onComplete={() => {
-              sessionStorage.removeItem("fromLoader");
-              setShowLoaderTransition(false);
-            }}
+      <EditModeProvider>
+        <NavigationProvider>
+          {showLoaderTransition && (
+            <RadialTransitionOverlay
+              isActive
+              direction="out"
+              onComplete={() => {
+                sessionStorage.removeItem("fromLoader");
+                setShowLoaderTransition(false);
+              }}
+            />
+          )}
+          <SinglePageContent
+            showProjects={showProjects}
+            returnFromProjects={returnFromProjects}
+            showContact={showContact}
+            forceProjectsIndex={forceProjectsIndex}
+            handleTransitionToProjects={handleTransitionToProjects}
+            handleReturnToHero={handleReturnToHero}
+            handleTransitionToContact={handleTransitionToContact}
+            handleCloseContact={handleCloseContact}
+            setReturnFromProjects={setReturnFromProjects}
+            setForceProjectsIndex={setForceProjectsIndex}
+            setShowProjects={setShowProjects}
           />
-        )}
-        <SinglePageContent
-          showProjects={showProjects}
-          returnFromProjects={returnFromProjects}
-          showContact={showContact}
-          forceProjectsIndex={forceProjectsIndex}
-          handleTransitionToProjects={handleTransitionToProjects}
-          handleReturnToHero={handleReturnToHero}
-          handleTransitionToContact={handleTransitionToContact}
-          handleCloseContact={handleCloseContact}
-          setReturnFromProjects={setReturnFromProjects}
-          setForceProjectsIndex={setForceProjectsIndex}
-          setShowProjects={setShowProjects}
-        />
-      </NavigationProvider>
+        </NavigationProvider>
+      </EditModeProvider>
     </ModalCVProvider>
   );
 };
@@ -376,6 +380,7 @@ const SinglePageContent = ({
         </div>
       )}
       <LanguageToggle />
+      <EditModeButton />
     </>
   );
 };

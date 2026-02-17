@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import ProjectCategory from "./ProjectCategory";
 import type { ProjectCover } from "./ProjectCategory";
+import { useEditMode } from "../../../contexts/EditModeContext";
 import {
   formations_openclassrooms_cover,
   openclassrooms_mosaic_projects,
@@ -56,6 +57,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const isAtBottomRef = useRef(false);
   const isAtTopRef = useRef(false);
   const isTransitioningFromContactRef = useRef(false);
+  const { isEditMode } = useEditMode();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -665,6 +667,13 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         return;
       }
 
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       const contactElement = document.querySelector('#contact') as HTMLElement;
       const isContactVisible = contactElement && 
         contactElement.offsetParent !== null && 
@@ -811,7 +820,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       if (timeoutId.current) clearTimeout(timeoutId.current);
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [changeCategory, covers.length, transitionToContact, transitionFromContact]);
+  }, [changeCategory, covers.length, transitionToContact, transitionFromContact, isEditMode]);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -819,6 +828,13 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
   const handleTouchMove = (e: TouchEvent) => {
     if (document.body.getAttribute("data-modal-open") === "true") {
+      return;
+    }
+
+    // Bloquer le scroll si le mode édition est activé
+    if (isEditMode) {
+      e.preventDefault();
+      e.stopPropagation();
       return;
     }
     
@@ -947,7 +963,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", () => (touchStartY.current = null));
     };
-  }, [changeCategory, transitionFromContact]);
+  }, [changeCategory, transitionFromContact, isEditMode]);
 
   useEffect(() => {
     const container = containerRef.current;

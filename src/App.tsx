@@ -12,6 +12,7 @@ import PolitiqueConfidentialite from "./components/Asides/PolitiqueConfidentiali
 import { LanguageProvider } from "./components/General/Language/LanguageContext";
 import { AuthProvider } from "./components/General/Auth/AuthContext";
 import { CvProvider } from "./components/General/Nav/CvContext";
+import { EditModeProvider } from "./contexts/EditModeContext";
 import Login from "./components/General/Auth/Login";
 import Dashboard from "./components/General/Dashboard/Dashboard";
 import ProtectedRoute from "./components/General/Auth/ProtectedRoute";
@@ -21,10 +22,11 @@ const App: React.FC = () => {
     <LanguageProvider>
       <AuthProvider>
         <CvProvider>
-          <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<SinglePage />} />
-            <Route path="/particles" element={<ParticlesPage />} />
+          <EditModeProvider>
+            <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<SinglePage />} />
+              <Route path="/particles" element={<ParticlesPage />} />
             <Route path="/projects/:categorySlug/:programmingLanguage" element={<SingleProjectPage />} />
             <Route path="/projects/:categorySlug" element={<SingleProjectPage />} />
             <Route path="/credits" element={<Credits />} />
@@ -40,8 +42,9 @@ const App: React.FC = () => {
               } 
             />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+          </EditModeProvider>
         </CvProvider>
       </AuthProvider>
     </LanguageProvider>

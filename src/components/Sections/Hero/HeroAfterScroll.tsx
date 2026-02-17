@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { useEditMode } from "../../../contexts/EditModeContext";
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
@@ -28,6 +29,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     ref
   ) => {
     const { t } = useLanguage();
+    const { isEditMode } = useEditMode();
     
     const texts: TextContent[] = useMemo(() => [
       t("hero.afterScroll.text1"),
@@ -635,6 +637,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           return;
         }
         
+        // Bloquer le scroll si le mode édition est activé
+        if (isEditMode) {
+          e.preventDefault();
+          return;
+        }
+        
         if (scrollLocked || timeoutId) {
           e.preventDefault();
           return;
@@ -711,6 +719,12 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     const handleTouchMove = (e: TouchEvent) => {
       if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
         return;
       }
       
@@ -792,6 +806,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       scrollLocked,
       onReturnToHeroBefore,
       onTransitionToProjects,
+      isEditMode,
     ]);
 
     useEffect(() => {

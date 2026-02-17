@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
+import { useEditMode } from "../../../contexts/EditModeContext";
 
 interface ProjectsProps {
   onTransitionToHero?: () => void;
@@ -9,6 +10,7 @@ interface ProjectsProps {
 const Projects = ({ onTransitionToHero }: ProjectsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
+  const { isEditMode } = useEditMode();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -43,6 +45,12 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
 
     const handleWheel = (e: WheelEvent) => {
       if (document.body.getAttribute("data-modal-open") === "true") {
+        return;
+      }
+      
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
         return;
       }
       
@@ -85,6 +93,12 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
         return;
       }
       
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
+        return;
+      }
+      
       if (scrollBlocked || touchStartY.current === null) return;
 
       const isAtTop = window.scrollY === 0;
@@ -121,7 +135,7 @@ const Projects = ({ onTransitionToHero }: ProjectsProps) => {
         () => (touchStartY.current = null)
       );
     };
-  }, [onTransitionToHero]);
+  }, [onTransitionToHero, isEditMode]);
 
   return (
     <div

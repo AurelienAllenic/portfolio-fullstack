@@ -1,10 +1,16 @@
 import React, { Suspense, useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
+import * as THREE from "three";
 // @ts-ignore
 import { Model } from "../Particles.jsx";
 import AutoZoom from "./components/General/ParticlesPage/AutoZoom";
+import ParticlesControls from "./components/General/EditMode/ParticlesControls";
+import ParticlesControls3D from "./components/General/EditMode/ParticlesControls3D";
+import ReadModelState from "./components/General/EditMode/ReadModelState";
+import EditModeButton from "./components/General/EditMode/EditModeButton";
 import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
+import { useEditMode } from "./contexts/EditModeContext";
 import styles from "./particlesPage.module.scss";
 
 const isTouchOrNarrow = () =>
@@ -13,12 +19,34 @@ const isTouchOrNarrow = () =>
 
 const ParticlesPage: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const particlesGroupRef = useRef<THREE.Group>(null);
   const [curtainClosed, setCurtainClosed] = useState(false);
   const [showNextModel, setShowNextModel] = useState(false);
   const [zoomResetTrigger, setZoomResetTrigger] = useState(0);
   const [showEntranceOverlay, setShowEntranceOverlay] = useState(true);
   const [lowPerf] = useState(() => isTouchOrNarrow());
   const hasClosedRef = useRef(false);
+  const { isEditMode } = useEditMode();
+  const [zoom, setZoom] = useState(25);
+  const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Fonction pour initialiser les valeurs depuis le modèle actuel
+  const handleStateRead = (currentZoom: number, currentRotation: { x: number; y: number; z: number }) => {
+    if (!isInitialized) {
+      setZoom(currentZoom);
+      setRotation(currentRotation);
+      setIsInitialized(true);
+    }
+  };
+
+  // Réinitialiser quand le mode édition est désactivé et sauvegarder le zoom actuel
+  useEffect(() => {
+    if (!isEditMode && isInitialized) {
+      // Le zoom actuel sera utilisé par AutoZoom pour reprendre l'animation
+      setIsInitialized(false);
+    }
+  }, [isEditMode, isInitialized]);
 
   // Bloquer tout scroll / overflow sur la page
   useEffect(() => {
@@ -58,6 +86,11 @@ const ParticlesPage: React.FC = () => {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       if (hasClosedRef.current) {
         if (e.deltaY < 0) goBack();
@@ -74,10 +107,20 @@ const ParticlesPage: React.FC = () => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Bloquer le scroll si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      // Bloquer complètement le swipe si le mode édition est activé
+      if (isEditMode) {
+        e.preventDefault();
+        return;
+      }
       if (!e.changedTouches[0]) return;
       const touchEndY = e.changedTouches[0].clientY;
       const deltaY = touchEndY - touchStartY;
@@ -100,7 +143,7 @@ const ParticlesPage: React.FC = () => {
       wrapper.removeEventListener("touchmove", handleTouchMove);
       wrapper.removeEventListener("touchend", handleTouchEnd);
     };
-  }, []);
+  }, [isEditMode]);
 
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
@@ -125,8 +168,22 @@ const ParticlesPage: React.FC = () => {
         >
           <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
-            <Model maxParticles={lowPerf ? 30 : 200} />
-            <AutoZoom resetTrigger={zoomResetTrigger} />
+            <Model maxParticles={lowPerf ? 30 : 200} groupRef={particlesGroupRef} />
+            {!isEditMode && <AutoZoom resetTrigger={zoomResetTrigger} initialZoom={zoom} />}
+            {isEditMode && (
+              <>
+                <ReadModelState
+                  particlesGroupRef={particlesGroupRef}
+                  onStateRead={handleStateRead}
+                />
+                <ParticlesControls3D
+                  particlesGroupRef={particlesGroupRef}
+                  zoom={zoom}
+                  rotation={rotation}
+                  isInitialized={isInitialized}
+                />
+              </>
+            )}
           </Suspense>
         </Canvas>
       </div>
@@ -148,6 +205,16 @@ const ParticlesPage: React.FC = () => {
         direction="out"
         onComplete={() => setShowEntranceOverlay(false)}
       />
+      <EditModeButton />
+      {isEditMode && isInitialized && (
+        <ParticlesControls
+          particlesGroupRef={particlesGroupRef}
+          zoom={zoom}
+          rotation={rotation}
+          onZoomUpdate={setZoom}
+          onRotationUpdate={setRotation}
+        />
+      )}
     </div>
   );
 };
