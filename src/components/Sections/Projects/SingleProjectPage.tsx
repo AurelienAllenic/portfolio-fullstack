@@ -8,13 +8,14 @@ import {
   solead_cover,
   iim_cover,
   OPENCLASSROOMS_FORMATIONS,
-  projects,
+  projectsFiltered,
   solead,
   iim,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 import FormationSelector from "./FormationSelector";
+import AllCategoriesSelector from "./AllCategoriesSelector";
 import styles from "./projects.module.scss";
 
 const FORMATION_SLUGS = ["formation-web", "formation-react", "formation-python"] as const;
@@ -31,6 +32,7 @@ const SingleProjectPage = () => {
   useTrackSectionArrival('page_projects');
 
   const isFormationsOpenclassrooms = categorySlug === "formations-openclassrooms";
+  const isTousLesProjetsPage = categorySlug === "tous-les-projets";
   const formationSlug = isFormationsOpenclassrooms && programmingLanguage && FORMATION_SLUGS.includes(programmingLanguage as typeof FORMATION_SLUGS[number])
     ? programmingLanguage
     : null;
@@ -53,7 +55,7 @@ const SingleProjectPage = () => {
   ];
 
   const projectsData: Project[][] = [
-    projects,
+    projectsFiltered,
     solead,
     iim,
   ];
@@ -103,7 +105,7 @@ const SingleProjectPage = () => {
     }
   }
 
-  if (categoryIndex === -1 && !isFormationSelectorPage && !formationSlug) {
+  if (categoryIndex === -1 && !isFormationSelectorPage && !formationSlug && !isTousLesProjetsPage) {
     return (
       <div style={{ 
         display: "flex", 
@@ -141,9 +143,17 @@ const SingleProjectPage = () => {
   }
 
   const handleBack = () => {
-    backTargetRef.current = formationSlug ? "/projects/formations-openclassrooms" : "/";
-    if (!formationSlug) {
+    if (formationSlug) {
+      // Formation spécifique → retour au sélecteur de formations
+      backTargetRef.current = "/projects/formations-openclassrooms";
+    } else if (isTousLesProjetsPage) {
+      // Page tous-les-projets → retour à l'accueil
+      backTargetRef.current = "/";
       sessionStorage.setItem('shouldRestoreScroll', 'true');
+    } else {
+      // Toutes les autres catégories (formations-openclassrooms, mastere-iim, projets-solead…)
+      // → retour à la page de sélection "Autres projets"
+      backTargetRef.current = "/projects/tous-les-projets";
     }
     setIsTransitioningBack(true);
   };
@@ -163,10 +173,10 @@ const SingleProjectPage = () => {
 
   // Éviter que l'overlay "in" (fermeture) reste actif après navigation formation → sélecteur
   useEffect(() => {
-    if (isFormationSelectorPage) {
+    if (isFormationSelectorPage || isTousLesProjetsPage) {
       setIsTransitioningBack(false);
     }
-  }, [isFormationSelectorPage]);
+  }, [isFormationSelectorPage, isTousLesProjetsPage]);
 
   if (isFormationSelectorPage) {
     return (
@@ -183,6 +193,35 @@ const SingleProjectPage = () => {
         />
         <div style={{ opacity: showContent ? 1 : 0, position: "relative" }}>
           <FormationSelector formations={OPENCLASSROOMS_FORMATIONS} />
+          <button
+            type="button"
+            onClick={handleBack}
+            className={styles.formationSelectorBackButton}
+            aria-label="Retour à l'accueil"
+          >
+            ← Retour
+          </button>
+        </div>
+        <LanguageToggle />
+      </>
+    );
+  }
+
+  if (isTousLesProjetsPage) {
+    return (
+      <>
+        <RadialTransitionOverlay
+          isActive={showEntryOverlay}
+          direction="out"
+          onComplete={() => setShowEntryOverlay(false)}
+        />
+        <RadialTransitionOverlay
+          isActive={isTransitioningBack}
+          direction="in"
+          onComplete={handleTransitionBackComplete}
+        />
+        <div style={{ opacity: showContent ? 1 : 0, position: "relative" }}>
+          <AllCategoriesSelector categoryIndex={categoryIndex !== -1 ? categoryIndex : undefined} />
           <button
             type="button"
             onClick={handleBack}

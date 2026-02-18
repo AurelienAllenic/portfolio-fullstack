@@ -714,6 +714,35 @@ export const iim = [
     },
 ]
 
+/* STANDALONE PROJECT COVERS (slides dédiées sur la page principale) */
+
+export const ascent_standalone_cover = {
+    title: 'Ascent',
+    slug: 'ascent-standalone',
+    content: "Site vitrine à destination des milieux de l'architecture et du design réalisé en Next.js, totalement administrable par l'utilisateur",
+    sideImages: [Ascent, ascentGif1, ascentGif2, Ascent],
+    mainImage: Ascent,
+    listIcons: [NextJs, SCSS]
+}
+
+export const paro_standalone_cover = {
+    title: 'Paro',
+    slug: 'paro-standalone',
+    content: "Projet de site vitrine pour l'artiste Paro réalisé avec React.js / Vite",
+    sideImages: [Paro, paroGif, Paro, paroGif],
+    mainImage: paroGif,
+    listIcons: [ReactJs, SCSS, nodeJs]
+}
+
+export const claquettes_standalone_cover = {
+    title: 'claquettes-swing.fr',
+    slug: 'claquettes-standalone',
+    content: "Participation à la création du front en React.js et au déploiement",
+    sideImages: [Claquettes, ClaquettesGif, Claquettes, ClaquettesGif],
+    mainImage: ClaquettesGif,
+    listIcons: [ReactJs, SCSS]
+}
+
 export const solead = [
     {
         id: 1,
@@ -884,3 +913,18 @@ export const solead = [
         technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
     },
 ]
+
+/** Cover "Autres projets" — slide regroupant toutes les catégories restantes */
+export const allprojects_cover = {
+    title: 'Autres projets',
+    slug: 'tous-les-projets',
+    content: "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, projets personnels, mastère IIM et projets réalisés chez Solead.",
+    sideImages: [Linconnu, CarEcommerce, District, Booki],
+    mainImage: CarEcommerce,
+    listIcons: [ReactJs, Python, Wordpress, NextJs]
+}
+
+/** Projets personnels filtrés (sans Paro, Ascent, Claquettes — affichés en slides standalone) */
+export const projectsFiltered = projects.filter(
+    p => !['Paro', 'Ascent', 'claquettes-swing.fr'].includes(p.title)
+);

@@ -68,6 +68,7 @@ interface ProjectCategoryProps {
   cover: ProjectCover;
   projects?: Project[];
   categoryIndex?: number;
+  onCtaClick?: () => void;
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
@@ -116,7 +117,7 @@ const slugifyProjectName = (name: string): string =>
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '') || 'project';
 
-const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: ProjectCategoryProps) => {
   const { t, language } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -191,11 +192,22 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     'projets-personnels': 'personnel',
     'projets-solead': 'solead',
     'mastere-iim': 'iim',
+    'ascent-standalone': 'ascent',
+    'paro-standalone': 'paro',
+    'claquettes-standalone': 'claquettes',
+    'allprojects': 'allprojects',
+    'tous-les-projets': 'allprojects',
   };
   
-  const categoryKey = categoryKeyMap[cover.slug] || 'web';
-  const categoryTitle = useMemo(() => t(`projects.category.${categoryKey}`), [t, categoryKey]);
-  const categoryDescription = useMemo(() => t(`projects.category.${categoryKey}.description`), [t, categoryKey]);
+  const categoryKey = categoryKeyMap[cover.slug] || null;
+  const categoryTitle = useMemo(() => {
+    if (categoryKey) return t(`projects.category.${categoryKey}`);
+    return cover.title;
+  }, [t, categoryKey, cover.title]);
+  const categoryDescription = useMemo(() => {
+    if (categoryKey) return t(`projects.category.${categoryKey}.description`);
+    return cover.content;
+  }, [t, categoryKey, cover.content]);
 
   const titleParts = useMemo(() => {
     const parts = categoryTitle.split(" ");
@@ -228,6 +240,10 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
   const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     trackClick(`${cover.slug}_voir_les_projets`);
+    if (onCtaClick) {
+      onCtaClick();
+      return;
+    }
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
@@ -683,12 +699,12 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           })}
         </div>
         <a 
-          href={`/projects/${cover.slug}`} 
+          href={onCtaClick ? '#' : `/projects/${cover.slug}`} 
           className={styles.cta}
           onClick={handleViewProjectsClick}
         >
           <span className={styles.arrow} aria-hidden><HiArrowRight /></span>
-          <span>{t("projects.view")}</span>
+          <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
         </a>
       </aside>
       <div className={styles.center}>
@@ -877,14 +893,14 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             );
           })()}
           <a 
-            href={`/projects/${cover.slug}`} 
+            href={onCtaClick ? '#' : `/projects/${cover.slug}`} 
             className={styles.mobileCta}
             onClick={handleViewProjectsClick}
           >
             <span className={styles.arrow} aria-hidden>
             <HiArrowRight />
             </span>
-            <span>{t("projects.view")}</span>
+            <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
           </a>
         </div>
       </div>

@@ -2,16 +2,14 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import ProjectCategory from "./ProjectCategory";
-import type { ProjectCover } from "./ProjectCategory";
+import type { ProjectCover, Project } from "./ProjectCategory";
+import ProjectLinksModal from "./ProjectLinksModal";
+import AllProjectsSection from "./AllProjectsSection";
 import {
-  formations_openclassrooms_cover,
-  openclassrooms_mosaic_projects,
-  projects_cover,
-  solead_cover,
-  iim_cover,
+  ascent_standalone_cover,
+  paro_standalone_cover,
+  claquettes_standalone_cover,
   projects,
-  solead,
-  iim,
 } from "./Data";
 
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -43,10 +41,27 @@ interface SliderProjectsProps {
   onForceIndexComplete?: () => void;
 }
 
+// Slides standalone : Ascent (index 1), Paro (index 0), Claquettes (index 2) dans projects[]
+const standaloneCovers: ProjectCover[] = [
+  ascent_standalone_cover,
+  paro_standalone_cover,
+  claquettes_standalone_cover,
+];
+
+// Projets correspondants aux slides standalone (dans le même ordre que standaloneCovers)
+const standaloneProjects: Project[] = [
+  projects[1], // Ascent
+  projects[0], // Paro
+  projects[2], // Claquettes
+];
+
+const TOTAL_SLIDES = standaloneCovers.length + 1; // 3 standalone + 1 all projects
+
 const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceIndex, onForceIndexComplete }: SliderProjectsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [scrollLocked, setScrollLocked] = useState(true);
+  const [modalProject, setModalProject] = useState<Project | null>(null);
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutId = useRef<number | null>(null);
@@ -66,19 +81,25 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const covers: ProjectCover[] = [
-    projects_cover,
-    solead_cover,
-    iim_cover,
-    formations_openclassrooms_cover,
-  ];
+  const handleStandaloneCtaClick = useCallback((project: Project) => {
+    const links: string[] = [
+      project.github,
+      project.demo,
+      project.figma,
+    ].filter(Boolean) as string[];
 
-  const projectsData = [
-    projects,
-    solead,
-    iim,
-    openclassrooms_mosaic_projects,
-  ];
+    if (links.length === 1) {
+      window.open(links[0], '_blank', 'noopener,noreferrer');
+    } else if (links.length > 1) {
+      setModalProject(project);
+      document.body.setAttribute('data-modal-open', 'true');
+    }
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setModalProject(null);
+    document.body.removeAttribute('data-modal-open');
+  }, []);
 
   useEffect(() => {
     currentIndexRef.current = currentIndex;
@@ -86,23 +107,25 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
   useEffect(() => {
     const preloadNextCategory = async () => {
-      const nextIndex = (currentIndex + 1) % covers.length;
-      const nextCover = covers[nextIndex];
-
-      setTimeout(() => {
-        const mainImageWidth = isMobile ? 600 : 800;
-        preloadImage(optimizeCloudinaryUrl(nextCover.mainImage, mainImageWidth, "85"));
+      const nextIndex = (currentIndex + 1) % TOTAL_SLIDES;
+      // Only preload if next slide is a standalone cover (not all projects)
+      if (nextIndex < standaloneCovers.length) {
+        const nextCover = standaloneCovers[nextIndex];
         setTimeout(() => {
-          const mosaicWidth = isMobile ? 400 : 600;
-          nextCover.sideImages.slice(0, 2).forEach(src => {
-            preloadImage(optimizeCloudinaryUrl(src, mosaicWidth, "80"));
-          });
-        }, 500);
-      }, 1000);
+          const mainImageWidth = isMobile ? 600 : 800;
+          preloadImage(optimizeCloudinaryUrl(nextCover.mainImage, mainImageWidth, "85"));
+          setTimeout(() => {
+            const mosaicWidth = isMobile ? 400 : 600;
+            nextCover.sideImages.slice(0, 2).forEach(src => {
+              preloadImage(optimizeCloudinaryUrl(src, mosaicWidth, "80"));
+            });
+          }, 500);
+        }, 1000);
+      }
     };
     
     preloadNextCategory();
-  }, [currentIndex, covers, isMobile]);
+  }, [currentIndex, isMobile]);
 
   useEffect(() => {
     if (forceIndex !== undefined && forceIndex !== currentIndex && !isTransitioningFromContactRef.current) {
@@ -237,7 +260,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   }, []);
 
   const changeCategory = useCallback((nextIndex: number) => {
-    if (nextIndex < 0 || nextIndex >= covers.length) {
+    if (nextIndex < 0 || nextIndex >= TOTAL_SLIDES) {
       return;
     }
 
@@ -346,7 +369,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       duration: 0.4,
       ease: "power2.out",
     });
-  }, [covers.length]);
+  }, []);
 
   const transitionToContact = useCallback(() => {
     
@@ -356,7 +379,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
 
     const currentIdx = currentIndexRef.current;
 
-    if (currentIdx !== covers.length - 1) {
+    if (currentIdx !== TOTAL_SLIDES - 1) {
       return;
     }
 
@@ -504,7 +527,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         checkAndAnimate();
       });
     });
-  }, [covers.length, onTransitionToContact]);
+  }, [onTransitionToContact]);
 
   const transitionFromContact = useCallback(() => {
     isTransitioningFromContactRef.current = true;
@@ -527,7 +550,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         pointerEvents: "none"
       });
     }
-    const lastCategoryIndex = covers.length - 1;
+    const lastCategoryIndex = TOTAL_SLIDES - 1;
     const lastCategoryElement = containerRef.current?.querySelector(
       `[data-category-index="${lastCategoryIndex}"]`
     );
@@ -657,7 +680,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         });
       });
     });
-  }, [covers.length, onTransitionFromContact]);
+  }, [onTransitionFromContact]);
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -702,7 +725,6 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       const goingDown = e.deltaY > 0;
       const goingUp = e.deltaY < 0;
       
-      // Seuil minimum pour éviter les micro-scrolls du trackpad (réduit à 1 pour plus de sensibilité)
       const SCROLL_THRESHOLD = 1;
       if (Math.abs(e.deltaY) < SCROLL_THRESHOLD) {
         return;
@@ -763,7 +785,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           return;
         }
 
-        if (currentIdx === covers.length - 1) {
+        if (currentIdx === TOTAL_SLIDES - 1) {
           if (!isAtBottomRef.current) {
             isAtBottomRef.current = true;
           }
@@ -773,7 +795,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           return;
         }
 
-        if (isAtBottomRef.current && currentIdx < covers.length - 1) {
+        if (isAtBottomRef.current && currentIdx < TOTAL_SLIDES - 1) {
           e.preventDefault();
           e.stopPropagation();
           changeCategory(currentIdx + 1);
@@ -811,7 +833,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       if (timeoutId.current) clearTimeout(timeoutId.current);
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [changeCategory, covers.length, transitionToContact, transitionFromContact]);
+  }, [changeCategory, transitionToContact, transitionFromContact]);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -900,7 +922,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         return;
       }
 
-      if (currentIdx === covers.length - 1) {
+      if (currentIdx === TOTAL_SLIDES - 1) {
         if (!isAtBottomRef.current) {
           isAtBottomRef.current = true;
         }
@@ -909,7 +931,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
         transitionToContact();
         return;
       }
-      if (isAtBottomRef.current && currentIdx < covers.length - 1) {
+      if (isAtBottomRef.current && currentIdx < TOTAL_SLIDES - 1) {
         e.preventDefault();
         e.stopPropagation();
         changeCategory(currentIdx + 1);
@@ -964,31 +986,67 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       data-slider-index={currentIndex}
       data-slider-locked={scrollLocked}
     >
-      {covers.map((cover, index) => {
+      {/* 3 slides standalone : Ascent, Paro, Claquettes */}
+      {standaloneCovers.map((cover, index) => {
         const isCurrent = index === currentIndex;
         return (
-        <div
-          key={index}
-          data-category-index={index}
-          style={{
-            position: isCurrent ? "relative" : "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            minHeight: "100vh",
-            opacity: isCurrent ? 1 : 0,
-            pointerEvents: isCurrent ? "auto" : "none",
-            zIndex: isCurrent ? 10 : 1,
-          }}
-        >
-          <ProjectCategory 
-            cover={cover} 
-            projects={projectsData[index]}
-            categoryIndex={index === currentIndex ? currentIndex : undefined}
-          />
-        </div>
+          <div
+            key={index}
+            data-category-index={index}
+            style={{
+              position: isCurrent ? "relative" : "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              minHeight: "100vh",
+              opacity: isCurrent ? 1 : 0,
+              pointerEvents: isCurrent ? "auto" : "none",
+              zIndex: isCurrent ? 10 : 1,
+            }}
+          >
+            <ProjectCategory
+              cover={cover}
+              categoryIndex={index === currentIndex ? currentIndex : undefined}
+              onCtaClick={() => handleStandaloneCtaClick(standaloneProjects[index])}
+            />
+          </div>
         );
       })}
+
+      {/* Slide "Tous mes projets" (index 3) */}
+      {(() => {
+        const allProjectsIndex = standaloneCovers.length;
+        const isCurrent = currentIndex === allProjectsIndex;
+        return (
+          <div
+            key="allprojects"
+            data-category-index={allProjectsIndex}
+            style={{
+              position: isCurrent ? "relative" : "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              minHeight: "100vh",
+              opacity: isCurrent ? 1 : 0,
+              pointerEvents: isCurrent ? "auto" : "none",
+              zIndex: isCurrent ? 10 : 1,
+            }}
+          >
+            <AllProjectsSection
+              categoryIndex={isCurrent ? allProjectsIndex : undefined}
+            />
+          </div>
+        );
+      })()}
+
+      {/* Modal liens projet standalone */}
+      {modalProject && (
+        <ProjectLinksModal
+          isOpen={true}
+          project={modalProject}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 };
