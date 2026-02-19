@@ -269,17 +269,17 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     const isStandaloneProject = ['ascent-standalone', 'paro-standalone', 'claquettes-standalone'].includes(cover.slug);
     const accentText = parts.slice(1).join(" ");
     
-    // Pour les projets standalone en français, ne pas afficher de deuxième ligne si accent est vide
-    if (isStandaloneProject && language === 'fr' && !accentText) {
+    // Pour les projets standalone, ne pas afficher de deuxième ligne si accent est vide
+    if (isStandaloneProject && !accentText) {
       return {
-        main: parts[0] || "WEB",
+        main: parts[0] || "",
         accent: ""
       };
     }
     
     return {
-      main: parts[0] || "WEB",
-      accent: accentText || "WEB"
+      main: parts[0] || "",
+      accent: accentText || ""
     };
   }, [categoryTitle, cover.slug, language]);
 
@@ -360,6 +360,9 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    
+    // Ne masquer les éléments que si le composant est visible (categoryIndex défini)
+    if (categoryIndex === undefined) return;
 
     const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
     const ctaButton = container.querySelector(`.${styles.cta}`);
@@ -395,7 +398,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
     if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
     if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
-  }, []);
+  }, [categoryIndex]);
 
   useEffect(() => {
     const container = containerRef.current;
