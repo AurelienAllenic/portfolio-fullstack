@@ -785,18 +785,32 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       const canScrollUp = contentOverflows && !isSectionAtTop;
 
       if (goingDown) {
-        if (canScrollDown) {
-          isAtBottomRef.current = false;
-          return;
-        }
-
+        // Pour la dernière slide (Autres projets), vérifier d'abord si on peut scroller
         if (currentIdx === TOTAL_SLIDES - 1) {
+          // Vérifier plus strictement qu'on est en bas pour la dernière slide
+          const strictIsAtBottom = contentOverflows 
+            ? (sectionBottom - viewportHeight) <= 20
+            : true;
+          
+          // Si on peut scroller vers le bas, permettre le scroll
+          if (canScrollDown || !strictIsAtBottom) {
+            isAtBottomRef.current = false;
+            return;
+          }
+          
+          // Seulement passer à Contact si on est vraiment en bas
           if (!isAtBottomRef.current) {
             isAtBottomRef.current = true;
           }
           e.preventDefault();
           e.stopPropagation();
           transitionToContact();
+          return;
+        }
+        
+        // Pour les autres slides, logique normale
+        if (canScrollDown) {
+          isAtBottomRef.current = false;
           return;
         }
 
@@ -903,17 +917,22 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       
       if (bottomElement) {
         const bottomRect = bottomElement.getBoundingClientRect();
-        isSectionAtBottom = bottomRect.bottom <= viewportHeight + 50;
+        // Pour la dernière slide, utiliser une tolérance plus stricte
+        const tolerance = currentIdx === TOTAL_SLIDES - 1 ? 20 : 50;
+        isSectionAtBottom = bottomRect.bottom <= viewportHeight + tolerance;
       } else {
         const distanceFromBottom = sectionBottom - viewportHeight;
+        // Pour la dernière slide, utiliser une tolérance plus stricte
+        const tolerance = currentIdx === TOTAL_SLIDES - 1 ? 20 : 50;
         isSectionAtBottom = contentOverflows 
-          ? distanceFromBottom <= 50
+          ? distanceFromBottom <= tolerance
           : true;
       }
     } else {
       const distanceFromBottom = sectionBottom - viewportHeight;
+      const tolerance = currentIdx === TOTAL_SLIDES - 1 ? 20 : 50;
       isSectionAtBottom = contentOverflows 
-        ? distanceFromBottom <= 50
+        ? distanceFromBottom <= tolerance
         : true;
     }
     
@@ -922,18 +941,32 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
     const canScrollUp = contentOverflows && !isSectionAtTop;
 
     if (deltaY > 30) {
-      if (canScrollDown) {
-        isAtBottomRef.current = false;
-        return;
-      }
-
+      // Pour la dernière slide (Autres projets), vérifier d'abord si on peut scroller
       if (currentIdx === TOTAL_SLIDES - 1) {
+        // Vérifier plus strictement qu'on est en bas pour la dernière slide
+        const strictIsAtBottom = contentOverflows 
+          ? (sectionBottom - viewportHeight) <= 20
+          : true;
+        
+        // Si on peut scroller vers le bas, permettre le scroll
+        if (canScrollDown || !strictIsAtBottom) {
+          isAtBottomRef.current = false;
+          return;
+        }
+        
+        // Seulement passer à Contact si on est vraiment en bas
         if (!isAtBottomRef.current) {
           isAtBottomRef.current = true;
         }
         e.preventDefault();
         e.stopPropagation();
         transitionToContact();
+        return;
+      }
+      
+      // Pour les autres slides, logique normale
+      if (canScrollDown) {
+        isAtBottomRef.current = false;
         return;
       }
       if (isAtBottomRef.current && currentIdx < TOTAL_SLIDES - 1) {
