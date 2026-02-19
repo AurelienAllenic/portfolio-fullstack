@@ -23,13 +23,13 @@
   font-family: $font-family-secondary;
   white-space: nowrap;
 
-  &:hover {
+  &:hover:not(.hidden) {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.3);
     transform: scale(1.05);
   }
 
-  &:active {
+  &:active:not(.hidden) {
     transform: scale(0.95);
   }
 
@@ -46,5 +46,11 @@
     right: 30px;
     font-size: 17px;
     border-radius: 30px;
+  }
+
+  &.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px) !important;
   }
 }

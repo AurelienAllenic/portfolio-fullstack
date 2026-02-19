@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
+import FormationsModal from "./FormationsModal";
 import { solead_cover, iim_cover, allProjectsImages } from "./Data";
 import styles from "./projects.module.scss";
 
@@ -52,6 +53,8 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
   const { language, t } = useLanguage();
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showEntryOverlay, setShowEntryOverlay] = useState(true);
+  const [showContent, setShowContent] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
   const [currentBackgroundImageIndex, setCurrentBackgroundImageIndex] = useState(0);
   const [nextBackgroundImageIndex, setNextBackgroundImageIndex] = useState<number | null>(null);
@@ -59,6 +62,15 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
   const [nextOpacity, setNextOpacity] = useState(0);
   const [currentBrightness, setCurrentBrightness] = useState(0.5);
   const [nextBrightness, setNextBrightness] = useState(1);
+  const [isFormationsModalOpen, setIsFormationsModalOpen] = useState(false);
+  
+  // Animation d'entrée : afficher le contenu après l'animation du radial gradient
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
   
   // Initialiser nextBackgroundImageIndex après le premier render
   useEffect(() => {
@@ -69,6 +81,14 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
     e.preventDefault();
+    
+    // Si c'est OpenClassrooms, ouvrir la modale au lieu de naviguer
+    if (slug === "formations-openclassrooms") {
+      setIsFormationsModalOpen(true);
+      return;
+    }
+    
+    // Pour les autres catégories, navigation normale
     if (categoryIndex !== undefined) {
       sessionStorage.setItem("lastProjectCategoryIndex", categoryIndex.toString());
       sessionStorage.setItem("shouldRestoreScroll", "true");
@@ -144,12 +164,23 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
 
   return (
     <>
+      <FormationsModal
+        isOpen={isFormationsModalOpen}
+        onClose={() => setIsFormationsModalOpen(false)}
+        categoryIndex={categoryIndex}
+      />
+      <RadialTransitionOverlay
+        isActive={showEntryOverlay}
+        direction="out"
+        onComplete={() => setShowEntryOverlay(false)}
+      />
       <RadialTransitionOverlay
         isActive={isTransitioning}
         direction="in"
         onComplete={handleTransitionComplete}
       />
-      <section className={`${styles.cover} ${styles.formationSelectorPage}`}>
+      <div style={{ opacity: showContent ? 1 : 0, position: "relative" }}>
+        <section className={`${styles.cover} ${styles.formationSelectorPage}`}>
         {/* Fond animé avec rotation des images - crossfade fluide avec animation de luminosité */}
         {currentBackgroundImage && (
           <div 
@@ -158,6 +189,7 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
               backgroundImage: `url(${currentBackgroundImage})`,
               opacity: currentOpacity,
               filter: `blur(15px) brightness(${currentBrightness})`,
+              zIndex: 0,
             }}
             aria-hidden="true"
           />
@@ -170,6 +202,7 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
               opacity: nextOpacity,
               filter: `blur(15px) brightness(${nextBrightness})`,
               pointerEvents: 'none',
+              zIndex: 1, // La nouvelle image est toujours au-dessus
             }}
             aria-hidden="true"
           />
@@ -206,6 +239,7 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
           </div>
         </div>
       </section>
+      </div>
     </>
   );
 };

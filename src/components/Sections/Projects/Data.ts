@@ -979,7 +979,19 @@ export const allprojects_cover = {
     listIcons: [ReactJs, Python, Wordpress, NextJs]
 }
 
+// Liste de toutes les images principales des projets OpenClassrooms pour le diaporama
+const openclassroomsImages = [
+  // OpenClassrooms - Formation Web
+  ...openclassrooms1.map(p => p.image),
+  // OpenClassrooms - Formation React
+  ...openclassrooms2.map(p => p.image),
+  // OpenClassrooms - Formation Python
+  ...openclassrooms3.map(p => p.image),
+].filter(Boolean); // Filtrer les valeurs vides
+
 // Export de la liste des GIFs pour la rotation dans ProjectCategory
 export { allProjectsGifs };
 // Export de la liste des images pour la rotation dans AllCategoriesSelector
 export { allProjectsImages };
+// Export de la liste des images OpenClassrooms pour le diaporama dans FormationSelector
+export { openclassroomsImages };

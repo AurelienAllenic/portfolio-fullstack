@@ -239,7 +239,6 @@
   background-position: center;
   background-repeat: no-repeat;
   transform: scale(1.2);
-  z-index: 0;
   pointer-events: none;
   transition: opacity 0.8s ease-in-out, filter 0.8s ease-in-out;
   @media (max-width: 900px) {
@@ -263,37 +262,97 @@
   justify-content: flex-end;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 12px;
   text-decoration: none;
   color: #fff;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  // Animation d'entrée avec délai progressif
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  
+  // Overlay gradient pour améliorer la lisibilité du texte
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.5) 40%,
+      rgba(0, 0, 0, 0) 70%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
   &:hover {
-    transform: scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05) translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+    
+    &::before {
+      opacity: 0.9;
+    }
+    
+    .formationCardImage img {
+      transform: scale(1.1);
+      opacity: 0.85;
+    }
   }
 }
 
 .formationCardImage {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   & img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0.7;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease;
+    will-change: transform;
   }
 }
 
 .formationCardTitle {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   font-family: $font-family-primary;
   font-size: clamp(14px, 1.5vw, 18px);
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
-  padding: 12px 8px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  padding: 16px 12px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9),
+               0 1px 3px rgba(0, 0, 0, 0.8);
   line-height: 1.2;
+  transition: transform 0.3s ease;
+  
+  .formationCard:hover & {
+    transform: translateY(-2px);
+  }
+}
+
+// Animation d'entrée pour les cartes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .formationSelectorBackButton {
@@ -1224,6 +1283,22 @@
   @media (max-width: 480px) {
     padding: 32px 24px;
   }
+  
+  // Style spécifique pour la modale des formations
+  &:has(.formationsModalGrid) {
+    max-width: 900px;
+    padding: 50px 60px;
+    gap: 32px;
+    @media (max-width: 768px) {
+      max-width: 95%;
+      padding: 40px 30px;
+      gap: 24px;
+    }
+    @media (max-width: 480px) {
+      padding: 32px 20px;
+      gap: 20px;
+    }
+  }
 }
 
 .modalTitle {
@@ -1233,6 +1308,13 @@
   color: #fff;
   margin: 0;
   text-align: center;
+  
+  // Style spécifique pour la modale des formations
+  .modalContent:has(.formationsModalGrid) & {
+    font-size: clamp(26px, 3.5vw, 36px);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
 }
 
 .modalLinks {
@@ -1275,6 +1357,126 @@
   transition: color 0.2s ease;
   &:hover {
     color: #fff;
+  }
+}
+
+/* ── Modale formations OpenClassrooms ───────────────────────────────────── */
+
+.formationsModalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.formationModalCard {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  padding: 0;
+  min-height: 320px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  
+  // Overlay gradient pour améliorer la lisibilité du texte
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.3) 70%,
+      rgba(0, 0, 0, 0) 85%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: scale(1.03) translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+    
+    &::before {
+      opacity: 0.95;
+    }
+    
+    .formationModalCardImage img {
+      transform: scale(1.08);
+      opacity: 0.9;
+    }
+    
+    .formationModalCardTitle {
+      transform: translateY(-3px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    min-height: 280px;
+  }
+  
+  @media (max-width: 480px) {
+    min-height: 240px;
+  }
+}
+
+.formationModalCardImage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.75;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s ease;
+    will-change: transform;
+  }
+}
+
+.formationModalCardTitle {
+  position: relative;
+  z-index: 2;
+  font-family: $font-family-primary;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 600;
+  text-align: center;
+  padding: 20px 16px;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.95),
+               0 2px 4px rgba(0, 0, 0, 0.9);
+  line-height: 1.3;
+  transition: transform 0.3s ease;
+  letter-spacing: 0.02em;
+  
+  @media (max-width: 768px) {
+    font-size: clamp(16px, 3vw, 20px);
+    padding: 18px 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 18px;
+    padding: 16px 12px;
   }
 }
 

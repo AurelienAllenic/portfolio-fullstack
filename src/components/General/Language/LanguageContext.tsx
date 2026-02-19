@@ -85,7 +85,7 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.claquettes": "Claquettes Swing",
     "projects.category.claquettes.description": "Participation à la création du front en React.js et au déploiement",
     "projects.category.allprojects": "Autres projets",
-    "projects.category.allprojects.description": "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, projets personnels, mastère IIM et projets réalisés chez Solead.",
+    "projects.category.allprojects.description": "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, mastère IIM et projets réalisés chez Solead.",
     "projects.view.project": "Voir le projet",
     
     // Common
@@ -274,7 +274,7 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.claquettes": "Claquettes Swing",
     "projects.category.claquettes.description": "Participation in front-end creation in React.js and deployment",
     "projects.category.allprojects": "Other projects",
-    "projects.category.allprojects.description": "Browse all my projects by category: OpenClassrooms training, personal projects, IIM master's and Solead projects.",
+    "projects.category.allprojects.description": "Browse all my projects by category: OpenClassrooms training, IIM master's and Solead projects.",
     "projects.view.project": "View project",
     
     // Common
