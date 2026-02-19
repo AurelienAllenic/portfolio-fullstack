@@ -721,7 +721,7 @@ export const ascent_standalone_cover = {
     slug: 'ascent-standalone',
     content: "Site vitrine à destination des milieux de l'architecture et du design réalisé en Next.js, totalement administrable par l'utilisateur",
     sideImages: [Ascent, ascentGif1, ascentGif2, Ascent],
-    mainImage: Ascent,
+    mainImage: ascentGif1,
     listIcons: [NextJs, SCSS]
 }
 
@@ -914,15 +914,52 @@ export const solead = [
     },
 ]
 
+// Liste de tous les GIFs des projets dans "Autres projets" (OpenClassrooms, projets personnels filtrés, IIM, Solead)
+const allProjectsGifs = [
+    // OpenClassrooms
+    BookiGif,
+    OhMyFoodGif,
+    LaPanthereGif,
+    KanapGif,
+    PetitsPlatsGif,
+    KasaGif,
+    WealthealthGif,
+    // Projets personnels (filtrés - sans Paro, Ascent, Claquettes)
+    LinconnuGif,
+    AurelienAllenicGif,
+    // IIM
+    CarECommerceGif,
+    PurpleGoghGif,
+    MintGif,
+    AIMnistGif,
+    // Solead
+    DistrictGif,
+    AlteysGif,
+    OpticDurocGif,
+    GillesEtBoissierGif,
+    NoreliveGif,
+    PatrickRubinsteinGif,
+    EcoAlternativGif,
+    PierreGaslyGif,
+    EliebenhamouGif,
+    LaCommuneGif,
+    AnavieGif,
+    RollerGrillGif,
+].filter(Boolean); // Filtrer les valeurs vides
+
 /** Cover "Autres projets" — slide regroupant toutes les catégories restantes */
 export const allprojects_cover = {
     title: 'Autres projets',
     slug: 'tous-les-projets',
     content: "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, projets personnels, mastère IIM et projets réalisés chez Solead.",
     sideImages: [Linconnu, CarEcommerce, District, Booki],
-    mainImage: CarEcommerce,
+    // Utiliser le premier GIF comme image initiale (sera remplacé par rotation dans ProjectCategory)
+    mainImage: allProjectsGifs[0] || BookiGif,
     listIcons: [ReactJs, Python, Wordpress, NextJs]
 }
+
+// Export de la liste des GIFs pour la rotation dans ProjectCategory
+export { allProjectsGifs };
 
 /** Projets personnels filtrés (sans Paro, Ascent, Claquettes — affichés en slides standalone) */
 export const projectsFiltered = projects.filter(

@@ -20,7 +20,12 @@ const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "a
   const rest = parts[1];
   const lastSlash = rest.lastIndexOf("/");
   const publicId = lastSlash >= 0 ? rest.slice(lastSlash + 1) : rest;
-  let params = `f_webp,q_${quality}`;
+  
+  // Pour les GIFs, ne pas transformer en WebP pour préserver l'animation
+  const isGif = publicId.toLowerCase().endsWith('.gif') || url.toLowerCase().includes('.gif');
+  const format = isGif ? 'f_auto' : 'f_webp';
+  
+  let params = `${format},q_${quality}`;
   if (width) params += `,w_${width}`;
   return `${base}/image/upload/${params}/${publicId}`;
 };
@@ -112,8 +117,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       if (nextIndex < standaloneCovers.length) {
         const nextCover = standaloneCovers[nextIndex];
         setTimeout(() => {
-          const mainImageWidth = isMobile ? 600 : 800;
-          preloadImage(optimizeCloudinaryUrl(nextCover.mainImage, mainImageWidth, "85"));
+          // Ne pas optimiser mainImage pour préserver les GIFs
+          preloadImage(nextCover.mainImage);
           setTimeout(() => {
             const mosaicWidth = isMobile ? 400 : 600;
             nextCover.sideImages.slice(0, 2).forEach(src => {
