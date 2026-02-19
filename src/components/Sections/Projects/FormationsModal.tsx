@@ -4,6 +4,7 @@ import BlurImage from "../../General/BlurImage";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import { OPENCLASSROOMS_FORMATIONS } from "./Data";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 interface FormationsModalProps {
   isOpen: boolean;
@@ -30,9 +31,17 @@ const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "a
 
 const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProps) => {
   const { language } = useLanguage();
+  const { trackClick } = useAnalytics();
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+
+  // Tracking de l'ouverture de la modale
+  useEffect(() => {
+    if (isOpen) {
+      trackClick('modal_formations_openclassrooms_ouvrir');
+    }
+  }, [isOpen, trackClick]);
 
   useEffect(() => {
     if (isOpen) {
@@ -48,11 +57,14 @@ const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProp
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        trackClick('modal_formations_openclassrooms_fermer');
+        onClose();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, trackClick]);
 
   const handleTransitionComplete = () => {
     if (pendingUrlRef.current) {
@@ -61,6 +73,7 @@ const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProp
   };
 
   const handleFormationClick = (slug: string) => {
+    trackClick(`modal_formations_openclassrooms_${slug}`);
     if (categoryIndex !== undefined) {
       sessionStorage.setItem("lastProjectCategoryIndex", categoryIndex.toString());
       sessionStorage.setItem("shouldRestoreScroll", "true");
@@ -71,16 +84,16 @@ const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProp
 
   if (!isOpen) return null;
 
-  const displayTitleFor = (formation: typeof OPENCLASSROOMS_FORMATIONS[number]) =>
-    language === "en"
-      ? (formation.slug === "formation-web"
-          ? "Web Developer Training"
-          : formation.slug === "formation-react"
-            ? "React Training"
-            : formation.slug === "formation-python"
-              ? "Python Training"
-              : formation.title)
-      : formation.title;
+  type FormationType = typeof OPENCLASSROOMS_FORMATIONS[number];
+  
+  const displayTitleFor = (formation: FormationType): string => {
+    if (language === "en") {
+      if (formation.slug === "formation-web") return "Web Developer Training";
+      if (formation.slug === "formation-react") return "React Training";
+      if (formation.slug === "formation-python") return "Python Training";
+    }
+    return formation.title;
+  };
 
   return (
     <>
@@ -89,7 +102,10 @@ const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProp
         direction="in"
         onComplete={handleTransitionComplete}
       />
-      <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modalOverlay} onClick={() => {
+        trackClick('modal_formations_openclassrooms_fermer');
+        onClose();
+      }}>
         <div
           className={styles.modalContent}
           onClick={(e) => e.stopPropagation()}
@@ -99,7 +115,10 @@ const FormationsModal = ({ isOpen, onClose, categoryIndex }: FormationsModalProp
         >
           <button
             className={styles.modalClose}
-            onClick={onClose}
+            onClick={() => {
+              trackClick('modal_formations_openclassrooms_fermer');
+              onClose();
+            }}
             aria-label="Fermer"
           >
             ×

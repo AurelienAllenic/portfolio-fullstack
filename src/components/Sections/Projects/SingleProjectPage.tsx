@@ -25,7 +25,6 @@ const SingleProjectPage = () => {
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [showEntryOverlay, setShowEntryOverlay] = useState(true);
   const backTargetRef = useRef("/");
 
   useTrackSectionArrival('page_projects');

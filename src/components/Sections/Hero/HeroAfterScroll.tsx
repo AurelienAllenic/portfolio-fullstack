@@ -80,9 +80,15 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
 
     useEffect(() => {
       const sectionName = `section_about_${textIndex + 1}`;
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      const label = isMobile ? `${sectionName}_mobile` : sectionName;
+      const isMobileDevice = window.matchMedia("(max-width: 768px)").matches;
+      const label = isMobileDevice ? `${sectionName}_mobile` : sectionName;
+      
+      // Utiliser sessionStorage pour éviter de tracker plusieurs fois même si le composant est remonté
+      const storageKey = `tracked_${label}`;
+      if (sessionStorage.getItem(storageKey)) return;
+      
       trackClick(label);
+      sessionStorage.setItem(storageKey, 'true');
     }, [textIndex, trackClick]);
 
     useEffect(() => {

@@ -5,7 +5,6 @@ import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import BlurImage from "../../General/BlurImage";
 import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
-import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { allProjectsGifs } from "./Data";
 
@@ -142,6 +141,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
   );
 
   const { trackClick } = useAnalytics();
+  const hasTrackedRef = useRef(false);
   
   // Rotation automatique des GIFs pour "Autres projets" avec transition fluide
   useEffect(() => {
@@ -152,11 +152,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     const interval = setInterval(() => {
       const nextIndex = (currentGifIndex + 1) % allProjectsGifs.length;
       const nextImage = allProjectsGifs[nextIndex];
-      
-      // Trouver les éléments image actuels
-      const mobileImage = containerRef.current?.querySelector(`.${styles.mobileImage} img`) as HTMLElement;
-      const desktopImage = containerRef.current?.querySelector(`.${styles.right} img`) as HTMLElement;
-      const imagesToAnimate = [mobileImage, desktopImage].filter(Boolean);
       
       // Utiliser le state d'opacité pour une transition CSS plus fluide
       setImageOpacity(0);
@@ -176,7 +171,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     return () => clearInterval(interval);
   }, [isAllProjectsCover, currentGifIndex]);
 
-  useTrackSectionArrival(`project_category_${cover.slug}`);
+  // Track section arrival only when the component is visible (categoryIndex is defined)
+  useEffect(() => {
+    if (categoryIndex === undefined || hasTrackedRef.current) return;
+
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const label = isMobile 
+      ? `project_category_${cover.slug}_mobile`
+      : `project_category_${cover.slug}`;
+
+    trackClick(label);
+    hasTrackedRef.current = true;
+  }, [categoryIndex, cover.slug, trackClick]);
 
   const findProjectIndexByImage = (imageUrl: string): number | null => {
     if (!projects || projects.length === 0) return null;
@@ -727,7 +733,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                 className={styles.mobileImage} 
                 loading="eager" 
                 key={imageToUse}
-                style={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
+                imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
               />
             );
             return projectIndex !== null ? (
@@ -880,7 +886,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                 alt="main" 
                 loading="eager" 
                 key={imageToUse}
-                style={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
+                imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
               />
             );
             return projectIndex !== null ? (

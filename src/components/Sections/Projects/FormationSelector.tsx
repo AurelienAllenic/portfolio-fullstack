@@ -3,6 +3,8 @@ import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import { openclassroomsImages } from "./Data";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import styles from "./projects.module.scss";
 
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -37,6 +39,7 @@ interface FormationSelectorProps {
 
 const FormationSelector = ({ formations, categoryIndex }: FormationSelectorProps) => {
   const { language, t } = useLanguage();
+  const { trackClick } = useAnalytics();
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [isTransitioning, setIsTransitioning] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
@@ -46,6 +49,8 @@ const FormationSelector = ({ formations, categoryIndex }: FormationSelectorProps
   const [nextOpacity, setNextOpacity] = useState(0);
   const [currentBrightness, setCurrentBrightness] = useState(0.5);
   const [nextBrightness, setNextBrightness] = useState(1);
+
+  useTrackSectionArrival('page_formations_openclassrooms');
   
   // Initialiser nextBackgroundImageIndex après le premier render
   useEffect(() => {
@@ -56,6 +61,7 @@ const FormationSelector = ({ formations, categoryIndex }: FormationSelectorProps
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
     e.preventDefault();
+    trackClick(`formations_openclassrooms_${slug}`);
     if (categoryIndex !== undefined) {
       sessionStorage.setItem("lastProjectCategoryIndex", categoryIndex.toString());
       sessionStorage.setItem("shouldRestoreScroll", "true");
@@ -134,7 +140,7 @@ const FormationSelector = ({ formations, categoryIndex }: FormationSelectorProps
     ? openclassroomsImages[currentBackgroundImageIndex] 
     : null;
   
-  const nextBackgroundImage = openclassroomsImages && openclassroomsImages.length > 0 
+  const nextBackgroundImage = openclassroomsImages && openclassroomsImages.length > 0 && nextBackgroundImageIndex !== null
     ? openclassroomsImages[nextBackgroundImageIndex] 
     : null;
 

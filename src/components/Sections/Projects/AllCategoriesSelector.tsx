@@ -4,6 +4,8 @@ import BlurImage from "../../General/BlurImage";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import FormationsModal from "./FormationsModal";
 import { solead_cover, iim_cover, allProjectsImages } from "./Data";
+import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import styles from "./projects.module.scss";
 
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
@@ -51,6 +53,7 @@ interface AllCategoriesSelectorProps {
 
 const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) => {
   const { language, t } = useLanguage();
+  const { trackClick } = useAnalytics();
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showEntryOverlay, setShowEntryOverlay] = useState(true);
@@ -63,6 +66,8 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
   const [currentBrightness, setCurrentBrightness] = useState(0.5);
   const [nextBrightness, setNextBrightness] = useState(1);
   const [isFormationsModalOpen, setIsFormationsModalOpen] = useState(false);
+
+  useTrackSectionArrival('page_tous_les_projets');
   
   // Animation d'entrée : afficher le contenu après l'animation du radial gradient
   useEffect(() => {
@@ -81,6 +86,9 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
     e.preventDefault();
+    
+    // Tracking du clic
+    trackClick(`tous_les_projets_${slug}`);
     
     // Si c'est OpenClassrooms, ouvrir la modale au lieu de naviguer
     if (slug === "formations-openclassrooms") {
@@ -158,7 +166,7 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
     ? allProjectsImages[currentBackgroundImageIndex] 
     : null;
   
-  const nextBackgroundImage = allProjectsImages && allProjectsImages.length > 0 
+  const nextBackgroundImage = allProjectsImages && allProjectsImages.length > 0 && nextBackgroundImageIndex !== null
     ? allProjectsImages[nextBackgroundImageIndex] 
     : null;
 
@@ -166,7 +174,10 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
     <>
       <FormationsModal
         isOpen={isFormationsModalOpen}
-        onClose={() => setIsFormationsModalOpen(false)}
+        onClose={() => {
+          trackClick('tous_les_projets_modal_fermer');
+          setIsFormationsModalOpen(false);
+        }}
         categoryIndex={categoryIndex}
       />
       <RadialTransitionOverlay
