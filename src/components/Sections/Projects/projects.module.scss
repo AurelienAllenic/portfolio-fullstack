@@ -144,6 +144,8 @@
 
 /* Page sélecteur de formations : titre + texte au-dessus, cartes en dessous */
 .formationSelectorPage {
+  position: relative;
+  z-index: 1;
   .formationSelectorInner {
     display: flex;
     flex-direction: column;
@@ -153,6 +155,8 @@
     width: 100%;
     margin: 0 auto;
     padding-top: 35px;
+    position: relative;
+    z-index: 1;
   }
 
   .formationSelectorHeader {
@@ -185,12 +189,12 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 200px;
-    gap: 1.25rem;
+    grid-template-rows: 280px; // Augmenté de 200px à 280px
+    gap: 20px; // Augmenté de 1.25rem à 20px
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
-      grid-template-rows: repeat(3, 160px);
-      gap: 1rem;
+      grid-template-rows: repeat(3, 200px); // Augmenté de 160px à 200px
+      gap: 16px; // Augmenté de 1rem à 16px
     }
   }
 }
@@ -198,16 +202,54 @@
 .formationSelectorGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 200px;
-  gap: 14px;
+  grid-template-rows: 280px; // Augmenté de 200px à 280px
+  gap: 20px; // Augmenté de 14px à 20px
   width: 100%;
-  max-width: 500px;
+  max-width: 700px; // Augmenté de 500px à 700px
   position: relative;
   @media (max-width: 900px) {
     max-width: 100%;
-    grid-template-rows: 160px;
-    gap: 12px;
+    grid-template-rows: 200px; // Augmenté de 160px à 200px
+    gap: 16px; // Augmenté de 12px à 16px
     margin: 0 auto 24px;
+  }
+}
+
+.allCategoriesGrid {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 280px); // Augmenté de 200px à 280px
+  max-width: 700px; // Augmenté de 600px à 700px
+  gap: 20px; // Ajout d'un gap plus grand
+  @media (max-width: 900px) {
+    max-width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 200px); // Augmenté de 140px à 200px
+    gap: 16px;
+  }
+}
+
+// Fond blur animé pour la page "Autres projets"
+.allProjectsBackgroundBlur {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 600px;
+  height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.2);
+  pointer-events: none;
+  transition: opacity 0.8s ease-in-out, filter 0.8s ease-in-out;
+  @media (max-width: 900px) {
+    width: 400px;
+    height: 400px;
+    filter: blur(12px) brightness(0.5);
+  }
+  @media (max-width: 768px) {
+    width: 300px;
+    height: 300px;
+    filter: blur(10px) brightness(0.5);
   }
 }
 
@@ -220,37 +262,97 @@
   justify-content: flex-end;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 12px;
   text-decoration: none;
   color: #fff;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  // Animation d'entrée avec délai progressif
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  
+  // Overlay gradient pour améliorer la lisibilité du texte
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.5) 40%,
+      rgba(0, 0, 0, 0) 70%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
   &:hover {
-    transform: scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05) translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+    
+    &::before {
+      opacity: 0.9;
+    }
+    
+    .formationCardImage img {
+      transform: scale(1.1);
+      opacity: 0.85;
+    }
   }
 }
 
 .formationCardImage {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   & img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0.7;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease;
+    will-change: transform;
   }
 }
 
 .formationCardTitle {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   font-family: $font-family-primary;
   font-size: clamp(14px, 1.5vw, 18px);
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
-  padding: 12px 8px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  padding: 16px 12px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9),
+               0 1px 3px rgba(0, 0, 0, 0.8);
   line-height: 1.2;
+  transition: transform 0.3s ease;
+  
+  .formationCard:hover & {
+    transform: translateY(-2px);
+  }
+}
+
+// Animation d'entrée pour les cartes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .formationSelectorBackButton {
@@ -389,11 +491,11 @@
   padding: 12px 14px;
   border-radius: 4px;
   max-width: 520px;
-  min-width: 290px;
+  min-width: 400px;
   font-family: $font-family-primary;
   font-size: $font-size-body-desktop;
   position: relative;
-  top: 50px;
+  top: 35px;
   p {
     font-size: 17px;
     line-height: 1.4;
@@ -461,7 +563,7 @@
     font-family: $font-family-primary;
     font-size: 18px;
     line-height: 1.6;
-    padding: 50px 0 0 0;
+    padding: 50px 0;
     width: 55%;
     p {
       margin: 0 0 6px;
@@ -1152,6 +1254,382 @@
   min-height: 100vh;
   overflow: hidden;
 }
+/* ── Modal liens projet standalone ───────────────────────────────────── */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 40px 48px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  @media (max-width: 480px) {
+    padding: 32px 24px;
+  }
+  
+  // Style spécifique pour la modale des formations
+  &:has(.formationsModalGrid) {
+    max-width: 900px;
+    padding: 50px 60px;
+    gap: 32px;
+    @media (max-width: 768px) {
+      max-width: 95%;
+      padding: 40px 30px;
+      gap: 24px;
+    }
+    @media (max-width: 480px) {
+      padding: 32px 20px;
+      gap: 20px;
+    }
+  }
+}
+
+.modalTitle {
+  font-family: $font-family-primary;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  text-align: center;
+  
+  // Style spécifique pour la modale des formations
+  .modalContent:has(.formationsModalGrid) & {
+    font-size: clamp(26px, 3.5vw, 36px);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+}
+
+.modalLinks {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.modalLinkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-family: $font-family-primary;
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.2s ease, transform 0.2s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+  }
+}
+
+.modalClose {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+  &:hover {
+    color: #fff;
+  }
+}
+
+/* ── Modale formations OpenClassrooms ───────────────────────────────────── */
+
+.formationsModalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.formationModalCard {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+  padding: 0;
+  min-height: 320px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  
+  // Overlay gradient pour améliorer la lisibilité du texte
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.3) 70%,
+      rgba(0, 0, 0, 0) 85%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: scale(1.03) translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+    
+    &::before {
+      opacity: 0.95;
+    }
+    
+    .formationModalCardImage img {
+      transform: scale(1.08);
+      opacity: 0.9;
+    }
+    
+    .formationModalCardTitle {
+      transform: translateY(-3px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    min-height: 280px;
+  }
+  
+  @media (max-width: 480px) {
+    min-height: 240px;
+  }
+}
+
+.formationModalCardImage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.75;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.4s ease;
+    will-change: transform;
+  }
+}
+
+.formationModalCardTitle {
+  position: relative;
+  z-index: 2;
+  font-family: $font-family-primary;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 600;
+  text-align: center;
+  padding: 20px 16px;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.95),
+               0 2px 4px rgba(0, 0, 0, 0.9);
+  line-height: 1.3;
+  transition: transform 0.3s ease;
+  letter-spacing: 0.02em;
+  
+  @media (max-width: 768px) {
+    font-size: clamp(16px, 3vw, 20px);
+    padding: 18px 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 18px;
+    padding: 16px 12px;
+  }
+}
+
+/* ── AllProjectsSection — grilles de catégories ──────────────────────── */
+
+/* Grille 2×2 côté gauche (vue catégories, desktop) */
+.allProjectsCategoriesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 200px 180px;
+  gap: 14px;
+  width: 100%;
+  @media (max-width: 1200px) {
+    grid-template-rows: 170px 150px;
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+/* Grille 2×2 côté droit (vue catégories, desktop) */
+.allProjectsCategoriesGridRight {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 200px 180px;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  @media (max-width: 1200px) {
+    grid-template-rows: 170px 150px;
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+/* Grille 2×2 mobile */
+.allProjectsMobileGrid {
+  display: none;
+  @media (max-width: 900px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 120px 120px;
+    gap: 10px;
+    width: 100%;
+    padding: 0 0 20px;
+  }
+}
+
+/* Carte catégorie */
+.allProjectsCategoryCard {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  transition: border-color 0.25s ease, filter 0.25s ease;
+  filter: brightness(0.75);
+  will-change: transform;
+  backface-visibility: hidden;
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    filter: brightness(0.95);
+  }
+  &:nth-child(1) { transform: translateY(6px) translateZ(0); }
+  &:nth-child(2) { transform: translateY(-10px) translateZ(0); }
+  &:nth-child(3) { transform: translateY(8px) translateZ(0); }
+  &:nth-child(4) { transform: translateY(-6px) translateZ(0); }
+  @media (max-width: 900px) {
+    &:nth-child(n) { transform: none; }
+  }
+}
+
+.allProjectsCardImage {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.allProjectsCardTitle {
+  position: relative;
+  z-index: 1;
+  font-family: $font-family-primary;
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 500;
+  color: #fff;
+  padding: 10px 12px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  width: 100%;
+  @media (max-width: 900px) {
+    font-size: 12px;
+    padding: 8px 8px;
+  }
+}
+
+/* Bouton retour affiché dans la colonne centrale (desktop, vue catégories) */
+.allProjectsBackInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #cfcfcf;
+  font-family: $font-family-primary;
+  font-size: 16px;
+  padding: 8px 18px;
+  cursor: pointer;
+  margin-top: 24px;
+  position: relative;
+  top: 50px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  &:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+/* Bouton retour mobile (dans mobileDescription) */
+.allProjectsBackBtn {
+  display: none;
+  @media (max-width: 900px) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #cfcfcf;
+    font-family: $font-family-primary;
+    font-size: 15px;
+    padding: 6px 14px;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    &:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+  }
+}
+
 .projectMainImage {
   position: relative;
   width: 100%;

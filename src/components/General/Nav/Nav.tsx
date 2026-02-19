@@ -17,10 +17,10 @@ const Nav = () => {
   const { error: cvError } = useCv();
 
   const categories = [
-    { title: t("projects.category.personnel"), index: 0 },
-    { title: t("projects.category.solead"), index: 1 },
-    { title: t("projects.category.iim"), index: 2 },
-    { title: t("projects.category.openclassrooms"), index: 3 },
+    { title: t("projects.category.ascent"), index: 0 },
+    { title: t("projects.category.paro"), index: 1 },
+    { title: t("projects.category.claquettes"), index: 2 },
+    { title: t("projects.category.allprojects"), index: 3 },
   ];
 
   useEffect(() => {

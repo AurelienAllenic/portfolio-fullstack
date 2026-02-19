@@ -27,6 +27,17 @@ function getLangFromLabel(label: string): 'FR' | 'EN' | null {
   return null;
 }
 
+function cleanLabel(label: string): string {
+  return label
+    .replace(/_LANG_FR$/, '')
+    .replace(/_LANG_EN$/, '')
+    .replace(/_mobile$/, '');
+}
+
+function isMobileLabel(label: string): boolean {
+  return label.toLowerCase().includes('_mobile');
+}
+
 interface DailyStatSub {
   date: string;
   pageViews: number;
@@ -85,8 +96,10 @@ const Analytics: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
-  const [openMobile, setOpenMobile] = useState(false);
-  const [openDesktop, setOpenDesktop] = useState(false);
+  const [openMobileFR, setOpenMobileFR] = useState(false);
+  const [openMobileEN, setOpenMobileEN] = useState(false);
+  const [openDesktopFR, setOpenDesktopFR] = useState(false);
+  const [openDesktopEN, setOpenDesktopEN] = useState(false);
 
   const getApiUrl = () => {
     const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -269,23 +282,6 @@ const Analytics: React.FC = () => {
     }));
   }, [period, filteredDailyData, filteredMonthlyStats, filteredYearlyStats]);
 
-  const { mobileStats, desktopStats } = useMemo(() => {
-    const mobile = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
-    const desktop = { pageViews: 0, visitors: 0, clicks: {} as Record<string, number> };
-
-    currentData.forEach(item => {
-      Object.entries(item.clicks || {}).forEach(([label, count]) => {
-        if (label.toLowerCase().includes('mobile')) {
-          mobile.clicks[label] = (mobile.clicks[label] || 0) + (count as number);
-        } else {
-          desktop.clicks[label] = (desktop.clicks[label] || 0) + (count as number);
-        }
-      });
-    });
-
-    return { mobileStats: mobile, desktopStats: desktop };
-  }, [currentData]);
-
   const comparisonChartData = useMemo(() => {
     return [...currentData].reverse().map(stat => {
       const mobileClicks = Object.entries(stat.clicks || {})
@@ -310,37 +306,43 @@ const Analytics: React.FC = () => {
   const totalVisitors = currentData.reduce((sum, item) => sum + item.uniqueVisitors, 0);
   const avgVisitorsPerItem = currentData.length > 0 ? Math.round(totalVisitors / currentData.length) : 0;
 
-  const groupedMobileClicks = useMemo(() => {
-    const grouped: Record<string, Record<string, number>> = {};
-    Object.entries(mobileStats.clicks).forEach(([label, count]) => {
-      if (label.includes('_')) {
-        const [prefix, ...rest] = label.split('_');
-        const action = rest.join('_');
-        if (!grouped[prefix]) grouped[prefix] = {};
-        grouped[prefix][action] = count;
-      } else {
-        if (!grouped['autres']) grouped['autres'] = {};
-        grouped['autres'][label] = count;
-      }
-    });
-    return grouped;
-  }, [mobileStats]);
+  // Organiser les données par device et langue avec labels nettoyés
+  const { desktopFR, desktopEN, mobileFR, mobileEN } = useMemo(() => {
+    const desktopFRData: Record<string, Record<string, number>> = {};
+    const desktopENData: Record<string, Record<string, number>> = {};
+    const mobileFRData: Record<string, Record<string, number>> = {};
+    const mobileENData: Record<string, Record<string, number>> = {};
 
-  const groupedDesktopClicks = useMemo(() => {
-    const grouped: Record<string, Record<string, number>> = {};
-    Object.entries(desktopStats.clicks).forEach(([label, count]) => {
-      if (label.includes('_')) {
-        const [prefix, ...rest] = label.split('_');
-        const action = rest.join('_');
-        if (!grouped[prefix]) grouped[prefix] = {};
-        grouped[prefix][action] = count;
-      } else {
-        if (!grouped['autres']) grouped['autres'] = {};
-        grouped['autres'][label] = count;
-      }
+    currentData.forEach(item => {
+      Object.entries(item.clicks || {}).forEach(([label, count]) => {
+        const lang = getLangFromLabel(label);
+        const isMobile = isMobileLabel(label);
+        const cleanedLabel = cleanLabel(label);
+        
+        if (!lang) return; // Ignorer les labels sans langue
+        
+        // Utiliser getZoneFromLabel pour obtenir la zone (Nav, Footer, etc.)
+        const zone = getZoneFromLabel(label);
+        
+        // Le label nettoyé devient l'action
+        const action = cleanedLabel;
+        
+        const target = isMobile 
+          ? (lang === 'FR' ? mobileFRData : mobileENData)
+          : (lang === 'FR' ? desktopFRData : desktopENData);
+        
+        if (!target[zone]) target[zone] = {};
+        target[zone][action] = (target[zone][action] || 0) + (count as number);
+      });
     });
-    return grouped;
-  }, [desktopStats]);
+
+    return {
+      desktopFR: desktopFRData,
+      desktopEN: desktopENData,
+      mobileFR: mobileFRData,
+      mobileEN: mobileENData,
+    };
+  }, [currentData]);
 
   const languageStats = useMemo(() => {
     let fr = 0;
@@ -373,27 +375,6 @@ const Analytics: React.FC = () => {
   const zoneChartDataWithColors = useMemo(() => {
     return zoneChartData.map((d, i) => ({ ...d, fill: ZONE_COLORS[i % ZONE_COLORS.length] }));
   }, [zoneChartData]);
-
-  const { mobileByLang, desktopByLang } = useMemo(() => {
-    const mobile = { FR: 0, EN: 0 };
-    const desktop = { FR: 0, EN: 0 };
-    currentData.forEach(item => {
-      Object.entries(item.clicks || {}).forEach(([label, count]) => {
-        const lang = getLangFromLabel(label);
-        const n = count as number;
-        if (lang === 'FR' || lang === 'EN') {
-          if (label.toLowerCase().includes('_mobile')) {
-            if (lang === 'FR') mobile.FR += n;
-            else mobile.EN += n;
-          } else {
-            if (lang === 'FR') desktop.FR += n;
-            else desktop.EN += n;
-          }
-        }
-      });
-    });
-    return { mobileByLang: mobile, desktopByLang: desktop };
-  }, [currentData]);
 
   const languagePieData = useMemo(() => [
     { name: 'Fr', value: languageStats.FR, fill: '#3498db' },
@@ -743,30 +724,29 @@ const Analytics: React.FC = () => {
         </div>
       </div>
       <div className={styles.platformComparison}>
+        {/* Desktop Français */}
         <div className={styles.platformSection}>
           <div
             className={styles.accordionHeader}
-            onClick={() => setOpenMobile(!openMobile)}
+            onClick={() => setOpenDesktopFR(!openDesktopFR)}
             role="button"
             tabIndex={0}
-            aria-expanded={openMobile}
+            aria-expanded={openDesktopFR}
           >
             <h3 className={styles.platformTitle}>
-              📱 Mobile ({Object.values(mobileStats.clicks).reduce((a, b) => a + b, 0)})
+              💻 Desktop — Français ({Object.values(desktopFR).reduce((sum, cat) => 
+                sum + Object.values(cat).reduce((a, b) => a + b, 0), 0
+              )} clics)
             </h3>
-            <span className={styles.toggleIcon}>{openMobile ? '▲' : '▼'}</span>
+            <span className={styles.toggleIcon}>{openDesktopFR ? '▲' : '▼'}</span>
           </div>
-          <div className={styles.accordionContent} aria-hidden={!openMobile}>
-            <div className={styles.langBreakdown}>
-              Français : <strong>{mobileByLang.FR}</strong> clics — English : <strong>{mobileByLang.EN}</strong> clics
-            </div>
+          <div className={styles.accordionContent} aria-hidden={!openDesktopFR}>
             <div className={styles.topClicks}>
-              <h4>Actions Mobile</h4>
               <div className={styles.clicksList}>
-                {Object.keys(groupedMobileClicks).length > 0 ? (
-                  Object.entries(groupedMobileClicks).map(([category, actions]) => (
-                    <div key={category} className={styles.clickCategory}>
-                      <h5 className={styles.categoryTitle}>{category}</h5>
+                {Object.keys(desktopFR).length > 0 ? (
+                  Object.entries(desktopFR).map(([zone, actions]) => (
+                    <div key={zone} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{zone}</h5>
                       {Object.entries(actions)
                         .sort(([, a], [, b]) => (b as number) - (a as number))
                         .map(([action, count]) => (
@@ -778,36 +758,36 @@ const Analytics: React.FC = () => {
                     </div>
                   ))
                 ) : (
-                  <span className={styles.noClicks}>Aucune donnée mobile</span>
+                  <span className={styles.noClicks}>Aucune donnée desktop français</span>
                 )}
               </div>
             </div>
           </div>
         </div>
+
+        {/* Desktop English */}
         <div className={styles.platformSection}>
           <div
             className={styles.accordionHeader}
-            onClick={() => setOpenDesktop(!openDesktop)}
+            onClick={() => setOpenDesktopEN(!openDesktopEN)}
             role="button"
             tabIndex={0}
-            aria-expanded={openDesktop}
+            aria-expanded={openDesktopEN}
           >
             <h3 className={styles.platformTitle}>
-              💻 Desktop ({Object.values(desktopStats.clicks).reduce((a, b) => a + b, 0)})
+              💻 Desktop — English ({Object.values(desktopEN).reduce((sum, cat) => 
+                sum + Object.values(cat).reduce((a, b) => a + b, 0), 0
+              )} clics)
             </h3>
-            <span className={styles.toggleIcon}>{openDesktop ? '▲' : '▼'}</span>
+            <span className={styles.toggleIcon}>{openDesktopEN ? '▲' : '▼'}</span>
           </div>
-          <div className={styles.accordionContent} aria-hidden={!openDesktop}>
-            <div className={styles.langBreakdown}>
-              Français : <strong>{desktopByLang.FR}</strong> clics — English : <strong>{desktopByLang.EN}</strong> clics
-            </div>
+          <div className={styles.accordionContent} aria-hidden={!openDesktopEN}>
             <div className={styles.topClicks}>
-              <h4>Actions Desktop</h4>
               <div className={styles.clicksList}>
-                {Object.keys(groupedDesktopClicks).length > 0 ? (
-                  Object.entries(groupedDesktopClicks).map(([category, actions]) => (
-                    <div key={category} className={styles.clickCategory}>
-                      <h5 className={styles.categoryTitle}>{category}</h5>
+                {Object.keys(desktopEN).length > 0 ? (
+                  Object.entries(desktopEN).map(([zone, actions]) => (
+                    <div key={zone} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{zone}</h5>
                       {Object.entries(actions)
                         .sort(([, a], [, b]) => (b as number) - (a as number))
                         .map(([action, count]) => (
@@ -819,7 +799,89 @@ const Analytics: React.FC = () => {
                     </div>
                   ))
                 ) : (
-                  <span className={styles.noClicks}>Aucune donnée desktop</span>
+                  <span className={styles.noClicks}>Aucune donnée desktop anglais</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Français */}
+        <div className={styles.platformSection}>
+          <div
+            className={styles.accordionHeader}
+            onClick={() => setOpenMobileFR(!openMobileFR)}
+            role="button"
+            tabIndex={0}
+            aria-expanded={openMobileFR}
+          >
+            <h3 className={styles.platformTitle}>
+              📱 Mobile — Français ({Object.values(mobileFR).reduce((sum, cat) => 
+                sum + Object.values(cat).reduce((a, b) => a + b, 0), 0
+              )} clics)
+            </h3>
+            <span className={styles.toggleIcon}>{openMobileFR ? '▲' : '▼'}</span>
+          </div>
+          <div className={styles.accordionContent} aria-hidden={!openMobileFR}>
+            <div className={styles.topClicks}>
+              <div className={styles.clicksList}>
+                {Object.keys(mobileFR).length > 0 ? (
+                  Object.entries(mobileFR).map(([zone, actions]) => (
+                    <div key={zone} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{zone}</h5>
+                      {Object.entries(actions)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
+                        .map(([action, count]) => (
+                          <div key={action} className={styles.clickItem}>
+                            <span className={styles.clickLabel}>{action}</span>
+                            <span className={styles.clickCount}>{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  ))
+                ) : (
+                  <span className={styles.noClicks}>Aucune donnée mobile français</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile English */}
+        <div className={styles.platformSection}>
+          <div
+            className={styles.accordionHeader}
+            onClick={() => setOpenMobileEN(!openMobileEN)}
+            role="button"
+            tabIndex={0}
+            aria-expanded={openMobileEN}
+          >
+            <h3 className={styles.platformTitle}>
+              📱 Mobile — English ({Object.values(mobileEN).reduce((sum, cat) => 
+                sum + Object.values(cat).reduce((a, b) => a + b, 0), 0
+              )} clics)
+            </h3>
+            <span className={styles.toggleIcon}>{openMobileEN ? '▲' : '▼'}</span>
+          </div>
+          <div className={styles.accordionContent} aria-hidden={!openMobileEN}>
+            <div className={styles.topClicks}>
+              <div className={styles.clicksList}>
+                {Object.keys(mobileEN).length > 0 ? (
+                  Object.entries(mobileEN).map(([zone, actions]) => (
+                    <div key={zone} className={styles.clickCategory}>
+                      <h5 className={styles.categoryTitle}>{zone}</h5>
+                      {Object.entries(actions)
+                        .sort(([, a], [, b]) => (b as number) - (a as number))
+                        .map(([action, count]) => (
+                          <div key={action} className={styles.clickItem}>
+                            <span className={styles.clickLabel}>{action}</span>
+                            <span className={styles.clickCount}>{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  ))
+                ) : (
+                  <span className={styles.noClicks}>Aucune donnée mobile anglais</span>
                 )}
               </div>
             </div>

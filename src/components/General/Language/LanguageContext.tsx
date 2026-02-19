@@ -78,6 +78,15 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.web.description": "Suivie en 2021, cette formation aborde largement les bases du développement web. Des projets en HTML, CSS, SCSS, Js vanilla, ReactJs et nodeJs ont pu être réalisés.",
     "projects.category.openclassrooms": "Formations Openclassrooms",
     "projects.category.openclassrooms.description": "Lors de ces trois formations Openclassrooms : Développeur Web, développeur JavaScript / React et Développeur d'applications Python, j'ai pu aborder des thèmes et des langages de programmation variés.",
+    "projects.category.ascent": "Ascent",
+    "projects.category.ascent.description": "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données.",
+    "projects.category.paro": "Paro",
+    "projects.category.paro.description": "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome.",
+    "projects.category.claquettes": "Claquettes Swing",
+    "projects.category.claquettes.description": "Participation à la création du frontend en React.js pour le site Claquettes Swing, ainsi qu'au déploiement de l'application. Ce projet m'a permis de collaborer sur un projet concret, en tenant compte de contraintes réelles de mise en production et d'organisation du code.",
+    "projects.category.allprojects": "Autres projets",
+    "projects.category.allprojects.description": "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, mastère IIM et projets réalisés chez Solead.",
+    "projects.view.project": "Voir le projet",
     
     // Common
     "common.back": "Retour",
@@ -258,6 +267,15 @@ const translations: Record<Language, Record<string, string>> = {
     "projects.category.web.description": "Followed in 2021, this training extensively covers the basics of web development. Projects in HTML, CSS, SCSS, vanilla JS, ReactJs and NodeJs were carried out.",
     "projects.category.openclassrooms": "Openclassrooms Training",
     "projects.category.openclassrooms.description": "During these three Openclassrooms trainings: Web Developer, JavaScript/React Developer and Python Application Developer, I was able to cover varied themes and programming languages.",
+    "projects.category.ascent": "Ascent",
+    "projects.category.ascent.description": "Ascent is a web application designed for architecture and design professionals, developed in Next.js, with an administration system allowing users to manage all content autonomously. The project focuses on front-end structure, performance and maintainability, while integrating back-end logic for dynamic data management.",
+    "projects.category.paro": "Paro",
+    "projects.category.paro.description": "Showcase website project created for the artist Paro, developed with React.js (Vite). I worked on interface design, implementation of reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend was created to manage a complete backoffice allowing the artist to manage all content autonomously.",
+    "projects.category.claquettes": "Claquettes Swing",
+    "projects.category.claquettes.description": "Participation in the creation of the frontend in React.js for the Claquettes Swing website, as well as the deployment of the application. This project allowed me to collaborate on a concrete project, taking into account real production constraints and code organization.",
+    "projects.category.allprojects": "Other projects",
+    "projects.category.allprojects.description": "Browse all my projects by category: OpenClassrooms training, IIM master's and Solead projects.",
+    "projects.view.project": "View project",
     
     // Common
     "common.back": "Back",

@@ -536,9 +536,9 @@ export const projects = [
         image: Paro,
         title: 'Paro',
         imageDiaporama: [Paro, paroGif],
-        description: "Projet de site vitrine pour l'artiste Paro réalisé avec React.js / Vite",
+        description: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome.",
         titleEn: 'Paro',
-        descriptionEn: 'Showcase website project for the artist Paros created with React.js / Vite',
+        descriptionEn: 'Showcase website project created for the artist Paro, developed with React.js (Vite). I worked on interface design, implementation of reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend was created to manage a complete backoffice allowing the artist to manage all content autonomously.',
         github: '',
         demo: 'https://paro-musique.com',
         figma:'',
@@ -550,9 +550,9 @@ export const projects = [
         image: Ascent,
         imageDiaporama: [Ascent, ascentGif1, ascentGif2],
         title: 'Ascent',
-        description: "Site vitrine à destination des milieux de l'architecture et du design réalisé en Next.js, totalement administrable par l'utilisateur",
+        description: "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données.",
         titleEn: 'Ascent',
-        descriptionEn: 'Showcase website for architecture and design professionals created in Next.js, fully manageable by the user',
+        descriptionEn: 'Ascent is a web application designed for architecture and design professionals, developed in Next.js, with an administration system allowing users to manage all content autonomously. The project focuses on front-end structure, performance and maintainability, while integrating back-end logic for dynamic data management.',
         github: 'https://github.com/AurelienAllenic/ascent',
         demo: 'https://ascent-six.vercel.app/',
         figma:'https://www.figma.com/design/JCrWII2C9NFsQSyAgcwxfh/Ascent?node-id=0-1&t=wqqq5q2qzDiRfd0W-1',
@@ -564,9 +564,9 @@ export const projects = [
         image: Claquettes,
         imageDiaporama: [Claquettes, ClaquettesGif],
         title: 'claquettes-swing.fr',
-        description: 'Participation à la création du front en React.js et au déploiement',
+        description: "Participation à la création du frontend en React.js pour le site Claquettes Swing, ainsi qu'au déploiement de l'application. Ce projet m'a permis de collaborer sur un projet concret, en tenant compte de contraintes réelles de mise en production et d'organisation du code.",
         titleEn: 'claquettes-swing.fr',
-        descriptionEn: 'Participation in front-end creation in React.js and deployment',
+        descriptionEn: 'Participation in the creation of the frontend in React.js for the Claquettes Swing website, as well as the deployment of the application. This project allowed me to collaborate on a concrete project, taking into account real production constraints and code organization.',
         github: '',
         demo: 'https://claquettes-swing.fr',
         figma:'',
@@ -713,6 +713,35 @@ export const iim = [
         technologies: ['reactnative', 'typescript', 'expo']
     },
 ]
+
+/* STANDALONE PROJECT COVERS (slides dédiées sur la page principale) */
+
+export const ascent_standalone_cover = {
+    title: 'Ascent',
+    slug: 'ascent-standalone',
+    content: "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données.",
+    sideImages: [Ascent, 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-2_uz28yw.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-3_lfnua8.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-4_sabfmd.webp'],
+    mainImage: ascentGif1,
+    listIcons: [NextJs, SCSS]
+}
+
+export const paro_standalone_cover = {
+    title: 'Paro',
+    slug: 'paro-standalone',
+    content: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome.",
+    sideImages: ['https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-1_n4hnct.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-2_jbaqco.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-3_xz4qvt.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-4_cl5ohm.webp'],
+    mainImage: paroGif,
+    listIcons: [ReactJs, SCSS, nodeJs]
+}
+
+export const claquettes_standalone_cover = {
+    title: 'claquettes-swing.fr',
+    slug: 'claquettes-standalone',
+    content: "Participation à la création du frontend en React.js pour le site Claquettes Swing, ainsi qu'au déploiement de l'application. Ce projet m'a permis de collaborer sur un projet concret, en tenant compte de contraintes réelles de mise en production et d'organisation du code.",
+    sideImages: ['https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes-1_goqycb.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes-3_q7atm3.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes-2_nwjkwj.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes-4_woytda.webp'],
+    mainImage: ClaquettesGif,
+    listIcons: [ReactJs, SCSS]
+}
 
 export const solead = [
     {
@@ -884,3 +913,85 @@ export const solead = [
         technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
     },
 ]
+
+// Liste de tous les GIFs des projets dans "Autres projets" (OpenClassrooms, projets personnels filtrés, IIM, Solead)
+const allProjectsGifs = [
+    // OpenClassrooms
+    BookiGif,
+    OhMyFoodGif,
+    LaPanthereGif,
+    KanapGif,
+    PetitsPlatsGif,
+    KasaGif,
+    WealthealthGif,
+    // Projets personnels (filtrés - sans Paro, Ascent, Claquettes)
+    LinconnuGif,
+    AurelienAllenicGif,
+    // IIM
+    CarECommerceGif,
+    PurpleGoghGif,
+    MintGif,
+    AIMnistGif,
+    // Solead
+    DistrictGif,
+    AlteysGif,
+    OpticDurocGif,
+    GillesEtBoissierGif,
+    NoreliveGif,
+    PatrickRubinsteinGif,
+    EcoAlternativGif,
+    PierreGaslyGif,
+    EliebenhamouGif,
+    LaCommuneGif,
+    AnavieGif,
+    RollerGrillGif,
+].filter(Boolean); // Filtrer les valeurs vides
+
+/** Projets personnels filtrés (sans Paro, Ascent, Claquettes — affichés en slides standalone) */
+export const projectsFiltered = projects.filter(
+    p => !['Paro', 'Ascent', 'claquettes-swing.fr'].includes(p.title)
+);
+
+// Liste de toutes les images principales (pas les GIFs) des projets dans "Autres projets"
+const allProjectsImages = [
+    // OpenClassrooms - Formation Web
+    ...openclassrooms1.map(p => p.image),
+    // OpenClassrooms - Formation React
+    ...openclassrooms2.map(p => p.image),
+    // OpenClassrooms - Formation Python
+    ...openclassrooms3.map(p => p.image),
+    // Projets personnels filtrés (sans Paro, Ascent, Claquettes)
+    ...projectsFiltered.map(p => p.image),
+    // IIM
+    ...iim.map(p => p.image),
+    // Solead
+    ...solead.map(p => p.image),
+].filter(Boolean); // Filtrer les valeurs vides
+
+/** Cover "Autres projets" — slide regroupant toutes les catégories restantes */
+export const allprojects_cover = {
+    title: 'Autres projets',
+    slug: 'tous-les-projets',
+    content: "Retrouvez ici l'ensemble de mes projets regroupés par catégorie : formations OpenClassrooms, projets personnels, mastère IIM et projets réalisés chez Solead.",
+    sideImages: [Linconnu, CarEcommerce, District, Booki],
+    // Utiliser le premier GIF comme image initiale (sera remplacé par rotation dans ProjectCategory)
+    mainImage: allProjectsGifs[0] || BookiGif,
+    listIcons: [ReactJs, Python, Wordpress, NextJs]
+}
+
+// Liste de toutes les images principales des projets OpenClassrooms pour le diaporama
+const openclassroomsImages = [
+  // OpenClassrooms - Formation Web
+  ...openclassrooms1.map(p => p.image),
+  // OpenClassrooms - Formation React
+  ...openclassrooms2.map(p => p.image),
+  // OpenClassrooms - Formation Python
+  ...openclassrooms3.map(p => p.image),
+].filter(Boolean); // Filtrer les valeurs vides
+
+// Export de la liste des GIFs pour la rotation dans ProjectCategory
+export { allProjectsGifs };
+// Export de la liste des images pour la rotation dans AllCategoriesSelector
+export { allProjectsImages };
+// Export de la liste des images OpenClassrooms pour le diaporama dans FormationSelector
+export { openclassroomsImages };

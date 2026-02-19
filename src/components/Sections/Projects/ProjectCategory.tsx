@@ -5,8 +5,8 @@ import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import BlurImage from "../../General/BlurImage";
 import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
-import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { allProjectsGifs } from "./Data";
 
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
@@ -16,7 +16,12 @@ const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "a
   const rest = parts[1];
   const lastSlash = rest.lastIndexOf("/");
   const publicId = lastSlash >= 0 ? rest.slice(lastSlash + 1) : rest;
-  let params = `f_webp,q_${quality}`;
+  
+  // Pour les GIFs, ne pas transformer en WebP pour préserver l'animation
+  const isGif = publicId.toLowerCase().endsWith('.gif') || url.toLowerCase().includes('.gif');
+  const format = isGif ? 'f_auto' : 'f_webp';
+  
+  let params = `${format},q_${quality}`;
   if (width) params += `,w_${width}`;
   return `${base}/image/upload/${params}/${publicId}`;
 };
@@ -68,6 +73,7 @@ interface ProjectCategoryProps {
   cover: ProjectCover;
   projects?: Project[];
   categoryIndex?: number;
+  onCtaClick?: () => void;
 }
 
 const isUrl = (v: string) => /^https?:\/\//i.test(v);
@@ -116,17 +122,67 @@ const slugifyProjectName = (name: string): string =>
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '') || 'project';
 
-const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProps) => {
+const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: ProjectCategoryProps) => {
   const { t, language } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const pendingUrlRef = useRef<string | null>(null);
+  const [currentGifIndex, setCurrentGifIndex] = useState(0);
+  const isAllProjectsCover = cover.slug === 'tous-les-projets';
+  const [imageOpacity, setImageOpacity] = useState(1);
+  
+  // Utiliser un state pour l'image principale afin de forcer le re-render lors de la rotation
+  const [currentMainImage, setCurrentMainImage] = useState<string>(
+    isAllProjectsCover && allProjectsGifs && allProjectsGifs.length > 0 
+      ? allProjectsGifs[0] 
+      : cover.mainImage
+  );
 
   const { trackClick } = useAnalytics();
+  const hasTrackedRef = useRef(false);
+  
+  // Rotation automatique des GIFs pour "Autres projets" avec transition fluide
+  useEffect(() => {
+    if (!isAllProjectsCover || !allProjectsGifs || allProjectsGifs.length <= 1) {
+      return;
+    }
 
-  useTrackSectionArrival(`project_category_${cover.slug}`);
+    const interval = setInterval(() => {
+      const nextIndex = (currentGifIndex + 1) % allProjectsGifs.length;
+      const nextImage = allProjectsGifs[nextIndex];
+      
+      // Utiliser le state d'opacité pour une transition CSS plus fluide
+      setImageOpacity(0);
+      
+      // Changer l'image après un court délai (pendant le fade out)
+      setTimeout(() => {
+        setCurrentMainImage(nextImage);
+        setCurrentGifIndex(nextIndex);
+        
+        // Fade in de la nouvelle image
+        setTimeout(() => {
+          setImageOpacity(1);
+        }, 50);
+      }, 500); // Délai correspondant à la durée du fade out
+    }, 3000); // Change de GIF toutes les 3 secondes
+
+    return () => clearInterval(interval);
+  }, [isAllProjectsCover, currentGifIndex]);
+
+  // Track section arrival only when the component is visible (categoryIndex is defined)
+  useEffect(() => {
+    if (categoryIndex === undefined || hasTrackedRef.current) return;
+
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const label = isMobile 
+      ? `project_category_${cover.slug}_mobile`
+      : `project_category_${cover.slug}`;
+
+    trackClick(label);
+    hasTrackedRef.current = true;
+  }, [categoryIndex, cover.slug, trackClick]);
 
   const findProjectIndexByImage = (imageUrl: string): number | null => {
     if (!projects || projects.length === 0) return null;
@@ -191,26 +247,52 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
     'projets-personnels': 'personnel',
     'projets-solead': 'solead',
     'mastere-iim': 'iim',
+    'ascent-standalone': 'ascent',
+    'paro-standalone': 'paro',
+    'claquettes-standalone': 'claquettes',
+    'allprojects': 'allprojects',
+    'tous-les-projets': 'allprojects',
   };
   
-  const categoryKey = categoryKeyMap[cover.slug] || 'web';
-  const categoryTitle = useMemo(() => t(`projects.category.${categoryKey}`), [t, categoryKey]);
-  const categoryDescription = useMemo(() => t(`projects.category.${categoryKey}.description`), [t, categoryKey]);
+  const categoryKey = categoryKeyMap[cover.slug] || null;
+  const categoryTitle = useMemo(() => {
+    if (categoryKey) return t(`projects.category.${categoryKey}`);
+    return cover.title;
+  }, [t, categoryKey, cover.title]);
+  const categoryDescription = useMemo(() => {
+    if (categoryKey) return t(`projects.category.${categoryKey}.description`);
+    return cover.content;
+  }, [t, categoryKey, cover.content]);
 
   const titleParts = useMemo(() => {
     const parts = categoryTitle.split(" ");
+    const isStandaloneProject = ['ascent-standalone', 'paro-standalone', 'claquettes-standalone'].includes(cover.slug);
+    const accentText = parts.slice(1).join(" ");
+    
+    // Pour les projets standalone en français, ne pas afficher de deuxième ligne si accent est vide
+    if (isStandaloneProject && language === 'fr' && !accentText) {
+      return {
+        main: parts[0] || "WEB",
+        accent: ""
+      };
+    }
+    
     return {
       main: parts[0] || "WEB",
-      accent: parts.slice(1).join(" ") || "WEB"
+      accent: accentText || "WEB"
     };
-  }, [categoryTitle]);
+  }, [categoryTitle, cover.slug, language]);
 
   useEffect(() => {
     const preloadImages = async () => {
       try {
-        const mainImageWidth = isMobile ? 600 : 800;
-
-        await preloadImage(optimizeCloudinaryUrl(cover.mainImage, mainImageWidth, "85"));
+        // Pour "Autres projets", précharger tous les GIFs
+        if (isAllProjectsCover && allProjectsGifs && allProjectsGifs.length > 0) {
+          await Promise.all(allProjectsGifs.map(gif => preloadImage(gif)));
+        } else {
+          // Ne pas optimiser mainImage pour préserver les GIFs
+          await preloadImage(currentMainImage);
+        }
 
         setTimeout(() => {
           cover.sideImages.slice(0, 2).forEach(src => {
@@ -223,11 +305,15 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       }
     };
     preloadImages();
-  }, [cover]);
+  }, [cover, isAllProjectsCover, currentMainImage]);
 
   const handleViewProjectsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     trackClick(`${cover.slug}_voir_les_projets`);
+    if (onCtaClick) {
+      onCtaClick();
+      return;
+    }
     if (categoryIndex !== undefined) {
       sessionStorage.setItem('lastProjectCategoryIndex', categoryIndex.toString());
       sessionStorage.setItem('shouldRestoreScroll', 'true');
@@ -285,7 +371,10 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
     gsap.set(mosaicItems, { opacity: 0 });
     gsap.set(ctaButton, { opacity: 0, y: 30 });
-    gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
+    const titleElements = [titleMain, titleAccent].filter(Boolean);
+    if (titleElements.length > 0) {
+      gsap.set(titleElements, { opacity: 0, y: -30 });
+    }
     gsap.set(contentBox, { opacity: 0 });
     gsap.set(icons, { opacity: 0 });
     gsap.set(rightImage, { opacity: 0, x: 50 });
@@ -326,7 +415,10 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
 
     gsap.set(mosaicItems, { opacity: 0 });
     gsap.set(ctaButton, { opacity: 0, y: 30 });
-    gsap.set([titleMain, titleAccent], { opacity: 0, y: -30 });
+    const titleElements = [titleMain, titleAccent].filter(Boolean);
+    if (titleElements.length > 0) {
+      gsap.set(titleElements, { opacity: 0, y: -30 });
+    }
     gsap.set(contentBox, { opacity: 0 });
     gsap.set(icons, { opacity: 0 });
     gsap.set(rightImage, { opacity: 0, x: 50 });
@@ -510,12 +602,15 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
         y: 0,
         duration: 0.4,
       }, 0.3);
-      tl.to([titleMain, titleAccent], {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        stagger: 0.05,
-      }, 0.4);
+      const titleElementsToAnimate = [titleMain, titleAccent].filter(Boolean);
+      if (titleElementsToAnimate.length > 0) {
+        tl.to(titleElementsToAnimate, {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.05,
+        }, 0.4);
+      }
       tl.to(contentBox, {
         opacity: 1,
         duration: 0.4,
@@ -620,14 +715,27 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             <h2 className={styles.mobileTitleMain}>
               {titleParts.main}
             </h2>
-            <h3 className={styles.mobileTitleAccent}>
-              {titleParts.accent}
-            </h3>
+            {titleParts.accent && (
+              <h3 className={styles.mobileTitleAccent}>
+                {titleParts.accent}
+              </h3>
+            )}
           </div>
           {(() => {
-            const projectIndex = findProjectIndexByImage(cover.mainImage);
-            const mainImgSrc = optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85");
-            const content = <BlurImage src={cover.mainImage} fullSrc={mainImgSrc} alt="main" className={styles.mobileImage} loading="eager" />;
+            const imageToUse = isAllProjectsCover ? currentMainImage : cover.mainImage;
+            const projectIndex = findProjectIndexByImage(imageToUse);
+            // Ne pas optimiser mainImage pour préserver les GIFs
+            const content = (
+              <BlurImage 
+                src={imageToUse} 
+                fullSrc={imageToUse} 
+                alt="main" 
+                className={styles.mobileImage} 
+                loading="eager" 
+                key={imageToUse}
+                imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
+              />
+            );
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
@@ -683,12 +791,12 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           })}
         </div>
         <a 
-          href={`/projects/${cover.slug}`} 
+          href={onCtaClick ? '#' : `/projects/${cover.slug}`} 
           className={styles.cta}
           onClick={handleViewProjectsClick}
         >
           <span className={styles.arrow} aria-hidden><HiArrowRight /></span>
-          <span>{t("projects.view")}</span>
+          <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
         </a>
       </aside>
       <div className={styles.center}>
@@ -696,9 +804,11 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
           <span className={styles.titleMain}>
             {titleParts.main}
           </span>
-          <span className={styles.titleAccent}>
-            {titleParts.accent}
-          </span>
+          {titleParts.accent && (
+            <span className={styles.titleAccent}>
+              {titleParts.accent}
+            </span>
+          )}
         </h2>
         <div className={styles.contentBox}>
           {categoryDescription.split(". ").map((line, i, arr) => (
@@ -766,9 +876,19 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
       </div>
         <aside className={styles.right}>
           {(() => {
-            const projectIndex = findProjectIndexByImage(cover.mainImage);
-            const mainImgSrc = optimizeCloudinaryUrl(cover.mainImage, isMobile ? 600 : 800, "85");
-            const content = <BlurImage src={cover.mainImage} fullSrc={mainImgSrc} alt="main" loading="eager" />;
+            const imageToUse = isAllProjectsCover ? currentMainImage : cover.mainImage;
+            const projectIndex = findProjectIndexByImage(imageToUse);
+            // Ne pas optimiser mainImage pour préserver les GIFs
+            const content = (
+              <BlurImage 
+                src={imageToUse} 
+                fullSrc={imageToUse} 
+                alt="main" 
+                loading="eager" 
+                key={imageToUse}
+                imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
+              />
+            );
             return projectIndex !== null ? (
               <a
                 href={`/projects/${cover.slug}?project=${projectIndex}`}
@@ -877,14 +997,14 @@ const ProjectCategory = ({ cover, projects, categoryIndex }: ProjectCategoryProp
             );
           })()}
           <a 
-            href={`/projects/${cover.slug}`} 
+            href={onCtaClick ? '#' : `/projects/${cover.slug}`} 
             className={styles.mobileCta}
             onClick={handleViewProjectsClick}
           >
             <span className={styles.arrow} aria-hidden>
             <HiArrowRight />
             </span>
-            <span>{t("projects.view")}</span>
+            <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
           </a>
         </div>
       </div>

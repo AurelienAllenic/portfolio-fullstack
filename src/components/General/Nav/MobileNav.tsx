@@ -6,11 +6,11 @@ import { useNavigation } from "./NavigationContext";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
 import {
-  formations_openclassrooms_cover,
+  ascent_standalone_cover,
+  paro_standalone_cover,
+  claquettes_standalone_cover,
+  allprojects_cover,
   OPENCLASSROOMS_FORMATIONS,
-  projects_cover,
-  solead_cover,
-  iim_cover,
   projects,
   solead,
   iim,
@@ -37,10 +37,10 @@ const MobileNav = () => {
   const { trackClick } = useAnalytics();
   
   const PROJECT_CATEGORIES = useMemo(() => [
-    { title: t("projects.category.personnel"), index: 0, image: projects_cover.mainImage },
-    { title: t("projects.category.solead"), index: 1, image: solead_cover.mainImage },
-    { title: t("projects.category.iim"), index: 2, image: iim_cover.mainImage },
-    { title: t("projects.category.openclassrooms"), index: 3, image: formations_openclassrooms_cover.mainImage },
+    { title: t("projects.category.ascent"), index: 0, image: ascent_standalone_cover.mainImage },
+    { title: t("projects.category.paro"), index: 1, image: paro_standalone_cover.mainImage },
+    { title: t("projects.category.claquettes"), index: 2, image: claquettes_standalone_cover.mainImage },
+    { title: t("projects.category.allprojects"), index: 3, image: allprojects_cover.mainImage },
   ], [t]);
   const mobileNavRef = useRef<HTMLDivElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);

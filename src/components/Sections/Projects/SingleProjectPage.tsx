@@ -8,13 +8,13 @@ import {
   solead_cover,
   iim_cover,
   OPENCLASSROOMS_FORMATIONS,
-  projects,
+  projectsFiltered,
   solead,
   iim,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
-import FormationSelector from "./FormationSelector";
+import AllCategoriesSelector from "./AllCategoriesSelector";
 import styles from "./projects.module.scss";
 
 const FORMATION_SLUGS = ["formation-web", "formation-react", "formation-python"] as const;
@@ -25,16 +25,15 @@ const SingleProjectPage = () => {
   const navigate = useNavigate();
   const [isTransitioningBack, setIsTransitioningBack] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [showEntryOverlay, setShowEntryOverlay] = useState(true);
   const backTargetRef = useRef("/");
 
   useTrackSectionArrival('page_projects');
 
-  const isFormationsOpenclassrooms = categorySlug === "formations-openclassrooms";
-  const formationSlug = isFormationsOpenclassrooms && programmingLanguage && FORMATION_SLUGS.includes(programmingLanguage as typeof FORMATION_SLUGS[number])
+  const isTousLesProjetsPage = categorySlug === "tous-les-projets";
+  // Détecter si on est sur une formation OpenClassrooms (formation-web, formation-react, formation-python)
+  const formationSlug = programmingLanguage && FORMATION_SLUGS.includes(programmingLanguage as typeof FORMATION_SLUGS[number])
     ? programmingLanguage
     : null;
-  const isFormationSelectorPage = isFormationsOpenclassrooms && !formationSlug;
   
   const categoryKeyMap: Record<string, string> = {
     "formation-web": "web",
@@ -53,7 +52,7 @@ const SingleProjectPage = () => {
   ];
 
   const projectsData: Project[][] = [
-    projects,
+    projectsFiltered,
     solead,
     iim,
   ];
@@ -103,7 +102,7 @@ const SingleProjectPage = () => {
     }
   }
 
-  if (categoryIndex === -1 && !isFormationSelectorPage && !formationSlug) {
+  if (categoryIndex === -1 && !formationSlug && !isTousLesProjetsPage) {
     return (
       <div style={{ 
         display: "flex", 
@@ -141,9 +140,17 @@ const SingleProjectPage = () => {
   }
 
   const handleBack = () => {
-    backTargetRef.current = formationSlug ? "/projects/formations-openclassrooms" : "/";
-    if (!formationSlug) {
+    if (formationSlug) {
+      // Formation spécifique OpenClassrooms → retour à la page "Autres projets"
+      backTargetRef.current = "/projects/tous-les-projets";
+    } else if (isTousLesProjetsPage) {
+      // Page tous-les-projets → retour à l'accueil
+      backTargetRef.current = "/";
       sessionStorage.setItem('shouldRestoreScroll', 'true');
+    } else {
+      // Toutes les autres catégories (mastere-iim, projets-solead…)
+      // → retour à la page de sélection "Autres projets"
+      backTargetRef.current = "/projects/tous-les-projets";
     }
     setIsTransitioningBack(true);
   };
@@ -161,37 +168,30 @@ const SingleProjectPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Éviter que l'overlay "in" (fermeture) reste actif après navigation formation → sélecteur
+  // Éviter que l'overlay "in" (fermeture) reste actif après navigation
   useEffect(() => {
-    if (isFormationSelectorPage) {
+    if (isTousLesProjetsPage) {
       setIsTransitioningBack(false);
     }
-  }, [isFormationSelectorPage]);
+  }, [isTousLesProjetsPage]);
 
-  if (isFormationSelectorPage) {
+  if (isTousLesProjetsPage) {
     return (
       <>
-        <RadialTransitionOverlay
-          isActive={showEntryOverlay}
-          direction="out"
-          onComplete={() => setShowEntryOverlay(false)}
-        />
         <RadialTransitionOverlay
           isActive={isTransitioningBack}
           direction="in"
           onComplete={handleTransitionBackComplete}
         />
-        <div style={{ opacity: showContent ? 1 : 0, position: "relative" }}>
-          <FormationSelector formations={OPENCLASSROOMS_FORMATIONS} />
-          <button
-            type="button"
-            onClick={handleBack}
-            className={styles.formationSelectorBackButton}
-            aria-label="Retour à l'accueil"
-          >
-            ← Retour
-          </button>
-        </div>
+        <AllCategoriesSelector categoryIndex={categoryIndex !== -1 ? categoryIndex : undefined} />
+        <button
+          type="button"
+          onClick={handleBack}
+          className={styles.formationSelectorBackButton}
+          aria-label="Retour à l'accueil"
+        >
+          ← Retour
+        </button>
         <LanguageToggle />
       </>
     );
