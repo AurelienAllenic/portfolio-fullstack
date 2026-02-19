@@ -1280,8 +1280,36 @@
   flex-direction: column;
   align-items: center;
   gap: 28px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Style du scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  // Pour Firefox
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+  
   @media (max-width: 480px) {
     padding: 32px 24px;
+    max-height: 95vh;
   }
   
   // Style spécifique pour la modale des formations
@@ -1289,14 +1317,17 @@
     max-width: 900px;
     padding: 50px 60px;
     gap: 32px;
+    max-height: 90vh;
     @media (max-width: 768px) {
       max-width: 95%;
       padding: 40px 30px;
       gap: 24px;
+      max-height: 95vh;
     }
     @media (max-width: 480px) {
       padding: 32px 20px;
       gap: 20px;
+      max-height: 95vh;
     }
   }
 }
@@ -1347,16 +1378,20 @@
   position: absolute;
   top: 14px;
   right: 16px;
-  background: transparent;
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(4px);
   border: none;
   color: rgba(255, 255, 255, 0.5);
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
   padding: 4px 8px;
-  transition: color 0.2s ease;
+  z-index: 20;
+  border-radius: 4px;
+  transition: color 0.2s ease, background 0.2s ease;
   &:hover {
     color: #fff;
+    background: rgba(17, 17, 17, 1);
   }
 }
 
@@ -1368,9 +1403,11 @@
   gap: 24px;
   width: 100%;
   max-width: 100%;
+  padding-bottom: 8px; // Espace supplémentaire pour le scroll
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 20px;
+    padding-bottom: 12px;
   }
 }
 
