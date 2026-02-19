@@ -947,6 +947,27 @@ const allProjectsGifs = [
     RollerGrillGif,
 ].filter(Boolean); // Filtrer les valeurs vides
 
+/** Projets personnels filtrés (sans Paro, Ascent, Claquettes — affichés en slides standalone) */
+export const projectsFiltered = projects.filter(
+    p => !['Paro', 'Ascent', 'claquettes-swing.fr'].includes(p.title)
+);
+
+// Liste de toutes les images principales (pas les GIFs) des projets dans "Autres projets"
+const allProjectsImages = [
+    // OpenClassrooms - Formation Web
+    ...openclassrooms1.map(p => p.image),
+    // OpenClassrooms - Formation React
+    ...openclassrooms2.map(p => p.image),
+    // OpenClassrooms - Formation Python
+    ...openclassrooms3.map(p => p.image),
+    // Projets personnels filtrés (sans Paro, Ascent, Claquettes)
+    ...projectsFiltered.map(p => p.image),
+    // IIM
+    ...iim.map(p => p.image),
+    // Solead
+    ...solead.map(p => p.image),
+].filter(Boolean); // Filtrer les valeurs vides
+
 /** Cover "Autres projets" — slide regroupant toutes les catégories restantes */
 export const allprojects_cover = {
     title: 'Autres projets',
@@ -960,8 +981,5 @@ export const allprojects_cover = {
 
 // Export de la liste des GIFs pour la rotation dans ProjectCategory
 export { allProjectsGifs };
-
-/** Projets personnels filtrés (sans Paro, Ascent, Claquettes — affichés en slides standalone) */
-export const projectsFiltered = projects.filter(
-    p => !['Paro', 'Ascent', 'claquettes-swing.fr'].includes(p.title)
-);
+// Export de la liste des images pour la rotation dans AllCategoriesSelector
+export { allProjectsImages };

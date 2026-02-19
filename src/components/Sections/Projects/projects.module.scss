@@ -144,6 +144,8 @@
 
 /* Page sélecteur de formations : titre + texte au-dessus, cartes en dessous */
 .formationSelectorPage {
+  position: relative;
+  z-index: 1;
   .formationSelectorInner {
     display: flex;
     flex-direction: column;
@@ -153,6 +155,8 @@
     width: 100%;
     margin: 0 auto;
     padding-top: 35px;
+    position: relative;
+    z-index: 1;
   }
 
   .formationSelectorHeader {
@@ -185,12 +189,12 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 200px;
-    gap: 1.25rem;
+    grid-template-rows: 280px; // Augmenté de 200px à 280px
+    gap: 20px; // Augmenté de 1.25rem à 20px
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
-      grid-template-rows: repeat(3, 160px);
-      gap: 1rem;
+      grid-template-rows: repeat(3, 200px); // Augmenté de 160px à 200px
+      gap: 16px; // Augmenté de 1rem à 16px
     }
   }
 }
@@ -198,27 +202,55 @@
 .formationSelectorGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 200px;
-  gap: 14px;
+  grid-template-rows: 280px; // Augmenté de 200px à 280px
+  gap: 20px; // Augmenté de 14px à 20px
   width: 100%;
-  max-width: 500px;
+  max-width: 700px; // Augmenté de 500px à 700px
   position: relative;
   @media (max-width: 900px) {
     max-width: 100%;
-    grid-template-rows: 160px;
-    gap: 12px;
+    grid-template-rows: 200px; // Augmenté de 160px à 200px
+    gap: 16px; // Augmenté de 12px à 16px
     margin: 0 auto 24px;
   }
 }
 
 .allCategoriesGrid {
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 200px);
-  max-width: 600px;
+  grid-template-rows: repeat(2, 280px); // Augmenté de 200px à 280px
+  max-width: 700px; // Augmenté de 600px à 700px
+  gap: 20px; // Ajout d'un gap plus grand
   @media (max-width: 900px) {
     max-width: 100%;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 140px);
+    grid-template-rows: repeat(2, 200px); // Augmenté de 140px à 200px
+    gap: 16px;
+  }
+}
+
+// Fond blur animé pour la page "Autres projets"
+.allProjectsBackgroundBlur {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 600px;
+  height: 600px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.2);
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease-in-out, filter 0.8s ease-in-out;
+  @media (max-width: 900px) {
+    width: 400px;
+    height: 400px;
+    filter: blur(12px) brightness(0.5);
+  }
+  @media (max-width: 768px) {
+    width: 300px;
+    height: 300px;
+    filter: blur(10px) brightness(0.5);
   }
 }
 
