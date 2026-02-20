@@ -243,7 +243,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
           if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
           if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
           if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
-          if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+          if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 20 });
         }
         gsap.to(firstElement, {
           y: 0,
@@ -336,7 +336,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
       if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
       if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
-      if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+      if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 20 });
     }
 
     const tl = gsap.timeline({

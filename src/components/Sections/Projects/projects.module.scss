@@ -34,6 +34,9 @@
   padding: 70px 48px;
   overflow: hidden;
   min-height: 100vh;
+  @media (max-width: 1228px) {
+    padding: 70px 30px;
+  }
   @media (max-width: 900px) {
     padding: 50px 20px;
   }
@@ -45,8 +48,14 @@
   align-items: center;
   max-width: 1500px;
   width: 100%;
+  @media (max-width: 1320px) {
+    grid-template-columns: 345px 0.75fr 30vw;
+  }
+  @media (max-width: 1260px) {
+    grid-template-columns: 300px 0.75fr 30vw;
+  }
   @media (max-width: 1200px) { 
-    grid-template-columns: 300px 0.5fr 40vw; 
+    grid-template-columns: 250px 0.5fr 40vw; 
   }
   @media (max-width: 1050px) { 
     grid-template-columns: 300px 0.5fr 37vw; 
@@ -65,6 +74,10 @@
     flex-direction: column;
     gap: 30px;
     padding: 20px;
+  }
+  @media (max-width: 435px) {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 .left {
@@ -443,7 +456,7 @@
   line-height: 1.1;
   z-index: 1;
   text-align: center;
-  opacity: 0;
+  opacity: 0; /* Masqué initialement, GSAP l'animera */
   transform: translateY(-30px);
   will-change: opacity, transform;
   @media (max-width: 586px) {
@@ -481,7 +494,7 @@
   font-family: $font-family-primary;
   text-align: left;
   margin: 0;
-  opacity: 0;
+  opacity: 0; /* Masqué initialement, GSAP l'animera */
   transform: translateY(-30px);
   will-change: opacity, transform;
   line-height: 1.1;
@@ -501,6 +514,9 @@
   }
   @media (max-width: 505px) {
     font-size: 35px;
+  }
+  @media (max-width: 435px) {
+    padding-top: 35px;
   }
   @media (max-width: 360px) {
     left: 40%;
@@ -550,6 +566,34 @@
   @media (max-width: 630px) {
     justify-content: center;
   }
+  @media (max-width: 435px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    // Image centrée avec padding sur les côtés, titre en dessous
+    & > *:last-child {
+      order: 1;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      align-self: center;
+    }
+    & > .mobileTitle {
+      order: 2;
+      width: 100%;
+      padding: 20px 0 0;
+    }
+    .mobileImage {
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: 220px;
+      aspect-ratio: 4 / 3;
+    }
+  }
   .mobileImage {
     width: 200px !important;
     min-width: 200px;
@@ -567,12 +611,10 @@
     flex: 0 0 30%;
   }
   @media (max-width: 435px) {
-    position: relative;
-    left: 25px;
+    padding: 50px 0 0 0 !important;
   }
   @media (max-width: 360px) {
-    position: relative;
-    left: 50px;
+    left: 0;
   }
 }
 .mobileDescription {
@@ -586,10 +628,13 @@
     width: 55%;
     p {
       margin: 0 0 6px;
-    }
+    } 
   }
   @media (max-width: 566px) {
     width: 75%;
+  }
+  @media (max-width: 435px) {
+    padding-top: 20px;
   }
   @media (max-width: 416px) {
     width: 85%;
@@ -663,18 +708,18 @@
   @media (max-width: 900px) {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     color: #cfcfcf;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 6px 0;
-    width: fit-content;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 40px;
     font-size: 17px;
-    position: absolute;
-    left: -20px;
-    bottom: 45px;
-    width: 158px;
+    position: relative;
     text-decoration: none;
     font-family: $font-family-primary;
     .arrow {
@@ -686,17 +731,10 @@
     }
   }
   @media(max-width: 425px){
-    left: 60px;
     font-size: 14px;
   }
   @media(max-width: 414px){
     font-size: 13px;
-  }
-  @media(max-width: 360px){
-    left: 75px;
-  }
-  @media(max-width: 350px){
-    left: 85px;
   }
 }
 .iconContainer {
@@ -788,7 +826,7 @@
   filter: brightness(0.7);
   flex-shrink: 0;
   opacity: 0;
-  animation: fadeIn 0.3s ease-out forwards 0.1s;
+  /* Animation gérée par GSAP dans ProjectCategory pour rester synchronisée avec le titre */
   background: #000;
   background-size: 200% 100%;
   @media (max-width: 480px) {
@@ -797,13 +835,17 @@
     max-width: 185px;
   }
   @media (max-width: 435px) {
-    max-width: 170px;
-    position: relative;
-    right: 25px;
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 100%;
+    height: auto !important;
+    min-height: 220px;
+    aspect-ratio: 4 / 3;
+    right: auto;
+    border-radius: 0;
   }
   @media (max-width: 360px) {
-    position: relative;
-    right: 45px;
+    right: auto;
   }
 }
 .containerSingleProject {

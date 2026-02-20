@@ -360,8 +360,21 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    
-    // Ne masquer les éléments que si le composant est visible (categoryIndex défini)
+
+    // Reset direct DOM (pas gsap.set qui peut être asynchrone) pour garantir
+    // que les titres sont invisibles AVANT tout paint du navigateur.
+    // Cela écrase aussi les styles inline laissés par GSAP lors d'une visite précédente.
+    const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`) as HTMLElement | null;
+    const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`) as HTMLElement | null;
+    if (mobileTitleMain) {
+      mobileTitleMain.style.opacity = '0';
+      mobileTitleMain.style.transform = 'translateY(-30px)';
+    }
+    if (mobileTitleAccent) {
+      mobileTitleAccent.style.opacity = '0';
+      mobileTitleAccent.style.transform = 'translateY(-30px)';
+    }
+
     if (categoryIndex === undefined) return;
 
     const mosaicItems = container.querySelectorAll(`.${styles.mosaicItem}`);
@@ -382,8 +395,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     gsap.set(icons, { opacity: 0 });
     gsap.set(rightImage, { opacity: 0, x: 50 });
 
-    const mobileTitleMain = container.querySelector(`.${styles.mobileTitleMain}`);
-    const mobileTitleAccent = container.querySelector(`.${styles.mobileTitleAccent}`);
     const mobileDescription = container.querySelector(`.${styles.mobileDescription}`);
     const mobileImage = container.querySelector(`.${styles.mobileImage}`);
     const mobileIcons = container.querySelectorAll(`.${styles.mobileIcons} .${styles.iconContainer}`);
@@ -391,13 +402,12 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
     const mobileCta = container.querySelector(`.${styles.mobileCta}`);
 
-    if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
     if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
     if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
     if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
     if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
     if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
-    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 20 });
   }, [categoryIndex]);
 
   useEffect(() => {
@@ -435,13 +445,15 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     const mobileImageRight = container.querySelector(`.${styles.mobileImageRight}`);
     const mobileCta = container.querySelector(`.${styles.mobileCta}`);
 
-    if (mobileTitleMain && mobileTitleAccent) gsap.set([mobileTitleMain, mobileTitleAccent], { opacity: 0, y: -30 });
+    // Masquer les titres mobiles initialement (animer chaque élément qui existe)
+    if (mobileTitleMain) gsap.set(mobileTitleMain, { opacity: 0, y: -30 });
+    if (mobileTitleAccent) gsap.set(mobileTitleAccent, { opacity: 0, y: -30 });
     if (mobileDescription) gsap.set(mobileDescription, { opacity: 0 });
     if (mobileImage) gsap.set(mobileImage, { opacity: 0, scale: 0.8 });
     if (mobileIcons.length > 0) gsap.set(mobileIcons, { opacity: 0 });
     if (mobileImageLeft) gsap.set(mobileImageLeft, { opacity: 0, x: -30 });
     if (mobileImageRight) gsap.set(mobileImageRight, { opacity: 0, x: 30 });
-    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 30 });
+    if (mobileCta) gsap.set(mobileCta, { opacity: 0, y: 20 });
 
     const parentElement = container.parentElement;
     if (parentElement && getComputedStyle(parentElement).opacity === "0") {
@@ -628,26 +640,34 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
         x: 0,
         duration: 0.5,
       }, 0.2);
-      if (mobileTitleMain && mobileTitleAccent) {
-        tl.to([mobileTitleMain, mobileTitleAccent], {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.05,
-        }, 0.2);
-      }
-      if (mobileImage) {
-        tl.to(mobileImage, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.4,
-        }, 0.3);
+      // Animer les titres mobiles avec fromTo pour forcer le départ à opacity:0
+      const mobileTitleEls = [mobileTitleMain, mobileTitleAccent].filter(Boolean);
+      const isAscentOrParo = cover.slug === 'ascent-standalone' || cover.slug === 'paro-standalone';
+      const titleStart = isAscentOrParo ? 0.5 : 0.2;
+      if (mobileTitleEls.length > 0) {
+        tl.fromTo(mobileTitleEls,
+          { opacity: 0, y: -30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: mobileTitleEls.length > 1 ? 0.05 : 0,
+          },
+          titleStart
+        );
       }
       if (mobileDescription) {
         tl.to(mobileDescription, {
           opacity: 1,
           duration: 0.4,
         }, 0.4);
+      }
+      if (mobileImage) {
+        tl.to(mobileImage, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+        }, 0.85);
       }
       if (mobileImageLeft) {
         tl.to(mobileImageLeft, {
@@ -687,6 +707,10 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
       const mobileImg = el.querySelector(`.${styles.mobileImage}`);
       const mobileLeft = el.querySelector(`.${styles.mobileImageLeft}`);
       const mobileRight = el.querySelector(`.${styles.mobileImageRight}`);
+      const titleMain = el.querySelector(`.${styles.titleMain}`);
+      const titleAccent = el.querySelector(`.${styles.titleAccent}`);
+      const mobileTitleMain = el.querySelector(`.${styles.mobileTitleMain}`);
+      const mobileTitleAccent = el.querySelector(`.${styles.mobileTitleAccent}`);
       const toShow = [
         ...mosaicItems,
         ...mosaicImgs,
@@ -694,10 +718,15 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
         ...(mobileImg ? [mobileImg] : []),
         ...(mobileLeft ? [mobileLeft] : []),
         ...(mobileRight ? [mobileRight] : []),
+        ...(titleMain ? [titleMain] : []),
+        ...(titleAccent ? [titleAccent] : []),
+        ...(mobileTitleMain ? [mobileTitleMain] : []),
+        ...(mobileTitleAccent ? [mobileTitleAccent] : []),
       ];
       toShow.forEach((node) => {
         if (node && parseFloat(getComputedStyle(node as Element).opacity) < 0.95) {
-          gsap.set(node, { opacity: 1, x: 0, y: 0, scale: 1 });
+          const isMobileCta = (node as Element).classList?.contains(styles.mobileCta);
+          gsap.set(node, isMobileCta ? { opacity: 1, y: 0 } : { opacity: 1, x: 0, y: 0, scale: 1 });
         }
       });
     }, 800);
@@ -761,6 +790,16 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
             </p>
           ))}
         </div>
+        <a
+          href={onCtaClick ? '#' : `/projects/${cover.slug}`}
+          className={styles.mobileCta}
+          onClick={handleViewProjectsClick}
+        >
+          <span className={styles.arrow} aria-hidden>
+            <HiArrowRight />
+          </span>
+          <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
+        </a>
         <aside className={styles.left}>
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => {
@@ -999,16 +1038,6 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
               content2
             );
           })()}
-          <a 
-            href={onCtaClick ? '#' : `/projects/${cover.slug}`} 
-            className={styles.mobileCta}
-            onClick={handleViewProjectsClick}
-          >
-            <span className={styles.arrow} aria-hidden>
-            <HiArrowRight />
-            </span>
-            <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
-          </a>
         </div>
       </div>
     </section>
