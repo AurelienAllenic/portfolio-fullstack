@@ -24,6 +24,7 @@ interface SingleProjectProps {
   programmingLanguage?: string;
   initialProjectIndex?: number;
   onBack?: () => void;
+  hideCategoryLabel?: boolean;
 }
 
 const SingleProject = ({ 
@@ -31,12 +32,15 @@ const SingleProject = ({
   categoryKey, 
   programmingLanguage,
   initialProjectIndex = 0,
-  onBack 
+  onBack,
+  hideCategoryLabel = false,
 }: SingleProjectProps) => {
   const { language, t } = useLanguage();
-  const categoryLabel = programmingLanguage
-    ? `${t(`projects.category.${categoryKey}`)} - ${programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1)}`
-    : t(`projects.category.${categoryKey}`);
+  const categoryLabel = hideCategoryLabel
+    ? (programmingLanguage ? programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1) : '')
+    : programmingLanguage
+      ? `${t(`projects.category.${categoryKey}`)} - ${programmingLanguage.charAt(0).toUpperCase() + programmingLanguage.slice(1)}`
+      : t(`projects.category.${categoryKey}`);
   const { trackClick } = useAnalytics();
   const [selectedIndex, setSelectedIndex] = useState(initialProjectIndex);
   const [showOverlay, setShowOverlay] = useState(true);

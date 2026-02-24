@@ -11,6 +11,9 @@ import {
   projectsFiltered,
   solead,
   iim,
+  openclassrooms1,
+  openclassrooms2,
+  openclassrooms3,
 } from "./Data";
 import type { ProjectCover, Project } from "./ProjectCategory";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
@@ -60,25 +63,45 @@ const SingleProjectPage = () => {
   const categoryIndex = covers.findIndex(cover => cover.slug === categorySlug);
   let filteredProjects: Project[] = projectsData[categoryIndex] || [];
 
+  const filterByLanguage = (projects: Project[], lang: string): Project[] => {
+    const normalized = lang.toLowerCase();
+    return projects.filter(project =>
+      project.technologies.some(tech => {
+        const t = tech.toLowerCase();
+        if (normalized === 'react' || normalized === 'reactjs') return t === 'reactjs' || t === 'react';
+        if (normalized === 'node' || normalized === 'nodejs') return t === 'nodejs' || t === 'node';
+        if (normalized === 'next' || normalized === 'nextjs') return t === 'nextjs' || t === 'next';
+        if (normalized === 'js' || normalized === 'javascript') return t === 'javascript' || t === 'js';
+        return t === normalized;
+      })
+    );
+  };
+
   if (formationSlug) {
     const formation = OPENCLASSROOMS_FORMATIONS.find(f => f.slug === formationSlug);
     filteredProjects = formation ? (formation.projects as Project[]) : [];
+  } else if (isTousLesProjetsPage && programmingLanguage) {
+    // Tous les projets (sans Paro, Ascent, Claquettes, Linconnu), toutes catégories confondues
+    const EXCLUDED_TITLES = ['Paro', 'Ascent', 'claquettes-swing.fr', 'linconnu-magic.com'];
+    const allProjects: Project[] = [
+      ...projectsFiltered.filter(p => !EXCLUDED_TITLES.includes(p.title)),
+      ...openclassrooms1,
+      ...openclassrooms2,
+      ...openclassrooms3,
+      ...iim,
+      ...solead,
+    ];
+    // Déduplication par titre (les ids ne sont pas uniques entre les tableaux)
+    const seen = new Set<string>();
+    const deduped = allProjects.filter(p => {
+      const key = p.title;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    filteredProjects = filterByLanguage(deduped, programmingLanguage);
   } else if (programmingLanguage && categoryIndex !== -1) {
-    const normalizedLanguage = programmingLanguage.toLowerCase();
-    filteredProjects = filteredProjects.filter(project => 
-      project.technologies.some(tech => {
-        const normalizedTech = tech.toLowerCase();
-        if (normalizedLanguage === 'react' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
-        if (normalizedLanguage === 'reactjs' && (normalizedTech === 'reactjs' || normalizedTech === 'react')) return true;
-        if (normalizedLanguage === 'node' && (normalizedTech === 'nodejs' || normalizedTech === 'node')) return true;
-        if (normalizedLanguage === 'nodejs' && (normalizedTech === 'nodejs' || normalizedTech === 'node')) return true;
-        if (normalizedLanguage === 'next' && (normalizedTech === 'nextjs' || normalizedTech === 'next')) return true;
-        if (normalizedLanguage === 'nextjs' && (normalizedTech === 'nextjs' || normalizedTech === 'next')) return true;
-        if (normalizedLanguage === 'js' && (normalizedTech === 'javascript' || normalizedTech === 'js')) return true;
-        if (normalizedLanguage === 'javascript' && (normalizedTech === 'javascript' || normalizedTech === 'js')) return true;
-        return normalizedTech === normalizedLanguage;
-      })
-    );
+    filteredProjects = filterByLanguage(filteredProjects, programmingLanguage);
   }
 
   const projectIndexParam = searchParams.get('project');
@@ -175,7 +198,7 @@ const SingleProjectPage = () => {
     }
   }, [isTousLesProjetsPage]);
 
-  if (isTousLesProjetsPage) {
+  if (isTousLesProjetsPage && !programmingLanguage) {
     return (
       <>
         <RadialTransitionOverlay
@@ -211,6 +234,7 @@ const SingleProjectPage = () => {
           programmingLanguage={formationSlug ? undefined : programmingLanguage}
           initialProjectIndex={isNaN(initialProjectIndex) || initialProjectIndex >= filteredProjects.length ? 0 : initialProjectIndex}
           onBack={handleBack}
+          hideCategoryLabel={isTousLesProjetsPage && !!programmingLanguage}
         />
       </div>
       <LanguageToggle />

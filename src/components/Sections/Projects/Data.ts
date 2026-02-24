@@ -976,7 +976,7 @@ export const allprojects_cover = {
     sideImages: [Linconnu, CarEcommerce, District, Booki],
     // Utiliser le premier GIF comme image initiale (sera remplacé par rotation dans ProjectCategory)
     mainImage: allProjectsGifs[0] || BookiGif,
-    listIcons: [ReactJs, Python, Wordpress, NextJs]
+    listIcons: [ReactJs, Python, Django, Wordpress, NextJs]
 }
 
 // Liste de toutes les images principales des projets OpenClassrooms pour le diaporama

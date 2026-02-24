@@ -1,4 +1,4 @@
-import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
+﻿import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
@@ -122,6 +122,9 @@ const slugifyProjectName = (name: string): string =>
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '') || 'project';
 
+const STANDALONE_SLUGS = ['ascent-standalone', 'paro-standalone', 'claquettes-standalone'] as const;
+const isStandaloneCover = (slug: string) => STANDALONE_SLUGS.includes(slug as typeof STANDALONE_SLUGS[number]);
+
 const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: ProjectCategoryProps) => {
   const { t, language } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
@@ -132,6 +135,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
   const [currentGifIndex, setCurrentGifIndex] = useState(0);
   const isAllProjectsCover = cover.slug === 'tous-les-projets';
   const [imageOpacity, setImageOpacity] = useState(1);
+  const isStandalone = isStandaloneCover(cover.slug);
   
   // Utiliser un state pour l'image principale afin de forcer le re-render lors de la rotation
   const [currentMainImage, setCurrentMainImage] = useState<string>(
@@ -338,8 +342,10 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     }
   };
 
+  /** Clic sur icône tech : pour standalone ne fait que toggle tooltip (géré dans le rendu). Pour les autres, navigation vers la page tous-les-projets filtrée par ce langage. */
   const handleTechIconClick = (e: React.MouseEvent<HTMLAnchorElement>, techUrl: string) => {
     e.preventDefault();
+    if (isStandalone) return;
     const techSlug = getTechSlug(techUrl);
     if (techSlug) trackClick(`${cover.slug}_${techSlug}`);
     if (categoryIndex !== undefined) {
@@ -865,6 +871,27 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
             if (typeof it === "string") {
               const techSlug = isUrl(it) ? getTechSlug(it) : null;
               const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+              const tooltipLabel = getTechName(it);
+              if (isStandalone) {
+                return (
+                  <div
+                    key={i}
+                    className={styles.iconContainer}
+                  >
+                    {isUrl(it) ? (
+                      <>
+                        <img src={it} alt={tooltipLabel} />
+                        <span className={styles.tooltip}>{tooltipLabel}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{it}</span>
+                        <span className={styles.tooltip}>{it}</span>
+                      </>
+                    )}
+                  </div>
+                );
+              }
               return (
                 <div key={i} className={styles.iconContainer}>
                   {isUrl(it) ? (
@@ -874,13 +901,13 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                         onClick={(e) => handleTechIconClick(e, it)}
                         style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
                       >
-                        <img src={it} alt={getTechName(it)} />
-                        <span className={styles.tooltip}>{getTechName(it)}</span>
+                        <img src={it} alt={tooltipLabel} />
+                        <span className={styles.tooltip}>{tooltipLabel}</span>
                       </a>
                     ) : (
                       <>
-                        <img src={it} alt={getTechName(it)} />
-                        <span className={styles.tooltip}>{getTechName(it)}</span>
+                        <img src={it} alt={tooltipLabel} />
+                        <span className={styles.tooltip}>{tooltipLabel}</span>
                       </>
                     )
                   ) : (
@@ -894,6 +921,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
             }
             const techSlug = getTechSlug(it.src);
             const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+            const tooltipLabel = it.alt ?? getTechName(it.src);
+            if (isStandalone) {
+              return (
+                <div
+                  key={i}
+                  className={styles.iconContainer}
+                >
+                  <img src={it.src} alt={tooltipLabel} />
+                  <span className={styles.tooltip}>{tooltipLabel}</span>
+                </div>
+              );
+            }
             return (
               <div key={i} className={styles.iconContainer}>
                 {techUrl ? (
@@ -902,13 +941,13 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                     onClick={(e) => handleTechIconClick(e, it.src)}
                     style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
                   >
-                    <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                    <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+                    <img src={it.src} alt={tooltipLabel} />
+                    <span className={styles.tooltip}>{tooltipLabel}</span>
                   </a>
                 ) : (
                   <>
-                    <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                    <span className={styles.tooltip}>{it.alt ?? getTechName(it.src)}</span>
+                    <img src={it.src} alt={tooltipLabel} />
+                    <span className={styles.tooltip}>{tooltipLabel}</span>
                   </>
                 )}
               </div>
@@ -967,6 +1006,27 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
               if (typeof it === "string") {
                 const techSlug = isUrl(it) ? getTechSlug(it) : null;
                 const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+                const tooltipLabel = getTechName(it);
+                if (isStandalone) {
+                  return (
+                    <div
+                      key={i}
+                      className={styles.iconContainer}
+                    >
+                      {isUrl(it) ? (
+                        <>
+                          <img src={it} alt={tooltipLabel} />
+                          <span className={styles.tooltip}>{tooltipLabel}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{it}</span>
+                          <span className={styles.tooltip}>{it}</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                }
                 return (
                   <div key={i} className={styles.iconContainer}>
                     {isUrl(it) ? (
@@ -976,13 +1036,13 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                           onClick={(e) => handleTechIconClick(e, it)}
                           style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
                         >
-                          <img src={it} alt={getTechName(it)} />
-                          <span className={styles.tooltip}>{getTechName(it)}</span>
+                          <img src={it} alt={tooltipLabel} />
+                          <span className={styles.tooltip}>{tooltipLabel}</span>
                         </a>
                       ) : (
                         <>
-                          <img src={it} alt={getTechName(it)} />
-                          <span className={styles.tooltip}>{getTechName(it)}</span>
+                          <img src={it} alt={tooltipLabel} />
+                          <span className={styles.tooltip}>{tooltipLabel}</span>
                         </>
                       )
                     ) : (
@@ -996,6 +1056,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
               }
               const techSlug = getTechSlug(it.src);
               const techUrl = techSlug ? `/projects/${cover.slug}/${techSlug}` : null;
+              const tooltipLabel = it.alt ?? getTechName(it.src);
+              if (isStandalone) {
+                return (
+                  <div
+                    key={i}
+                    className={styles.iconContainer}
+                  >
+                    <img src={it.src} alt={tooltipLabel} />
+                    <span className={styles.tooltip}>{tooltipLabel}</span>
+                  </div>
+                );
+              }
               return (
                 <div key={i} className={styles.iconContainer}>
                   {techUrl ? (
@@ -1004,17 +1076,13 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                       onClick={(e) => handleTechIconClick(e, it.src)}
                       style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer' }}
                     >
-                      <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                      <span className={styles.tooltip}>
-                        {it.alt ?? getTechName(it.src)}
-                      </span>
+                      <img src={it.src} alt={tooltipLabel} />
+                      <span className={styles.tooltip}>{tooltipLabel}</span>
                     </a>
                   ) : (
                     <>
-                      <img src={it.src} alt={it.alt ?? getTechName(it.src)} />
-                      <span className={styles.tooltip}>
-                        {it.alt ?? getTechName(it.src)}
-                      </span>
+                      <img src={it.src} alt={tooltipLabel} />
+                      <span className={styles.tooltip}>{tooltipLabel}</span>
                     </>
                   )}
                 </div>
