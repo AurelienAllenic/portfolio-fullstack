@@ -28,20 +28,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Hero After Scroll
     "hero.afterScroll.title": "Mon PARCOURS",
-    "hero.afterScroll.text1": "Depuis 2021, je me forme au développement web fullStack. Mes technologies de prédilection sont ReactJs avec NodeJs.",
-    "hero.afterScroll.text2.before": "Je suis titulaire d'un mastère en développement web fullstack à ",
-    "hero.afterScroll.text2.link": "l'IIM Digital School",
-    "hero.afterScroll.text2.after": " du pôle Léonard de Vinci.",
-    "hero.afterScroll.text3.before": "Pendant ces deux années de mastère, j'ai réalisé une alternance chez ",
-    "hero.afterScroll.text3.link": "Solead agency",
-    "hero.afterScroll.text3.after": " en tant que développeur web. Travaillant à la fois sur du front et du back",
-    "hero.afterScroll.text4.before": "J'ai également suivi trois formations ",
-    "hero.afterScroll.text4.link": "OpenClassrooms",
-    "hero.afterScroll.text4.after1": ":",
-    "hero.afterScroll.text4.after2": "Développeur Web,",
-    "hero.afterScroll.text4.after3": "Développeur d'application - JavaScript/React,",
-    "hero.afterScroll.text4.after4": "Développeur d'application - Python.",
-    "hero.afterScroll.text5": "J'utilise des solutions d'IA (&nbsp;cloud et locales&nbsp;) pour optimiser le développement de projets complexes. L'IA étant un levier de productivité puissant, non un substitut au raisonnement ou à la maîtrise technique.",
+    "hero.afterScroll.text1": "Depuis 2021, je me forme au développement web fullstack. J'ai suivi plusieurs formations spécialisées, notamment chez OpenClassrooms, ainsi qu'un mastère en développement web fullstack à l'<a href=\"https://www.iim.fr/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"heroAfterScrollLink\">IIM Digital School</a> (Pôle Léonard de Vinci). Ces parcours m'ont permis de construire des bases solides en frontend et en backend, avec une spécialisation progressive autour de l'écosystème JavaScript.",
+    "hero.afterScroll.text2": "Pendant mon mastère, j'ai réalisé une alternance de deux ans chez <a href=\"https://soleadagency.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"heroAfterScrollLink\">Solead Agency</a> en tant que développeur web. J'y ai travaillé sur des projets concrets, aussi bien en frontend qu'en backend, principalement autour de sites vitrines et e-commerce, avec des enjeux réels de performance, de qualité visuelle et de maintenabilité.",
+    "hero.afterScroll.text3": "J'adopte une approche orientée produit dans mes projets, en m'intéressant aux usages réels afin de concevoir des fonctionnalités utiles et cohérentes. J'utilise également des outils d'intelligence artificielle, en local comme via le cloud, comme levier de productivité et d'exploration, tout en conservant une maîtrise technique et un raisonnement rigoureux.",
     
     // Contact
     "contact.title.main": "Me",
@@ -217,20 +206,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Hero After Scroll
     "hero.afterScroll.title": "MY JOURNEY",
-    "hero.afterScroll.text1": "Since 2021, I've been training in fullStack web development. My preferred technologies are ReactJs with NodeJs.",
-    "hero.afterScroll.text2.before": "I hold a master's degree in fullstack web development from ",
-    "hero.afterScroll.text2.link": "IIM Digital School",
-    "hero.afterScroll.text2.after": " at the Léonard de Vinci hub.",
-    "hero.afterScroll.text3.before": "During these two years of master's degree, I completed an internship at ",
-    "hero.afterScroll.text3.link": "Solead agency",
-    "hero.afterScroll.text3.after": " as a web developer. Working on both front and back end",
-    "hero.afterScroll.text4.before": "I also completed three training courses from ",
-    "hero.afterScroll.text4.link": "OpenClassrooms",
-    "hero.afterScroll.text4.after1": ":",
-    "hero.afterScroll.text4.after2": "Web Developer,",
-    "hero.afterScroll.text4.after3": "Application Developer - JavaScript/React,",
-    "hero.afterScroll.text4.after4": "Application Developer - Python.",
-    "hero.afterScroll.text5": "I use AI solutions (&nbsp;cloud and local&nbsp;) to optimize the development of complex projects. AI is a powerful productivity lever, not a substitute for reasoning or technical mastery.",
+    "hero.afterScroll.text1": "Since 2021, I have been training in fullstack web development. I have completed several specialized courses, including at OpenClassrooms, as well as a master's degree in fullstack web development at <a href=\"https://www.iim.fr/\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"heroAfterScrollLink\">IIM Digital School</a> (Pôle Léonard de Vinci). These paths have allowed me to build solid foundations in frontend and backend, with a progressive specialization around the JavaScript ecosystem.",
+    "hero.afterScroll.text2": "During my master's degree, I completed a two-year work-study program at <a href=\"https://soleadagency.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"heroAfterScrollLink\">Solead Agency</a> as a web developer. I worked on concrete projects, both in frontend and backend, mainly on showcase and e-commerce sites, with real stakes in performance, visual quality and maintainability.",
+    "hero.afterScroll.text3": "I adopt a product-oriented approach in my projects, focusing on real usage to design useful and coherent features. I also use artificial intelligence tools, both locally and via the cloud, as a lever for productivity and exploration, while maintaining technical mastery and rigorous reasoning.",
     
     // Contact
     "contact.title.main": "Contact",

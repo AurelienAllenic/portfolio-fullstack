@@ -1,8 +1,28 @@
-import { forwardRef, useEffect, useRef, useState, useLayoutEffect, useMemo } from "react";
+import { forwardRef, useEffect, useRef, useState, useLayoutEffect, useMemo, Fragment } from "react";
 import { gsap } from "gsap";
 import styles from "./heroAfterScroll.module.scss";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+
+type TextSegment = { type: "text"; value: string } | { type: "link"; href: string; text: string };
+
+function parseTextWithLinks(html: string): TextSegment[] {
+  const parts: TextSegment[] = [];
+  const regex = /<a\s+href="([^"]+)"[^>]*>([^<]*)<\/a>/gi;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: "text", value: html.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: "link", href: match[1], text: match[2] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < html.length) {
+    parts.push({ type: "text", value: html.slice(lastIndex) });
+  }
+  return parts.length > 0 ? parts : [{ type: "text", value: html }];
+}
 
 interface HeroAfterScrollProps {
   onReturnToHeroBefore?: () => void;
@@ -13,15 +33,6 @@ interface HeroAfterScrollProps {
   onNavigationReset?: boolean;
 }
 
-type LinkText = {
-  beforeLink: string;
-  linkText: string;
-  linkHref: string;
-  afterLink: string | string[];
-};
-
-type TextContent = string | LinkText;
-
 const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
   (
     { onReturnToHeroBefore, onTransitionToProjects, returnFromProjects, isForced, forceTextIndex, onNavigationReset },
@@ -29,32 +40,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
   ) => {
     const { t } = useLanguage();
     
-    const texts: TextContent[] = useMemo(() => [
+    const texts: string[] = useMemo(() => [
       t("hero.afterScroll.text1"),
-      {
-        beforeLink: t("hero.afterScroll.text2.before"),
-        linkText: t("hero.afterScroll.text2.link"),
-        linkHref: "https://www.iim.fr/",
-        afterLink: t("hero.afterScroll.text2.after"),
-      },
-      {
-        beforeLink: t("hero.afterScroll.text3.before"),
-        linkText: t("hero.afterScroll.text3.link"),
-        linkHref: "https://soleadagency.com",
-        afterLink: t("hero.afterScroll.text3.after"),
-      },
-      {
-        beforeLink: t("hero.afterScroll.text4.before"),
-        linkText: t("hero.afterScroll.text4.link"),
-        linkHref: "https://openclassrooms.com/",
-        afterLink: [
-          t("hero.afterScroll.text4.after1"),
-          t("hero.afterScroll.text4.after2"),
-          t("hero.afterScroll.text4.after3"),
-          t("hero.afterScroll.text4.after4"),
-        ],
-      },
-      t("hero.afterScroll.text5"),
+      t("hero.afterScroll.text2"),
+      t("hero.afterScroll.text3"),
     ], [t]);
 
     const iconContainers = useRef<(HTMLDivElement | null)[]>([]);
@@ -74,6 +63,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const wasNavigationReset = useRef(false);
     const contentRightRef = useRef<HTMLDivElement | null>(null);
     const iconsWrapperRef = useRef<HTMLDivElement | null>(null);
+    const containerSubtitleRef = useRef<HTMLDivElement | null>(null);
     const scrollAnimationRef = useRef<gsap.core.Timeline | null>(null);
     const [isMobile, setIsMobile] = useState(false);
     const { trackClick } = useAnalytics();
@@ -130,127 +120,28 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     const getIconsForTextIndex = useMemo(() => {
       return (index: number) => {
         switch (index) {
-          case 0: // First text
+          case 0: // Formations (OpenClassrooms, IIM), fullstack, écosystème JavaScript
             return [
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-                name: "React",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
-                name: "React Native",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
-                name: "Node.js",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
-                name: "Next.js",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
-                name: "MongoDB",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
-                name: "Prisma",
-              },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp", name: "HTML" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp", name: "CSS" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp", name: "JavaScript" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp", name: "React" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp", name: "Node.js" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp", name: "Next.js" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp", name: "Python" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp", name: "Django" },
             ];
-          case 1: // Second text
+          case 1: // Alternance Solead, vitrines et e-commerce
             return [
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
-                name: "HTML",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-                name: "CSS",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
-                name: "SCSS",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-                name: "React",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
-                name: "React Native",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
-                name: "Docker",
-              },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp", name: "HTML" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp", name: "CSS" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp", name: "JavaScript" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp", name: "jQuery" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp", name: "PHP" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp", name: "WordPress" },
+              { src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp", name: "React" },
             ];
-        case 2: // Third text
-          return [
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
-              name: "HTML",
-            },
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-              name: "CSS",
-            },
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
-              name: "JavaScript",
-            },
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp",
-              name: "jQuery",
-            },
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp",
-              name: "PHP",
-            },
-            {
-              src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
-              name: "WordPress",
-            },
-          ];
-          case 3: // Fourth text
-            return [
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
-                name: "HTML",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-                name: "CSS",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
-                name: "SCSS",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
-                name: "JavaScript",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-                name: "React",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
-                name: "Next.js",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
-                name: "Node.js",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
-                name: "Python",
-              },
-              {
-                src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
-                name: "Django",
-              },
-            ];
-          case 4: // Fifth text (IA)
+          case 2: // Approche produit, IA (local + cloud)
             return aiIcons;
           default:
             return [];
@@ -258,102 +149,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       };
     }, [aiIcons]);
 
-    const allIconsMobile = useMemo(() => [
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/html_yzkdbv.webp",
-        name: "HTML",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/css_ldbn4p.webp",
-        name: "CSS",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/scss_f6hkzy.webp",
-        name: "SCSS",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/js_cbaqmr.webp",
-        name: "JavaScript",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/jquery_wk7xot.webp",
-        name: "jQuery",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/react_jzelsd.webp",
-        name: "React",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/react-native_dyhcn4.webp",
-        name: "React Native",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/next_ep27nk.webp",
-        name: "Next.js",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/wordpress-icon_ngq76k.webp",
-        name: "Wordpress",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/nodejs_lqsesq.webp",
-        name: "Node.js",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/python_ldgrbv.webp",
-        name: "Python",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/django_dyc8kz.webp",
-        name: "Django",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/php_r7rttg.webp",
-        name: "PHP",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/symfony_t74k8y.webp",
-        name: "Symfony",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/mongodb-icon_bsizyi.webp",
-        name: "MongoDb",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/docker-icon_vwrf7p.webp",
-        name: "Docker",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/prisma-icon_vgbfdr.webp",
-        name: "Prisma",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/chatgpt_mefpin.webp",
-        name: "ChatGPT",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/grok_dkpy3i.webp",
-        name: "Grok",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/claude_y8vo09.webp",
-        name: "Claude",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/gemini_trlcb2.webp",
-        name: "Gemini",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/cursor_levshl.webp",
-        name: "Cursor",
-      },
-      {
-        src: "https://res.cloudinary.com/dwpbyyhoq/image/upload/ollama_pf9fbp.webp",
-        name: "Ollama",
-      },
-    ], []);
-
-    const allIconsDesktop = useMemo(() => getIconsForTextIndex(textIndex), [getIconsForTextIndex, textIndex]);
+    const currentIcons = useMemo(() => getIconsForTextIndex(textIndex), [getIconsForTextIndex, textIndex]);
 
     useEffect(() => {
       if (onNavigationReset && !wasNavigationReset.current) {
@@ -399,7 +195,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
     }, [returnFromProjects]);
 
     useEffect(() => {
-      const iconCount = isMobile ? allIconsMobile.length : allIconsDesktop.length;
+      const iconCount = currentIcons.length;
       
       const timeouts: number[] = [];
       for (let index = 0; index < iconCount; index++) {
@@ -423,7 +219,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         timeouts.forEach(clearTimeout);
         clearTimeout(allAnimationsTimeout);
       };
-    }, [textIndex, isMobile]);
+    }, [textIndex, isMobile, currentIcons.length]);
 
     useEffect(() => {
       if (overlayRef.current) {
@@ -449,7 +245,7 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (iconsWrapperRef.current) {
         const wrapper = iconsWrapperRef.current;
         const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-        const expectedCount = allIconsMobile.length;
+        const expectedCount = getIconsForTextIndex(textIndex).length;
         if (allIcons.length > expectedCount) {
           const iconsArray = Array.from(allIcons);
           const duplicates = iconsArray.slice(expectedCount);
@@ -596,22 +392,8 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
           scrollAnimationRef.current.kill();
           scrollAnimationRef.current = null;
         }
-        if (iconsWrapperRef.current) {
-          const wrapper = iconsWrapperRef.current;
-          const allIcons = wrapper.querySelectorAll(`.${styles.iconContainer}`);
-          const expectedCount = allIconsMobile.length;
-          if (allIcons.length > expectedCount) {
-            const iconsArray = Array.from(allIcons);
-            const duplicates = iconsArray.slice(expectedCount);
-            duplicates.forEach((icon) => {
-              if (icon.parentNode) {
-                icon.parentNode.removeChild(icon);
-              }
-            });
-          }
-        }
       };
-    }, [isMobile]);
+    }, [isMobile, textIndex, getIconsForTextIndex]);
 
     const changeText = (nextIndex: number, callback?: () => void) => {
       const newDirection = nextIndex > textIndex ? "down" : "up";
@@ -640,7 +422,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (document.body.getAttribute("data-modal-open") === "true") {
           return;
         }
-        
+        // Sur mobile/desktop : ne pas intercepter le scroll si l'utilisateur scroll dans la box texte
+        if (containerSubtitleRef.current?.contains(e.target as Node)) {
+          return;
+        }
         if (scrollLocked || timeoutId) {
           e.preventDefault();
           return;
@@ -719,7 +504,10 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
-      
+      // Ne pas intercepter le touch si l'utilisateur scroll dans la box texte (mobile)
+      if (containerSubtitleRef.current?.contains(e.target as Node)) {
+        return;
+      }
       if (
         touchStartY.current === null ||
         touchStartX.current === null ||
@@ -931,54 +719,29 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 return <span key={index}>{word} </span>;
               })}
             </h2>
-            <div className={styles.containerSubtitle}>
+            <div ref={containerSubtitleRef} className={styles.containerSubtitle}>
               <p
                 ref={textRef}
-                className={`${styles.subtitle} ${
-                  textIndex === 2
-                    ? styles.mediumSubtitle
-                    : textIndex === 3 || textIndex === 4
-                    ? styles.largeSubtitle
-                    : ""
-                } ${
+                className={`${styles.subtitle} ${styles.largeSubtitle} ${
                   returnFromProjects && textIndex === texts.length - 1
                     ? styles.noAnimation
                     : ""
                 }`}
               >
-                {typeof texts[textIndex] === "string" ? (
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: texts[textIndex] as string,
-                    }}
-                  />
-                ) : (
-                  (() => {
-                    const text = texts[textIndex] as LinkText;
-                    return (
-                      <>
-                        {text.beforeLink}
-                        <a
-                          href={text.linkHref}
-                          className={styles.linkSubtitle}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {text.linkText}
-                        </a>
-                        {Array.isArray(text.afterLink) ? (
-                          text.afterLink.map((line, i) => (
-                            <span key={i}>
-                              {line}
-                              <br />
-                            </span>
-                          ))
-                        ) : (
-                          <span>{text.afterLink}</span>
-                        )}
-                      </>
-                    );
-                  })()
+                {parseTextWithLinks(texts[textIndex]).map((segment, i) =>
+                  segment.type === "text" ? (
+                    <Fragment key={i}>{segment.value}</Fragment>
+                  ) : (
+                    <a
+                      key={i}
+                      href={segment.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.linkSubtitle}
+                    >
+                      {segment.text}
+                    </a>
+                  )
                 )}
               </p>
             </div>
@@ -1004,62 +767,64 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
                 }
               }}
             >
-              {isMobile ? (
-                <div 
-                  ref={iconsWrapperRef} 
-                  style={{ display: 'flex', gap: '25px', willChange: 'transform' }}
-                >
-                  {allIconsMobile.map((icon, index) => (
-                    <div
-                      key={`mobile-${index}`}
-                      ref={(el) => {
-                        iconContainers.current[index] = el;
-                      }}
-                      className={styles.iconContainer}
-                    >
-                      <img
-                        src={icon.src}
-                        alt={icon.name}
-                        className={styles.icon}
-                        style={{ animationDelay: `${0.5 + index * 0.1}s` }}
-                      />
-                      <span
-                        className={`${styles.tooltip} ${
-                          index < 6 ? styles.tooltipTop : styles.tooltipBottom
-                        }`}
+              <div key={`icons-${textIndex}-${isMobile ? "mobile" : "desktop"}`}>
+                {isMobile ? (
+                  <div
+                    ref={iconsWrapperRef}
+                    style={{ display: "flex", gap: "25px", willChange: "transform" }}
+                  >
+                    {currentIcons.map((icon, index) => (
+                      <div
+                        key={index}
+                        ref={(el) => {
+                          iconContainers.current[index] = el;
+                        }}
+                        className={styles.iconContainer}
                       >
-                        {icon.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  {allIconsDesktop.map((icon, index) => (
-                    <div
-                      key={`desktop-${textIndex}-${index}`}
-                      ref={(el) => {
-                        iconContainers.current[index] = el;
-                      }}
-                      className={styles.iconContainer}
-                    >
-                      <img
-                        src={icon.src}
-                        alt={icon.name}
-                        className={styles.icon}
-                        style={{ animationDelay: `${0.5 + index * 0.1}s` }}
-                      />
-                      <span
-                        className={`${styles.tooltip} ${
-                          index < 6 ? styles.tooltipTop : styles.tooltipBottom
-                        }`}
+                        <img
+                          src={icon.src}
+                          alt={icon.name}
+                          className={styles.icon}
+                          style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                        />
+                        <span
+                          className={`${styles.tooltip} ${
+                            index < Math.ceil(currentIcons.length / 2) ? styles.tooltipTop : styles.tooltipBottom
+                          }`}
+                        >
+                          {icon.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    {currentIcons.map((icon, index) => (
+                      <div
+                        key={index}
+                        ref={(el) => {
+                          iconContainers.current[index] = el;
+                        }}
+                        className={styles.iconContainer}
                       >
-                        {icon.name}
-                      </span>
-                    </div>
-                  ))}
-                </>
-              )}
+                        <img
+                          src={icon.src}
+                          alt={icon.name}
+                          className={styles.icon}
+                          style={{ animationDelay: `${0.5 + index * 0.1}s` }}
+                        />
+                        <span
+                          className={`${styles.tooltip} ${
+                            index < Math.ceil(currentIcons.length / 2) ? styles.tooltipTop : styles.tooltipBottom
+                          }`}
+                        >
+                          {icon.name}
+                        </span>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
