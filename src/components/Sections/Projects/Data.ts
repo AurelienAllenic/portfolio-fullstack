@@ -538,7 +538,7 @@ export const projects = [
         imageDiaporama: [Paro, paroGif],
         description: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
         titleEn: 'Paro',
-        descriptionEn: 'Showcase website project created for the artist Paro, developed with React.js (Vite). I worked on interface design, implementation of reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend was created to manage a complete backoffice allowing the artist to manage all content autonomously. A custom analytics system was integrated to track visits on the site.',
+        descriptionEn: 'Showcase website project for the artist Paro, developed with React.js (Vite). I worked on interface design, reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend was created to manage a complete backoffice allowing the artist to manage all content autonomously. A custom analytics system was integrated to track visits on the site.',
         github: '',
         demo: 'https://paro-musique.com',
         figma:'',
@@ -552,7 +552,7 @@ export const projects = [
         title: 'Ascent',
         description: "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données. Un système d'analytics customisé a été intégré pour suivre les visites sur le site et dont les statistiques sont disponibles en backoffice. Le projet est modifiable en backoffice sur un modèle similaire à un système comme elementor",
         titleEn: 'Ascent',
-        descriptionEn: 'Ascent is a web application designed for architecture and design professionals, developed in Next.js, with an administration system allowing users to manage all content autonomously. The project focuses on front-end structure, performance and maintainability, while integrating back-end logic for dynamic data management. A custom analytics system was integrated to track visits on the site and whose statistics are available in the backoffice. The project is modifiable in the backoffice on a similar system to a system like elementor',
+        descriptionEn: 'Ascent is a web application for architecture and design professionals, developed in Next.js with an administration system allowing users to manage all content autonomously. The project emphasises front-end structure, performance and maintainability, while integrating back-end logic for dynamic data management. A custom analytics system was integrated to track site visits and statistics are available in the backoffice. The project can be edited in the backoffice on a model similar to a system like Elementor.',
         github: 'https://github.com/AurelienAllenic/ascent',
         demo: 'https://ascent-six.vercel.app/',
         figma:'https://www.figma.com/design/JCrWII2C9NFsQSyAgcwxfh/Ascent?node-id=0-1&t=wqqq5q2qzDiRfd0W-1',
@@ -719,7 +719,7 @@ export const iim = [
 export const ascent_standalone_cover = {
     title: 'Ascent',
     slug: 'ascent-standalone',
-    content: "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données.",
+    content: "Ascent est une application web destinée aux professionnels de l'architecture et du design, développée en Next.js, avec un système d'administration permettant à l'utilisateur de gérer l'ensemble du contenu de manière autonome. Le projet met l'accent sur la structure front, la performance et la maintenabilité, tout en intégrant une logique back pour la gestion dynamique des données. Un système d'analytics customisé a été intégré pour suivre les visites sur le site et dont les statistiques sont disponibles en backoffice. Le projet est modifiable en backoffice sur un modèle similaire à un système comme elementor.",
     sideImages: [Ascent, 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-2_uz28yw.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-3_lfnua8.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent-4_sabfmd.webp'],
     mainImage: ascentGif1,
     listIcons: [NextJs, SCSS]
@@ -728,7 +728,7 @@ export const ascent_standalone_cover = {
 export const paro_standalone_cover = {
     title: 'Paro',
     slug: 'paro-standalone',
-    content: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome.",
+    content: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
     sideImages: ['https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-1_n4hnct.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-2_jbaqco.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-3_xz4qvt.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-4_cl5ohm.webp'],
     mainImage: paroGif,
     listIcons: [ReactJs, SCSS, nodeJs]
