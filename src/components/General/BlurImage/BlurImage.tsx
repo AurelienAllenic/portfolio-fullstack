@@ -38,6 +38,8 @@ interface BlurImageProps {
   wrapperStyle?: React.CSSProperties;
   imgClassName?: string;
   imgStyle?: React.CSSProperties;
+  /** Désactive le placeholder blur (image visible immédiatement). Utilisé pour les covers ProjectCategory sur la homepage. */
+  noBlur?: boolean;
 }
 
 const BlurImage = ({
@@ -50,10 +52,11 @@ const BlurImage = ({
   wrapperStyle,
   imgClassName,
   imgStyle,
+  noBlur = false,
 }: BlurImageProps) => {
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(noBlur);
   const finalSrc = fullSrc ?? src;
-  const tinyUrl = getTinyCloudinaryUrl(finalSrc);
+  const tinyUrl = noBlur ? null : getTinyCloudinaryUrl(finalSrc);
 
   return (
     <span className={`${styles.wrapper} ${className}`} data-object-fit={objectFit} style={wrapperStyle}>

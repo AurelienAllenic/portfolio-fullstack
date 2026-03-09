@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useLayoutEffect, useState, useMemo } from "react";
 import { gsap } from "gsap";
 import styles from "./projects.module.scss";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
@@ -174,6 +174,18 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
 
     return () => clearInterval(interval);
   }, [isAllProjectsCover, currentGifIndex]);
+
+  // Après rotation du GIF "Autres projets", le nouveau wrapper .mobileImage est monté avec opacity:0 (CSS).
+  // GSAP n'anime que le premier nœud, donc on force opacity 1 sur le wrapper actuel.
+  useEffect(() => {
+    if (!isAllProjectsCover || !containerRef.current) return;
+    const container = containerRef.current;
+    const raf = requestAnimationFrame(() => {
+      const wrapper = container.querySelector(`.${styles.mobileImage}`);
+      if (wrapper) gsap.set(wrapper, { opacity: 1 });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [isAllProjectsCover, currentMainImage]);
 
   // Track section arrival only when the component is visible (categoryIndex is defined)
   useEffect(() => {
@@ -771,6 +783,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                 className={styles.mobileImage} 
                 loading="eager" 
                 key={imageToUse}
+                noBlur
                 imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
               />
             );
@@ -967,6 +980,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
                 alt="main" 
                 loading="eager" 
                 key={imageToUse}
+                noBlur
                 imgStyle={{ opacity: imageOpacity, transition: 'opacity 0.5s ease-in-out' }}
               />
             );

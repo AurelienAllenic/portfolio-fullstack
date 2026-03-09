@@ -422,9 +422,24 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         if (document.body.getAttribute("data-modal-open") === "true") {
           return;
         }
-        // Sur mobile/desktop : ne pas intercepter le scroll si l'utilisateur scroll dans la box texte
-        if (containerSubtitleRef.current?.contains(e.target as Node)) {
-          return;
+        const isInSubtitleBox = containerSubtitleRef.current?.contains(e.target as Node);
+        if (isInSubtitleBox) {
+          const isMobileView = window.innerWidth <= 768;
+          if (isMobileView && containerSubtitleRef.current) {
+            const el = containerSubtitleRef.current;
+            const edge = 2;
+            const atTop = el.scrollTop <= edge;
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - edge;
+            const goingDown = e.deltaY > 1;
+            const goingUp = e.deltaY < -1;
+            if ((goingDown && atBottom) || (goingUp && atTop)) {
+              // Au bord du texte scrollable, laisser déclencher le changement de texte / gradient
+            } else {
+              return;
+            }
+          } else {
+            return;
+          }
         }
         if (scrollLocked || timeoutId) {
           e.preventDefault();
@@ -504,8 +519,22 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
       if (document.body.getAttribute("data-modal-open") === "true") {
         return;
       }
-      // Ne pas intercepter le touch si l'utilisateur scroll dans la box texte (mobile)
-      if (containerSubtitleRef.current?.contains(e.target as Node)) {
+      const deltaY = touchStartY.current === null ? 0 : touchStartY.current - e.touches[0].clientY;
+      const deltaX = touchStartX.current === null ? 0 : touchStartX.current - e.touches[0].clientX;
+      const isInSubtitleBox = containerSubtitleRef.current?.contains(e.target as Node);
+      if (isInSubtitleBox && window.innerWidth <= 768 && containerSubtitleRef.current) {
+        const el = containerSubtitleRef.current;
+        const edge = 2;
+        const atTop = el.scrollTop <= edge;
+        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - edge;
+        const swipeDown = deltaY > 30;
+        const swipeUp = deltaY < -30;
+        if ((swipeDown && atBottom) || (swipeUp && atTop)) {
+          // Au bord du texte scrollable, laisser déclencher le changement de texte / gradient
+        } else {
+          return;
+        }
+      } else if (isInSubtitleBox) {
         return;
       }
       if (
@@ -515,9 +544,6 @@ const HeroAfterScroll = forwardRef<HTMLDivElement, HeroAfterScrollProps>(
         hasTriggeredSwipe.current
       )
         return;
-      
-      const deltaY = touchStartY.current - e.touches[0].clientY;
-      const deltaX = touchStartX.current - e.touches[0].clientX;
 
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         return;
