@@ -70,6 +70,7 @@ const FlutterEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_we
 const AIMnist = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ia-mnist_pver85.webp'
 const SymfonyECommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/symfony-ecommerce_dfzxyy.webp'
 const Learnify = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/learnify_nir4ie.webp'
+const CreaContenu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/creacontenuwebp_lljilz.webp'
 
 /* GIFS */
 
@@ -103,6 +104,7 @@ const EliebenhamouGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_web
 const LaCommuneGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_ddcxu3.gif'
 const AnavieGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/anavie_smxnim.gif'
 const RollerGrillGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rollergrill_shpbxd.gif'
+const CreaContenuGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/creacontenugif_lwvfcq.gif'
 
 /* COVERS */
 
@@ -712,6 +714,20 @@ export const iim = [
         folder:'',
         technologies: ['reactnative', 'typescript', 'expo']
     },
+    {
+        id: 9,
+        image: CreaContenu,
+        imageDiaporama: [CreaContenu, CreaContenuGif],
+        title: 'CreaContenu',
+        description: "CreaContenu est une application web Saas développée en équipe, permetant à un créateur de contenu d'organiser son emploi du temps et ses sorties de média via un planing, des todo et autres outils de productivité",
+        titleEn: 'CreaContenu',
+        descriptionEn: 'CreaContenu is a team developed SaaS web application that helps content creators organize their schedules and media releases through planning tools, to-do lists, and other productivity features.',
+        github: 'https://github.com/Enzoait/CreaContenu-SaaS',
+        demo: 'https://crea-contenu-saa-s.vercel.app/',
+        figma:'',
+        folder:'',
+        technologies: ['reactjs', 'typescript', 'scss', 'supabase']
+    }
 ]
 
 /* STANDALONE PROJECT COVERS (slides dédiées sur la page principale) */
