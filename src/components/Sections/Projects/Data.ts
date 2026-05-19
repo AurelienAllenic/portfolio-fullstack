@@ -71,6 +71,8 @@ const AIMnist = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto
 const SymfonyECommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/symfony-ecommerce_dfzxyy.webp'
 const Learnify = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/learnify_nir4ie.webp'
 const CreaContenu = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/creacontenuwebp_lljilz.webp'
+const Cottage = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cottage_yq78qe.webp'
+const LabIA = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/labIA_m39bpl.webp'
 
 /* GIFS */
 
@@ -105,6 +107,9 @@ const LaCommuneGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q
 const AnavieGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/anavie_smxnim.gif'
 const RollerGrillGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rollergrill_shpbxd.gif'
 const CreaContenuGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/creacontenugif_lwvfcq.gif'
+const CottageGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cottage_qlwo1q.gif'
+const LabIAGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/labIA_livzfn.gif'
+
 
 /* COVERS */
 
@@ -727,6 +732,34 @@ export const iim = [
         figma:'',
         folder:'',
         technologies: ['reactjs', 'typescript', 'scss', 'supabase']
+    },
+    {
+        id: 10,
+        image: Cottage,
+        imageDiaporama: [Cottage, CottageGif],
+        title: 'Les Cottages du bélvédère',
+        description: "Les cottages du belvédère est un projet 3d incluant la gestion par la voix, les gestes ainsi que de l'AR",
+        titleEn: 'CreaContenu',
+        descriptionEn: 'The Belvedere Cottages is a 3D project including voice control, gesture control, and AR.',
+        github: 'https://github.com/zeno-nq/cottage-interface',
+        demo: 'https://cottage-interface.vercel.app/',
+        figma:'',
+        folder:'',
+        technologies: ['reactjs', 'typescript', 'scss', 'threejs']
+    },
+    {
+        id: 11,
+        image: LabIA,
+        imageDiaporama: [LabIA, LabIAGif],
+        title: 'LabIA',
+        description: "LabIA est un projet d'amélioration d'un site pré-existant dans le domaine de la santé",
+        titleEn: 'CreaContenu',
+        descriptionEn: 'LabIA is a project aimed at improving a pre-existing website in the healthcare sector.',
+        github: 'https://github.com/AurelienAllenic/ProjetLabTech',
+        demo: 'https://projet-lab-tech.vercel.app/',
+        figma:'',
+        folder:'',
+        technologies: ['reactjs', 'typescript', 'scss', 'nodejs']
     }
 ]
 
