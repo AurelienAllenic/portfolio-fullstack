@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { getApiUrl } from '../../../config/api';
 
 interface User {
   id: string;
@@ -36,13 +37,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getApiUrl = () => {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  };
-
   const checkSession = async () => {
     try {
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'GET',
         credentials: 'include',
@@ -72,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
@@ -100,7 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       await fetch(`${apiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',

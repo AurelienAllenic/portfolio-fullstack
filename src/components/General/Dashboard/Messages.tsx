@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './messages.module.scss';
 import { FaTrash, FaEnvelope, FaUser, FaCalendar, FaChevronDown, FaChevronUp } from 'react-icons/fa6';
+import { getApiUrl } from '../../../config/api';
 
 interface Message {
   _id: string;
@@ -16,15 +17,11 @@ const Messages: React.FC = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const getApiUrl = () => {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  };
-
   const fetchMessages = async () => {
     try {
       setLoading(true);
       setError(null);
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/messages`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +54,7 @@ const Messages: React.FC = () => {
 
     try {
       setDeletingId(id);
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },

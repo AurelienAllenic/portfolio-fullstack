@@ -4,6 +4,7 @@ import {
   Tooltip, ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell
 } from 'recharts';
 import styles from './analytics.module.scss';
+import { getApiUrl } from '../../../config/api';
 
 function getZoneFromLabel(label: string): string {
   let base = label
@@ -100,11 +101,6 @@ const Analytics: React.FC = () => {
   const [openMobileEN, setOpenMobileEN] = useState(false);
   const [openDesktopFR, setOpenDesktopFR] = useState(false);
   const [openDesktopEN, setOpenDesktopEN] = useState(false);
-
-  const getApiUrl = () => {
-    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    return url.replace(/\/$/, '');
-  };
 
   const fetchDailyStats = async () => {
     try {

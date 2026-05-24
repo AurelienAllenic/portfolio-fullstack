@@ -1,7 +1,7 @@
 import { useLanguage } from '../components/General/Language/LanguageContext';
+import { getApiUrl } from '../config/api';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/';
-const TRACK_ENDPOINT = `${BASE_URL}/track`;
+const TRACK_ENDPOINT = `${getApiUrl()}/track`;
 const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
 
 interface TrackMetadata {
@@ -29,7 +29,6 @@ export const useAnalytics = () => {
       path: window.location.pathname,
       label,
       metadata,
-      timestamp: new Date()
     };
 
     try {
@@ -37,6 +36,7 @@ export const useAnalytics = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        keepalive: true,
       });
     } catch (err) {
       console.error("Tracking error:", err);

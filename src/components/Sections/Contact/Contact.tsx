@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
+import { getApiUrl } from "../../../config/api";
 
 const CONTACT_BACKGROUND_IMAGE =
   "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_auto,q_auto/background_ll7suh.webp";
@@ -107,8 +108,7 @@ const Contact = () => {
 
     try {
       const fullMessage = `De: ${formData.name}\n\n${formData.message}`;
-      let apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      apiUrl = apiUrl.replace(/\/$/, '');
+      const apiUrl = getApiUrl();
 
       let captchaToken: string | undefined;
       if (RECAPTCHA_SITE_KEY && formData.consent) {

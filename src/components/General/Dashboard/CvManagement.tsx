@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './cvManagement.module.scss';
 import { FaTrash, FaUpload, FaFileImage, FaFilePdf } from 'react-icons/fa6';
+import { getApiUrl } from '../../../config/api';
 
 interface CvData {
   imageWebpFr: string;
@@ -20,15 +21,11 @@ const CvManagement: React.FC = () => {
   const [pdfFr, setPdfFr] = useState<File | null>(null);
   const [pdfEn, setPdfEn] = useState<File | null>(null);
 
-  const getApiUrl = () => {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  };
-
   const fetchCv = async () => {
     try {
       setLoading(true);
       setError(null);
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/cv`, {
         method: 'GET',
         headers: {
@@ -66,7 +63,7 @@ const CvManagement: React.FC = () => {
     setSuccess(null);
 
     try {
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const formData = new FormData();
 
       if (imageWebpFr) formData.append('imageWebpFr', imageWebpFr);
@@ -108,7 +105,7 @@ const CvManagement: React.FC = () => {
 
     try {
       setError(null);
-      const apiUrl = getApiUrl().replace(/\/$/, '');
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/cv`, {
         method: 'DELETE',
         headers: {

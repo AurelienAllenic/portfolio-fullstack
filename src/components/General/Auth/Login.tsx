@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { getApiUrl } from '../../../config/api';
 import styles from './login.module.scss';
 import { FcGoogle } from 'react-icons/fc';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
@@ -55,12 +56,8 @@ const Login: React.FC = () => {
     }
   }, [searchParams]);
 
-  const getApiUrl = () => {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  };
-
   const handleGoogleLogin = () => {
-    const apiUrl = getApiUrl().replace(/\/$/, '');
+    const apiUrl = getApiUrl();
     window.location.href = `${apiUrl}/auth/google`;
   };
 

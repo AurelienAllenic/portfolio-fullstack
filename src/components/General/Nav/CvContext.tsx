@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { getApiUrl } from '../../../config/api';
 
 interface CvData {
   imageWebpFr: string;
@@ -23,16 +24,12 @@ export const CvProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const getApiUrl = () => {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  };
-
   useEffect(() => {
     const fetchCv = async () => {
       try {
         setLoading(true);
         setError(false);
-        const apiUrl = getApiUrl().replace(/\/$/, '');
+        const apiUrl = getApiUrl();
         const response = await fetch(`${apiUrl}/cv`, {
           method: 'GET',
           headers: {
