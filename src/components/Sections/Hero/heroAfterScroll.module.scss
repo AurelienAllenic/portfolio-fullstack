@@ -92,6 +92,12 @@
       position: relative;
       height: 100%;
       z-index: 10;
+      @media (max-width: 768px) {
+        width: 100%;
+        max-width: 100%;
+        align-items: center;
+        box-sizing: border-box;
+      }
       .titleLeft {
         font-family: $font-family-primary;
         font-size: 108px;
@@ -107,14 +113,28 @@
           font-size: 70px;
         }
         @media (max-width: 768px) {
-          font-size: 65px;
           top: 0;
+          align-self: center;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: min(100%, 340px);
+          max-width: 100%;
+          font-size: clamp(42px, 11.5vw, 65px);
+          line-height: 1;
+          text-align: left;
+          box-sizing: border-box;
+          padding-right: 8px;
+
+          > span:first-child {
+            display: block;
+          }
         }
         @media (max-width: 475px) {
-          font-size: 55px;
+          font-size: clamp(38px, 10.5vw, 55px);
         }
         @media (max-width: 375px) {
-          font-size: 50px;
+          font-size: clamp(34px, 10vw, 50px);
         }
         @media (max-height: 400px) {
           font-size: 35px;
@@ -139,26 +159,31 @@
             top: 75px;
           }
           @media (max-width: 768px) {
-            font-size: 32px;
-            top: 65px;
-            left: 120px;
+            position: static;
+            margin-top: 0.1em;
+            margin-left: clamp(28px, 13vw, 92px);
+            width: max-content;
+            max-width: calc(100% - clamp(28px, 13vw, 92px));
+            font-size: clamp(20px, 5.4vw, 32px);
+            line-height: 1.05;
+            text-align: left;
           }
           @media (max-width: 475px) {
-            font-size: 30px;
-            top: 55px;
-            left: 105px;
+            margin-left: clamp(24px, 11vw, 72px);
+            max-width: calc(100% - clamp(24px, 11vw, 72px));
+            font-size: clamp(18px, 5vw, 30px);
           }
           @media (max-width: 375px) {
-            font-size: 28px;
-            top: 50px;
-            left: 95px;
+            margin-left: clamp(20px, 10vw, 64px);
+            max-width: calc(100% - clamp(20px, 10vw, 64px));
+            font-size: clamp(17px, 4.8vw, 28px);
           }
-          @media (max-height: 400px) {
+          @media (max-height: 400px) and (min-width: 769px) {
             font-size: 22px;
             left: 150px;
             top: 45px;
           }
-          @media (max-height: 270px) {
+          @media (max-height: 270px) and (min-width: 769px) {
             top: 35px;
           }  
         }
@@ -166,17 +191,17 @@
       .containerSubtitle {
         @media (max-width: 768px) {
           position: relative;
-          top: 0;
+          top: 20px;
           max-height: min(325px, 50vh);
           width: 100%;
-          max-width: 320px;
+          max-width: 100%;
           overflow-y: auto;
           overflow-x: hidden;
           -webkit-overflow-scrolling: touch;
           display: block;
-          padding: 8px 0;
+          padding: 8px 4px;
           border-radius: 6px;
-          top: 20px;
+          box-sizing: border-box;
         }
         @media (max-width: 768px) and (max-height: 590px) {
           max-height: min(200px, 40vh);
@@ -212,9 +237,13 @@
           position: relative;
           top: auto;
           margin: 0 auto;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          overflow-wrap: anywhere;
+          word-break: break-word;
         }
         @media (max-width: 375px) {
-          width: 260px;
           font-size: 15px;
           line-height: 21px;
         }
@@ -294,23 +323,17 @@
         @media (max-width: 768px) {
           font-size: 16px;
           line-height: 23px;
-          width: 320px;
+          width: 100%;
+          max-width: 100%;
           height: auto;
-          min-height: 200px;
+          min-height: 0;
+          box-sizing: border-box;
+          overflow-wrap: anywhere;
+          word-break: break-word;
         }
         @media (max-width: 375px) {
-          width: 270px;
           font-size: 14px;
           line-height: 21px;
-        }
-        @media (max-width: 475px) {
-          width: 350px;
-        }
-        @media (max-width: 375px) {
-          width: 275px;
-          font-size: 16px;
-          line-height: 26px;
-          height: 190px;
         }
         @media (max-height: 590px) and (min-width: 768px) {
           font-size: 14px;
