@@ -6,6 +6,7 @@ import Projects from "./components/Sections/Projects/Projects";
 import MobileNav from "./components/General/Nav/MobileNav";
 import SliderProjects from "./components/Sections/Projects/SliderProjects";
 import { ModalCVProvider } from "./components/General/Nav/ModalCVContext";
+import AutoCvModalOnLoad from "./components/General/Nav/AutoCvModalOnLoad";
 import { NavigationProvider, useNavigation } from "./components/General/Nav/NavigationContext";
 import TransitionOverlay from "./components/General/Nav/TransitionOverlay";
 import RadialTransitionOverlay from "./components/General/Nav/RadialTransitionOverlay";
@@ -322,6 +323,14 @@ const SinglePageContent = ({
 
   return (
     <>
+      <AutoCvModalOnLoad
+        enabled={
+          showContent &&
+          !showProjects &&
+          !showContact &&
+          !(isRestoringFromProjects && !isReturningToContact)
+        }
+      />
       <div style={{ opacity: navOpacity, transition: 'opacity 0.4s ease' }}>
         <Nav />
         <MobileNav />
