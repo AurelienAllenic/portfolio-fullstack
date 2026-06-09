@@ -8,6 +8,7 @@ interface TrackMetadata {
   duration_seconds?: number;
   project?: string;
   category?: string;
+  candidature?: string;
   [key: string]: any;
 }
 
@@ -15,6 +16,12 @@ export interface TrackClickOptions {
   desktopSuffix?: string;
   mobileSuffix?: string;
 }
+
+const getCandidatureFromUrl = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('candidature');
+};
 
 export const useAnalytics = () => {
   const { language } = useLanguage();
@@ -24,11 +31,16 @@ export const useAnalytics = () => {
     label?: string,
     metadata: TrackMetadata = {}
   ) => {
+    const candidature = getCandidatureFromUrl();
+    const enrichedMetadata = candidature
+      ? { ...metadata, candidature }
+      : metadata;
+
     const data = {
       type,
       path: window.location.pathname,
       label,
-      metadata,
+      metadata: enrichedMetadata,
     };
 
     try {

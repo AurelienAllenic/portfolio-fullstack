@@ -6,8 +6,9 @@ import { CiLogout } from "react-icons/ci";
 import Messages from './Messages';
 import CvManagement from './CvManagement';
 import Analytics from './Analytics';
+import Candidatures from './Candidatures';
 
-type TabType = 'home' | 'messages' | 'cv' | 'analytics';
+type TabType = 'home' | 'messages' | 'cv' | 'analytics' | 'candidatures';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -53,6 +54,12 @@ const Dashboard: React.FC = () => {
               Messages
             </button>
             <button
+              className={`${styles.tab} ${activeTab === 'candidatures' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('candidatures')}
+            >
+              Candidatures
+            </button>
+            <button
               className={`${styles.tab} ${activeTab === 'cv' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('cv')}
             >
@@ -81,6 +88,8 @@ const Dashboard: React.FC = () => {
               </>
             ) : activeTab === 'messages' ? (
               <Messages />
+            ) : activeTab === 'candidatures' ? (
+              <Candidatures />
             ) : (
               <CvManagement />
             )}
