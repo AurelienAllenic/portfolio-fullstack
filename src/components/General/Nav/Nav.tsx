@@ -1,12 +1,13 @@
 import styles from "./nav.module.scss";
 import { gsap } from "gsap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useModalCV } from "./ModalCVContext";
 import { useNavigation } from "./NavigationContext";
 import ProjectsDropdown from "./ProjectsDropdown";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { HiOutlineUser, HiOutlineFolderOpen, HiOutlineMail, HiOutlineHome } from "react-icons/hi";
 
 const Nav = () => {
   const { trackClick } = useAnalytics();
@@ -15,6 +16,31 @@ const Nav = () => {
   const { navigateToHero, navigateToContact, navigateToProjects } = useNavigation();
   const { t } = useLanguage();
   const { error: cvError } = useCv();
+
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [pillProjectsOpen, setPillProjectsOpen] = useState(false);
+  const pillProjectsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > 80) setIsScrolled(true);
+      else if (currentY <= 10) setIsScrolled(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!pillProjectsOpen) return;
+    const handleOutside = (e: MouseEvent) => {
+      if (pillProjectsRef.current && !pillProjectsRef.current.contains(e.target as Node)) {
+        setPillProjectsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [pillProjectsOpen]);
 
   const categories = [
     { title: t("projects.category.ascent"), index: 0 },
@@ -81,7 +107,63 @@ const Nav = () => {
   };
 
   return (
-    <div className={styles.containerNav}>
+    <>
+    {isScrolled && (
+      <div className={styles.pillNav}>
+        <div
+          className={styles.pillItem}
+          title="Home"
+          onClick={() => handleTrackerClick("nav_logo", "navigateToHero", "hero1")}
+        >
+          <HiOutlineHome />
+        </div>
+        <div className={styles.pillDivider} />
+        <div
+          className={styles.pillItem}
+          title="About"
+          onClick={() => handleTrackerClick("nav_about", "navigateToHero", "hero2")}
+        >
+          <HiOutlineUser />
+        </div>
+        <div className={styles.pillDivider} />
+        <div
+          className={styles.pillItem}
+          title="Projects"
+          ref={pillProjectsRef}
+          style={{ position: "relative" }}
+          onClick={() => setPillProjectsOpen((o) => !o)}
+        >
+          <HiOutlineFolderOpen />
+          {pillProjectsOpen && (
+            <div className={styles.pillDropdown}>
+              {categories.map((cat) => (
+                <div
+                  key={cat.index}
+                  className={styles.pillDropdownItem}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    trackClick(`nav_${cat.title}`);
+                    navigateToProjects(cat.index);
+                    setPillProjectsOpen(false);
+                  }}
+                >
+                  {cat.title}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className={styles.pillDivider} />
+        <div
+          className={styles.pillItem}
+          title="Contact"
+          onClick={() => handleTrackerClick("nav_contact", "navigateToContact")}
+        >
+          <HiOutlineMail />
+        </div>
+      </div>
+    )}
+    <div className={styles.containerNav} style={isScrolled ? { opacity: 0, pointerEvents: "none" } : undefined}>
       <nav className={styles.nav} ref={navRef}>
         <div 
           className={styles.logo}
@@ -145,6 +227,7 @@ const Nav = () => {
         </div>
       </nav>
     </div>
+    </>
   );
 };
 
