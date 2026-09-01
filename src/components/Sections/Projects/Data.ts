@@ -60,7 +60,7 @@ const Eliebenhamou = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q
 const LaCommune = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/lacommune_xnku7a.webp'
 const Anavie = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/anavie_sumvpa.webp'
 const RollerGrill = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/rollergrill_wttjr8.webp'
-
+const MyIbs = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/myibs-cover_tvxnxd.webp'
 
 const CarEcommerce = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/car-ecommerce_kswbxa.webp'
 const ELTPiepline = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/pipeline_xkn0dl.webp'
@@ -83,7 +83,7 @@ const KanapGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/
 const PetitsPlatsGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/petits-plats_qevcmt.gif'
 const KasaGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/kasa_r1rsws.gif'
 const WealthealthGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/wealthealth_xgzmdu.gif'
-const paroGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro_uhxlmm.gif'
+const paroGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-gif_rhmggj.gif'
 const ascentGif1='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent1_ld9d5y.gif'
 const ascentGif2='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/ascent2_s7tkqu.gif'
 const ClaquettesGif='https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/claquettes_gx04ty.gif'
@@ -109,7 +109,7 @@ const RollerGrillGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp
 const CreaContenuGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/creacontenugif_lwvfcq.gif'
 const CottageGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/cottage_qlwo1q.gif'
 const LabIAGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/labIA_livzfn.gif'
-
+const MyIbsGif = 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/myibs-gif_rrqonp.gif'
 
 /* COVERS */
 
@@ -778,7 +778,7 @@ export const paro_standalone_cover = {
     title: 'Paro',
     slug: 'paro-standalone',
     content: "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
-    sideImages: ['https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-1_n4hnct.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-2_jbaqco.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-3_xz4qvt.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-4_cl5ohm.webp'],
+    sideImages: ['https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-1_wimwvo.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-2_r7tofp.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-3_lgt5cs.webp', 'https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-4_r7g6cc.webp'],
     mainImage: paroGif,
     listIcons: [ReactJs, SCSS, nodeJs]
 }
@@ -957,6 +957,20 @@ export const solead = [
         descriptionEn: "French manufacturer of professional kitchen equipment since 1947.",
         github: '',
         demo: 'https://www.rollergrill-international.com/fr/',
+        figma: '',
+        folder: '',
+        technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
+    },
+    {
+        id: 13,
+        image: MyIbs,
+        imageDiaporama: [MyIbs, MyIbsGif],
+        title: 'MyIbs',
+        description: "Impression, télécom, informatique. Réalisation complète du projet",
+        titleEn: 'MyIbs',
+        descriptionEn: "Printing, Telecom, IT — End-to-end project execution",
+        github: '',
+        demo: 'https://myibs.staging.prodsolead.com/',
         figma: '',
         folder: '',
         technologies: ['wordpress', 'html', 'css', 'javascript', 'jquery', 'php']
