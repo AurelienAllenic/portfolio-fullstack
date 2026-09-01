@@ -9,7 +9,7 @@ interface TrackMetadata {
   project?: string;
   category?: string;
   candidature?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface TrackClickOptions {

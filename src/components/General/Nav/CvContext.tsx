@@ -86,6 +86,7 @@ export const CvProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCv = () => {
   const context = useContext(CvContext);
   if (context === undefined) {

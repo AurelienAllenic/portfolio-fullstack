@@ -253,7 +253,6 @@ const SinglePageContent = ({
         setTimeout(() => {
           setForceProjectsIndex(undefined);
         }, 500);
-      } else {
       }
     });
   }, [setNavigateToProjects, handleTransitionToProjects, showContact, handleCloseContact, showProjects]);

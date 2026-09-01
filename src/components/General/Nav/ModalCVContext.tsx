@@ -25,6 +25,7 @@ export const ModalCVProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useModalCV = () => {
   const context = useContext(ModalCVContext);
   if (context === undefined) {

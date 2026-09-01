@@ -342,7 +342,7 @@ const Credits = () => {
               <div key={categoryIndex} className={styles.categorySection}>
                 <h2 className={styles.categoryTitle}>{category.category}</h2>
                 <ul className={styles.projectsList}>
-                  {category.projects.map((project: any, projectIndex) => {
+                  {category.projects.map((project: { name: string; cloudinaryId?: string; demoUrl?: string; pexelsUrl?: string; unsplashUrl?: string; istockUrl?: string; imageUrl?: string }, projectIndex) => {
                     let imageUrl: string | null = null;
                     let buttonText = t("credits.credits.seeImage");
                     

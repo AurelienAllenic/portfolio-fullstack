@@ -19,6 +19,7 @@ const getCloudinaryPublicId = (url: string): string | null => {
  * For non-Cloudinary URLs, return null (no placeholder blur).
  * For GIFs, we don't use f_webp (Cloudinary may return 400).
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const getTinyCloudinaryUrl = (url: string): string | null => {
   const base = url?.split("/image/upload/")[0];
   const publicId = getCloudinaryPublicId(url);

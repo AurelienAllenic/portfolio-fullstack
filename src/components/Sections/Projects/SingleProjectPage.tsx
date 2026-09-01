@@ -125,6 +125,21 @@ const SingleProjectPage = () => {
     }
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Éviter que l'overlay "in" (fermeture) reste actif après navigation
+  useEffect(() => {
+    if (isTousLesProjetsPage) {
+      setIsTransitioningBack(false);
+    }
+  }, [isTousLesProjetsPage]);
+
   if (categoryIndex === -1 && !formationSlug && !isTousLesProjetsPage) {
     return (
       <div style={{ 
@@ -182,21 +197,6 @@ const SingleProjectPage = () => {
     const target = backTargetRef.current;
     navigate(target);
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Éviter que l'overlay "in" (fermeture) reste actif après navigation
-  useEffect(() => {
-    if (isTousLesProjetsPage) {
-      setIsTransitioningBack(false);
-    }
-  }, [isTousLesProjetsPage]);
 
   if (isTousLesProjetsPage && !programmingLanguage) {
     return (

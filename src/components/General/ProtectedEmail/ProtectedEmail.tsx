@@ -26,7 +26,7 @@ const ProtectedEmail: React.FC<ProtectedEmailProps> = ({
       // Decode from base64
       const decoded = atob(encodedEmail);
       setEmail(decoded);
-    } catch (error) {
+    } catch {
       console.error('Erreur décodage email');
     }
   }, [encodedEmail]);

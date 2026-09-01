@@ -7,7 +7,7 @@ import styles from './analytics.module.scss';
 import { getApiUrl } from '../../../config/api';
 
 function getZoneFromLabel(label: string): string {
-  let base = label
+  const base = label
     .replace(/_LANG_FR$/, '')
     .replace(/_LANG_EN$/, '')
     .replace(/_mobile$/, '');
@@ -120,7 +120,7 @@ const Analytics: React.FC = () => {
 
       const data = await response.json();
       setDailyStats(data || []);
-    } catch (err) {
+    } catch {
       setDailyStats([]);
     }
   };
@@ -144,7 +144,7 @@ const Analytics: React.FC = () => {
 
       const data: MonthlyStat[] = await response.json();
       setMonthlyStats(data || []);
-    } catch (err) {
+    } catch {
       setMonthlyStats([]);
     }
   };
@@ -166,7 +166,7 @@ const Analytics: React.FC = () => {
       }
       const data = await response.json();
       setYearlyStats(data || []);
-    } catch (err) {
+    } catch {
       setYearlyStats([]);
     }
   };
