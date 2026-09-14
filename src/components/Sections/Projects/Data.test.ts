@@ -12,11 +12,10 @@ import {
   openclassroomsImages,
   allprojects_cover,
   paro_standalone_cover,
-  ascent_standalone_cover,
+  celeste_standalone_cover,
   claquettes_standalone_cover,
+  STANDALONE_PROJECT_TITLES as STANDALONE_TITLES,
 } from './Data'
-
-const STANDALONE_TITLES = ['Paro', 'Ascent', 'claquettes-swing.fr']
 const allCategories = [projects, openclassrooms1, openclassrooms2, openclassrooms3, iim, solead]
 
 describe('catalogues de projets', () => {
@@ -91,7 +90,7 @@ describe('covers de slides', () => {
   const covers = [
     ['allprojects_cover', allprojects_cover],
     ['paro_standalone_cover', paro_standalone_cover],
-    ['ascent_standalone_cover', ascent_standalone_cover],
+    ['celeste_standalone_cover', celeste_standalone_cover],
     ['claquettes_standalone_cover', claquettes_standalone_cover],
   ] as const
 

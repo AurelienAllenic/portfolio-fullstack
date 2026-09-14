@@ -3,7 +3,7 @@ import { useLanguage } from "../../General/Language/LanguageContext";
 import BlurImage from "../../General/BlurImage";
 import RadialTransitionOverlay from "../../General/Nav/RadialTransitionOverlay";
 import FormationsModal from "./FormationsModal";
-import { solead_cover, iim_cover, allProjectsImages } from "./Data";
+import { solead_cover, iim_cover, projects_cover, allProjectsImages } from "./Data";
 import { useTrackSectionArrival } from "../../../hooks/useTrackSectionArrival";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import styles from "./projects.module.scss";
@@ -44,6 +44,12 @@ const ALL_CATEGORIES = [
     titleFr: "Solead",
     titleEn: "Solead",
     image: solead_cover.mainImage,
+  },
+  {
+    slug: "projets-personnels",
+    titleFr: "Projets personnels",
+    titleEn: "Personal projects",
+    image: projects_cover.mainImage,
   },
 ] as const;
 
@@ -225,7 +231,7 @@ const AllCategoriesSelector = ({ categoryIndex }: AllCategoriesSelectorProps) =>
               <p>{t("projects.category.allprojects.description")}</p>
             </div>
           </header>
-          <div className={styles.formationSelectorGrid}>
+          <div className={`${styles.formationSelectorGrid} ${styles.allCategoriesGrid}`}>
             {ALL_CATEGORIES.map((cat) => {
               const href = `/projects/${cat.slug}`;
               return (

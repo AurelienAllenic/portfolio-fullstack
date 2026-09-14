@@ -6,7 +6,7 @@ import { useNavigation } from "./NavigationContext";
 import { useLanguage } from "../Language/LanguageContext";
 import { useCv } from "./CvContext";
 import {
-  ascent_standalone_cover,
+  celeste_standalone_cover,
   paro_standalone_cover,
   claquettes_standalone_cover,
   allprojects_cover,
@@ -37,7 +37,7 @@ const MobileNav = () => {
   const { trackClick } = useAnalytics();
   
   const PROJECT_CATEGORIES = useMemo(() => [
-    { title: t("projects.category.ascent"), index: 0, image: ascent_standalone_cover.mainImage },
+    { title: t("projects.category.celeste"), index: 0, image: celeste_standalone_cover.mainImage },
     { title: t("projects.category.paro"), index: 1, image: paro_standalone_cover.mainImage },
     { title: t("projects.category.claquettes"), index: 2, image: claquettes_standalone_cover.mainImage },
     { title: t("projects.category.allprojects"), index: 3, image: allprojects_cover.mainImage },

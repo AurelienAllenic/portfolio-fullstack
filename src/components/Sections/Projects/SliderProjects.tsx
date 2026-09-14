@@ -6,7 +6,7 @@ import type { ProjectCover, Project } from "./ProjectCategory";
 import ProjectLinksModal from "./ProjectLinksModal";
 import AllProjectsSection from "./AllProjectsSection";
 import {
-  ascent_standalone_cover,
+  celeste_standalone_cover,
   paro_standalone_cover,
   claquettes_standalone_cover,
   projects,
@@ -46,18 +46,24 @@ interface SliderProjectsProps {
   onForceIndexComplete?: () => void;
 }
 
-// Slides standalone : Ascent (index 1), Paro (index 0), Claquettes (index 2) dans projects[]
+// Slides standalone : Céleste, Paro, Claquettes
 const standaloneCovers: ProjectCover[] = [
-  ascent_standalone_cover,
+  celeste_standalone_cover,
   paro_standalone_cover,
   claquettes_standalone_cover,
 ];
 
+const findProjectByTitle = (title: string): Project => {
+  const project = projects.find(p => p.title === title);
+  if (!project) throw new Error(`Projet standalone introuvable : ${title}`);
+  return project;
+};
+
 // Projets correspondants aux slides standalone (dans le même ordre que standaloneCovers)
 const standaloneProjects: Project[] = [
-  projects[1], // Ascent
-  projects[0], // Paro
-  projects[2], // Claquettes
+  findProjectByTitle('Céleste Ragonneau'),
+  findProjectByTitle('Paro'),
+  findProjectByTitle('claquettes-swing.fr'),
 ];
 
 const TOTAL_SLIDES = standaloneCovers.length + 1; // 3 standalone + 1 all projects
@@ -1024,7 +1030,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       data-slider-index={currentIndex}
       data-slider-locked={scrollLocked}
     >
-      {/* 3 slides standalone : Ascent, Paro, Claquettes */}
+      {/* 3 slides standalone : Céleste, Paro, Claquettes */}
       {standaloneCovers.map((cover, index) => {
         const isCurrent = index === currentIndex;
         return (

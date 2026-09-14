@@ -81,8 +81,8 @@ const SingleProjectPage = () => {
     const formation = OPENCLASSROOMS_FORMATIONS.find(f => f.slug === formationSlug);
     filteredProjects = formation ? (formation.projects as Project[]) : [];
   } else if (isTousLesProjetsPage && programmingLanguage) {
-    // Tous les projets (sans Paro, Ascent, Claquettes, Linconnu), toutes catégories confondues
-    const EXCLUDED_TITLES = ['Paro', 'Ascent', 'claquettes-swing.fr', 'linconnu-magic.com'];
+    // Tous les projets (sans Paro, Céleste, Claquettes, Linconnu), toutes catégories confondues
+    const EXCLUDED_TITLES = ['Paro', 'Céleste Ragonneau', 'claquettes-swing.fr', 'linconnu-magic.com'];
     const allProjects: Project[] = [
       ...projectsFiltered.filter(p => !EXCLUDED_TITLES.includes(p.title)),
       ...openclassrooms1,
@@ -186,7 +186,7 @@ const SingleProjectPage = () => {
       backTargetRef.current = "/";
       sessionStorage.setItem('shouldRestoreScroll', 'true');
     } else {
-      // Toutes les autres catégories (mastere-iim, projets-solead…)
+      // Toutes les autres catégories (mastere-iim, projets-solead, projets-personnels…)
       // → retour à la page de sélection "Autres projets"
       backTargetRef.current = "/projects/tous-les-projets";
     }

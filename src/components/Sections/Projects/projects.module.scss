@@ -209,6 +209,16 @@
       grid-template-rows: repeat(3, 200px); // Augmenté de 160px à 200px
       gap: 16px; // Augmenté de 1rem à 16px
     }
+
+    // "Autres projets" : 4 catégories en 2x2
+    &.allCategoriesGrid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 280px);
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 200px);
+      }
+    }
   }
 }
 

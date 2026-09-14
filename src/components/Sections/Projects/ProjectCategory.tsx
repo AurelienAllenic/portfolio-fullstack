@@ -85,6 +85,7 @@ const getTechName = (url: string): string => {
     if (name === 'nodejs') return 'Node.js';
     if (name === 'reactjs') return 'React';
     if (name === 'nextjs') return 'Next.js';
+    if (name === 'mongodb-icon') return 'MongoDB';
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
   return 'Technologie';
@@ -122,7 +123,7 @@ const slugifyProjectName = (name: string): string =>
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '') || 'project';
 
-const STANDALONE_SLUGS = ['ascent-standalone', 'paro-standalone', 'claquettes-standalone'] as const;
+const STANDALONE_SLUGS = ['celeste-standalone', 'paro-standalone', 'claquettes-standalone'] as const;
 const isStandaloneCover = (slug: string) => STANDALONE_SLUGS.includes(slug as typeof STANDALONE_SLUGS[number]);
 
 const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: ProjectCategoryProps) => {
@@ -263,7 +264,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
     'projets-personnels': 'personnel',
     'projets-solead': 'solead',
     'mastere-iim': 'iim',
-    'ascent-standalone': 'ascent',
+    'celeste-standalone': 'celeste',
     'paro-standalone': 'paro',
     'claquettes-standalone': 'claquettes',
     'allprojects': 'allprojects',
@@ -282,7 +283,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
 
   const titleParts = useMemo(() => {
     const parts = categoryTitle.split(" ");
-    const isStandaloneProject = ['ascent-standalone', 'paro-standalone', 'claquettes-standalone'].includes(cover.slug);
+    const isStandaloneProject = isStandaloneCover(cover.slug);
     const accentText = parts.slice(1).join(" ");
     
     // Pour les projets standalone, ne pas afficher de deuxième ligne si accent est vide
@@ -660,8 +661,8 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
       }, 0.2);
       // Animer les titres mobiles avec fromTo pour forcer le départ à opacity:0
       const mobileTitleEls = [mobileTitleMain, mobileTitleAccent].filter(Boolean);
-      const isAscentOrParo = cover.slug === 'ascent-standalone' || cover.slug === 'paro-standalone';
-      const titleStart = isAscentOrParo ? 0.5 : 0.2;
+      const isCelesteOrParo = cover.slug === 'celeste-standalone' || cover.slug === 'paro-standalone';
+      const titleStart = isCelesteOrParo ? 0.5 : 0.2;
       if (mobileTitleEls.length > 0) {
         tl.fromTo(mobileTitleEls,
           { opacity: 0, y: -30 },

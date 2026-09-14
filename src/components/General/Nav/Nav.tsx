@@ -43,7 +43,7 @@ const Nav = () => {
   }, [pillProjectsOpen]);
 
   const categories = [
-    { title: t("projects.category.ascent"), index: 0 },
+    { title: t("projects.category.celeste"), index: 0 },
     { title: t("projects.category.paro"), index: 1 },
     { title: t("projects.category.claquettes"), index: 2 },
     { title: t("projects.category.allprojects"), index: 3 },
