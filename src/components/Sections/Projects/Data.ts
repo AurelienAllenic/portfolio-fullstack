@@ -707,15 +707,15 @@ export const projects = [
     title: "Paro",
     imageDiaporama: [Paro, paroGif],
     description:
-      "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
+      "Projet de site vitrine réalisé pour l'artiste Paro, développé en Next.js et SCSS. J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js, reposant sur une base de données MongoDB, a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
     titleEn: "Paro",
     descriptionEn:
-      "Showcase website project for the artist Paro, developed with React.js (Vite). I worked on interface design, reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend was created to manage a complete backoffice allowing the artist to manage all content autonomously. A custom analytics system was integrated to track visits on the site.",
+      "Showcase website project for the artist Paro, developed with Next.js and SCSS. I worked on interface design, reusable components and content integration, with particular attention to visual clarity and user experience. A Node.js backend, backed by a MongoDB database, was created to manage a complete backoffice allowing the artist to manage all content autonomously. A custom analytics system was integrated to track visits on the site.",
     github: "",
     demo: "https://paro-musique.com",
     figma: "",
     folder: "",
-    technologies: ["reactjs", "scss", "nodejs"],
+    technologies: ["nextjs", "scss", "nodejs", "mongodb"],
   },
   {
     id: 2,
@@ -997,7 +997,7 @@ export const paro_standalone_cover = {
   title: "Paro",
   slug: "paro-standalone",
   content:
-    "Projet de site vitrine réalisé pour l'artiste Paro, développé avec React.js (Vite). J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
+    "Projet de site vitrine réalisé pour l'artiste Paro, développé en Next.js et SCSS. J'ai travaillé sur la conception de l'interface, la mise en place de composants réutilisables et l'intégration du contenu, avec une attention particulière portée à la clarté visuelle et à l'expérience utilisateur. Un back en Node.js, reposant sur une base de données MongoDB, a été créé pour gérer un backoffice complet permettant à l'artiste de gérer l'ensemble du contenu de manière autonome. Un système d'analytics customisé a été intégré pour suivre les visites sur le site.",
   sideImages: [
     "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-1_wimwvo.webp",
     "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-2_r7tofp.webp",
@@ -1005,7 +1005,7 @@ export const paro_standalone_cover = {
     "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/paro-4_r7g6cc.webp",
   ],
   mainImage: paroGif,
-  listIcons: [ReactJs, SCSS, nodeJs],
+  listIcons: [NextJs, SCSS, nodeJs, MongoDB],
 };
 
 export const claquettes_standalone_cover = {
