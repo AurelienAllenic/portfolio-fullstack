@@ -524,7 +524,7 @@ const MobileNav = () => {
               </div>
             )}
             <a
-              href="https://fr.linkedin.com/in/aur%C3%A9lien-allenic-5725b8219"
+              href="https://www.linkedin.com/in/aur%C3%A9lien-allenic/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackClick('nav_linkedin')}
