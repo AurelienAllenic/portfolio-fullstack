@@ -61,7 +61,7 @@ const findProjectByTitle = (title: string): Project => {
 
 // Projets correspondants aux slides standalone (dans le même ordre que standaloneCovers)
 const standaloneProjects: Project[] = [
-  findProjectByTitle('Céleste Ragonneau'),
+  findProjectByTitle('Maître Ragonneau'),
   findProjectByTitle('Paro'),
   findProjectByTitle('claquettes-swing.fr'),
 ];

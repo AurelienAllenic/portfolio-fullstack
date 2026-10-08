@@ -91,8 +91,8 @@ const Linconnu =
   "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/linconnu_blnezz.webp";
 const PreviousAurelien =
   "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/aurelienallenic_xxjzsw.webp";
-// TODO Céleste : image de couverture (webp)
-const CelesteAvocate = "";
+const CelesteAvocate =
+  "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/celeste-1_ttnkc9.webp";
 
 const District =
   "https://res.cloudinary.com/dwpbyyhoq/image/upload/f_webp,q_auto/district_ztpd3h.webp";
@@ -786,12 +786,12 @@ export const projects = [
     id: 6,
     image: CelesteAvocate,
     imageDiaporama: [CelesteAvocate, CelesteAvocateGif],
-    title: "Céleste Ragonneau",
+    title: "Maître Ragonneau",
     description:
-      "Site vitrine de Céleste Ragonneau, avocate au barreau de Paris (droit pénal, droit de la famille, violences conjugales et protection de l'enfance), développé en Next.js et SCSS avec une base de données MongoDB. Le site présente ses domaines d'intervention, ses honoraires, des articles juridiques et des témoignages clients, et intègre un formulaire de contact. Le site est disponible en français et en anglais.",
-    titleEn: "Céleste Ragonneau",
+      "Site vitrine de Maître Ragonneau, avocate au barreau de Paris (droit pénal, droit de la famille, violences conjugales et protection de l'enfance), développé en Next.js et SCSS avec une base de données MongoDB. Le site présente ses domaines d'intervention, ses honoraires, des articles juridiques et des témoignages clients, et intègre un formulaire de contact. Le site est disponible en français et en anglais.",
+    titleEn: "Maître Ragonneau",
     descriptionEn:
-      "Showcase website for Céleste Ragonneau, a lawyer at the Paris Bar (criminal law, family law, domestic violence and child protection), built with Next.js and SCSS with a MongoDB database. The site presents her practice areas, fees, legal articles and client testimonials, and includes a contact form. The site is available in French and English.",
+      "Showcase website for Maître Ragonneau, a lawyer at the Paris Bar (criminal law, family law, domestic violence and child protection), built with Next.js and SCSS with a MongoDB database. The site presents her practice areas, fees, legal articles and client testimonials, and includes a contact form. The site is available in French and English.",
     github: "",
     demo: "https://celeste-avocate.vercel.app/",
     figma: "",
@@ -978,11 +978,11 @@ export const iim = [
 /* STANDALONE PROJECT COVERS (slides dédiées sur la page principale) */
 
 export const celeste_standalone_cover = {
-  title: "Céleste Ragonneau",
+  title: "Maître Ragonneau",
   slug: "celeste-standalone",
   // Le texte affiché vient de LanguageContext (projects.category.celeste.description)
   content:
-    "Site vitrine de Céleste Ragonneau, avocate au barreau de Paris (droit pénal, droit de la famille, violences conjugales et protection de l'enfance), développé en Next.js et SCSS avec une base de données MongoDB. Le site présente ses domaines d'intervention, ses honoraires, des articles juridiques et des témoignages clients, et intègre un formulaire de contact. Le site est disponible en français et en anglais.",
+    "Site vitrine de Maître Ragonneau, avocate au barreau de Paris (droit pénal, droit de la famille, violences conjugales et protection de l'enfance), développé en Next.js et SCSS avec une base de données MongoDB. Le site présente ses domaines d'intervention, ses honoraires, des articles juridiques et des témoignages clients, et intègre un formulaire de contact. Le site est disponible en français et en anglais.",
   sideImages: [
     CelesteAvocateSide1,
     CelesteAvocateSide2,
@@ -1268,7 +1268,7 @@ const allProjectsGifs = [
 /** Titres des projets affichés en slides standalone sur la page principale */
 export const STANDALONE_PROJECT_TITLES = [
   "Paro",
-  "Céleste Ragonneau",
+  "Maître Ragonneau",
   "claquettes-swing.fr",
 ];
 

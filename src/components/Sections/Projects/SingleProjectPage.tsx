@@ -82,7 +82,7 @@ const SingleProjectPage = () => {
     filteredProjects = formation ? (formation.projects as Project[]) : [];
   } else if (isTousLesProjetsPage && programmingLanguage) {
     // Tous les projets (sans Paro, Céleste, Claquettes, Linconnu), toutes catégories confondues
-    const EXCLUDED_TITLES = ['Paro', 'Céleste Ragonneau', 'claquettes-swing.fr', 'linconnu-magic.com'];
+    const EXCLUDED_TITLES = ['Paro', 'Maître Ragonneau', 'claquettes-swing.fr', 'linconnu-magic.com'];
     const allProjects: Project[] = [
       ...projectsFiltered.filter(p => !EXCLUDED_TITLES.includes(p.title)),
       ...openclassrooms1,
