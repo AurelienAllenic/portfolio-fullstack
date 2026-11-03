@@ -793,7 +793,8 @@ export const projects = [
     descriptionEn:
       "Showcase website for Maître Ragonneau, a lawyer at the Paris Bar (criminal law, family law, domestic violence and child protection), built with Next.js and SCSS with a MongoDB database. The site presents her practice areas, fees, legal articles and client testimonials, and includes a contact form. The site is available in French and English.",
     github: "",
-    demo: "https://celeste-avocate.vercel.app/",
+    demo: "https://www.ragonneau-avocat.fr/",
+    demoEn: "https://www.ragonneau-avocat.fr/en",
     figma: "",
     folder: "",
     technologies: ["nextjs", "scss", "mongodb"],

@@ -64,6 +64,7 @@ export interface Project {
   descriptionEn: string;
   github: string;
   demo: string;
+  demoEn?: string;
   figma: string;
   folder: string | ProjectFolderItem[];
   technologies: string[];

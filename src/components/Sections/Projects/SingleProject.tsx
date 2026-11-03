@@ -610,7 +610,7 @@ const SingleProject = ({
               )}
               {selectedProject.demo && (
                 <a
-                  href={selectedProject.demo}
+                  href={(language === "en" && selectedProject.demoEn) || selectedProject.demo}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectButton}

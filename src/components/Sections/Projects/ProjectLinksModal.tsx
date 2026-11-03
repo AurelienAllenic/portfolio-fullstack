@@ -39,7 +39,7 @@ const ProjectLinksModal = ({ isOpen, project, onClose }: ProjectLinksModalProps)
 
   const links: { label: string; url: string }[] = [
     project.github ? { label: "GitHub", url: project.github } : null,
-    project.demo ? { label: "Live Demo", url: project.demo } : null,
+    project.demo ? { label: "Live Demo", url: (language === "en" && project.demoEn) || project.demo } : null,
     project.figma ? { label: "Figma", url: project.figma } : null,
   ].filter(Boolean) as { label: string; url: string }[];
 

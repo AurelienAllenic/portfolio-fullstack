@@ -4,6 +4,7 @@ import styles from "./projects.module.scss";
 import ProjectCategory from "./ProjectCategory";
 import type { ProjectCover, Project } from "./ProjectCategory";
 import ProjectLinksModal from "./ProjectLinksModal";
+import { useLanguage } from "../../General/Language/LanguageContext";
 import AllProjectsSection from "./AllProjectsSection";
 import {
   celeste_standalone_cover,
@@ -73,6 +74,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const [isMobile, setIsMobile] = useState(false);
   const [scrollLocked, setScrollLocked] = useState(true);
   const [modalProject, setModalProject] = useState<Project | null>(null);
+  const { language } = useLanguage();
   const touchStartY = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutId = useRef<number | null>(null);
@@ -95,7 +97,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
   const handleStandaloneCtaClick = useCallback((project: Project) => {
     const links: string[] = [
       project.github,
-      project.demo,
+      (language === "en" && project.demoEn) || project.demo,
       project.figma,
     ].filter(Boolean) as string[];
 
@@ -105,7 +107,7 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       setModalProject(project);
       document.body.setAttribute('data-modal-open', 'true');
     }
-  }, []);
+  }, [language]);
 
   const handleModalClose = useCallback(() => {
     setModalProject(null);
