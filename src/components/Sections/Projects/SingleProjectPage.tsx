@@ -233,7 +233,8 @@ const SingleProjectPage = () => {
           categoryKey={formationSlug ? categoryKeyMap[formationSlug] ?? "web" : categoryKeyMap[categorySlug ?? ""] ?? "web"}
           programmingLanguage={formationSlug ? undefined : programmingLanguage}
           initialProjectIndex={isNaN(initialProjectIndex) || initialProjectIndex >= filteredProjects.length ? 0 : initialProjectIndex}
-          onBack={handleBack}
+          // Dans un écran du portfolio 3D, ce bouton mènerait à l'accueil depuis l'écran.
+          onBack={window.self === window.top ? handleBack : undefined}
           hideCategoryLabel={isTousLesProjetsPage && !!programmingLanguage}
         />
       </div>

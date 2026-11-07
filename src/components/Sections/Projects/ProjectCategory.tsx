@@ -7,6 +7,7 @@ import { HiArrowRight } from "react-icons/hi2";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { allProjectsGifs } from "./Data";
+import ImmersiveBanner from "./ImmersiveBanner";
 
 const optimizeCloudinaryUrl = (url: string, width?: number, quality: string = "auto"): string => {
   if (!url.includes("cloudinary.com")) return url;
@@ -821,6 +822,7 @@ const ProjectCategory = ({ cover, projects, categoryIndex, onCtaClick }: Project
           </span>
           <span>{onCtaClick ? t("projects.view.project") : t("projects.view")}</span>
         </a>
+        <ImmersiveBanner inline />
         <aside className={styles.left}>
         <div className={styles.mosaic}>
           {cover.sideImages.slice(0, 4).map((src, i) => {

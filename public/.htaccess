@@ -116,7 +116,7 @@
   Header set X-Content-Type-Options "nosniff"
   
   # Protection contre le Clickjacking (le portfolio immersif affiche ce site dans un ecran 3D)
-  Header set Content-Security-Policy "frame-ancestors 'self' http://localhost:3456"
+  Header set Content-Security-Policy "frame-ancestors 'self' https://portfolio-immersive-six.vercel.app http://localhost:3456"
   
   # Referrer Policy (contrôle des informations envoyées)
   Header set Referrer-Policy "strict-origin-when-cross-origin"

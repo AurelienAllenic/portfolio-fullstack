@@ -510,7 +510,11 @@
   line-height: 1.1;
   font-weight: 400;
   position: relative;
-  left: 65%;
+  // Calé à droite plutôt qu'à 65 % : un mot long ne sort plus de l'écran.
+  align-self: flex-end;
+  max-width: 100%;
+  padding-right: 6%;
+  text-align: right;
   top: 5px;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -525,11 +529,12 @@
   @media (max-width: 505px) {
     font-size: 35px;
   }
+  @media (max-width: 380px) {
+    font-size: 30px;
+    padding-right: 0;
+  }
   @media (max-width: 435px) {
     padding-top: 35px;
-  }
-  @media (max-width: 360px) {
-    left: 40%;
   }
 }
 .contentBox {
@@ -1779,5 +1784,77 @@
     height: 200px;
     width: 90%;
     margin: 0 auto;
+  }
+}
+
+.immersiveBanner {
+  position: fixed;
+  z-index: 20;
+  left: 3.5%;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 22px 6px 6px;
+  color: #050505;
+  font-family: $font-family-text;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.55);
+  transition: background-color 0.2s, color 0.2s;
+
+  video,
+  img {
+    width: 100px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    background: #050505;
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+
+  // Sur téléphone, l'encart fixe recouvrirait le contenu : il passe dans chaque section.
+  @media (max-width: 900px) {
+    display: none;
+  }
+
+  &.immersiveBannerInline {
+    display: none;
+    @media (max-width: 900px) {
+      position: static;
+      display: flex;
+      align-self: center;
+      max-width: 100%;
+      margin: 0 auto 40px;
+      white-space: normal;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    left: 16px;
+    bottom: 20px;
+    // Jamais sous le bouton de langue (60 px de large, a 20 px du bord droit).
+    max-width: calc(100vw - 16px - 20px - 60px - 12px);
+    gap: 9px;
+    padding: 4px 12px 4px 4px;
+    font-size: 14px;
+    line-height: 1.15;
+    white-space: normal;
+
+    video,
+    img {
+      width: 56px;
+      height: 34px;
+    }
   }
 }

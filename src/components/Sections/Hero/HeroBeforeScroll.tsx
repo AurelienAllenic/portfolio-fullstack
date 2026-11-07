@@ -51,6 +51,13 @@ const HeroBeforeScroll = () => {
         <p className={styles.subtitle}>
           {t("hero.beforeScroll.subtitle")}
         </p>
+        <a className={styles.visit3d} href="https://portfolio-immersive-six.vercel.app/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4z" />
+            <path d="M4 7.4l8 4.6 8-4.6M12 12v9.2" />
+          </svg>
+          {t("hero.beforeScroll.visit3d")}
+        </a>
       </div>
       <div className={styles.scrollIndicatorContainer}>
         <p className={styles.scrollIndicator}>

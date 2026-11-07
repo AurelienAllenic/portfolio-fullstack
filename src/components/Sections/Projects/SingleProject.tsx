@@ -650,9 +650,11 @@ const SingleProject = ({
           </div>
           <div className={styles.categoryLabel}>{categoryLabel}</div>
         </div>
-        <button onClick={onBack} className={styles.backButton}>
-          ← {language === "en" ? "Back" : "Retour"}
-        </button>
+        {onBack && (
+          <button onClick={onBack} className={styles.backButton}>
+            ← {language === "en" ? "Back" : "Retour"}
+          </button>
+        )}
       </div>
     </>
   );

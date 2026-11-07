@@ -23,6 +23,8 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.beforeScroll.web": "WEB",
     "hero.beforeScroll.fullstack": "FULLSTACK",
     "hero.beforeScroll.subtitle": "De la conception à la programmation d'applications performantes et design",
+    "hero.beforeScroll.visit3d": "Visiter en 3D",
+    "projects.visit3d": "Voir mes projets en 3D",
     "hero.beforeScroll.scrollDown": "Scroll Down",
     "hero.beforeScroll.scrollUp": "Scroll Up",
     
@@ -201,6 +203,8 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.beforeScroll.web": "WEB",
     "hero.beforeScroll.fullstack": "FULLSTACK",
     "hero.beforeScroll.subtitle": "From design to programming of performant and stylish applications",
+    "hero.beforeScroll.visit3d": "Visit in 3D",
+    "projects.visit3d": "See my projects in 3D",
     "hero.beforeScroll.scrollDown": "Scroll Down",
     "hero.beforeScroll.scrollUp": "Scroll Up",
     

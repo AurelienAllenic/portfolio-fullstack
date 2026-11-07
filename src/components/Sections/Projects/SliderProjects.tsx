@@ -6,6 +6,7 @@ import type { ProjectCover, Project } from "./ProjectCategory";
 import ProjectLinksModal from "./ProjectLinksModal";
 import { useLanguage } from "../../General/Language/LanguageContext";
 import AllProjectsSection from "./AllProjectsSection";
+import ImmersiveBanner from "./ImmersiveBanner";
 import {
   celeste_standalone_cover,
   paro_standalone_cover,
@@ -1032,6 +1033,8 @@ const SliderProjects = ({ onTransitionToContact, onTransitionFromContact, forceI
       data-slider-index={currentIndex}
       data-slider-locked={scrollLocked}
     >
+      <ImmersiveBanner />
+
       {/* 3 slides standalone : Céleste, Paro, Claquettes */}
       {standaloneCovers.map((cover, index) => {
         const isCurrent = index === currentIndex;
